@@ -46,3 +46,15 @@ last-reviewed: YYYY-MM-DD
 | File | Purpose |
 |---|---|
 | [`research-topic.md`](./research-topic.md) | Research `<topic>` and produce a structured note. |
+| [`architect-fa.md`](./architect-fa.md) | Architect/Planner system prompt (full). |
+| [`architect-fa-compact.md`](./architect-fa-compact.md) | Architect/Planner system prompt (compact). |
+
+## Note on system prompts vs. task prompts
+
+The template above (`[Objective] / [Context] / [Approach] / ...`) is for
+**task prompts** sent to Devin to perform a single piece of work. Files
+in this directory whose `purpose` describes a **role's system prompt**
+(e.g. `architect-fa.md`) follow a different shape: short frontmatter +
+short meta block + the literal system prompt inside a fenced `text`
+block. They are intended to be loaded verbatim into the system slot of
+an LLM API call, not consumed by Devin as a task.
