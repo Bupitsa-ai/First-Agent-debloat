@@ -7,6 +7,23 @@
 
 ---
 
+## Bootstrap pattern: создавайте `llms.txt` сразу
+
+Когда заводите новый LLM-агентский проект (свой или форк First-Agent для другой задачи) — **первым делом** создайте `knowledge/llms.txt` (или `llms.txt` в корне) по convention'у [llmstxt.org](https://llmstxt.org/).
+
+Это hand-maintained URL-индекс ваших docs/ и knowledge/ как raw-ссылок (GitHub raw, GitLab raw, etc.). Любой LLM-агент (Devin, Claude, GPT через web-fetch) за один HTTP-запрос получает карту проекта — и не должен crawl'ить репо или принимать список файлов руками.
+
+Пример из этого репо: [`knowledge/llms.txt`](../knowledge/llms.txt).
+
+Затраты: 30 минут один раз + одна строка в `AGENTS.md` PR-чек-листе про обновление при изменении структуры. Возврат: десятки минут трения, сэкономленных в каждой будущей сессии. Drift — реален, поэтому:
+
+1. Правило в PR-чек-листе: «если структура `docs/` или `knowledge/` изменилась, обнови `llms.txt`».
+2. Опционально, после Phase S: pre-commit hook или CI-проверка, которая регенерирует `llms.txt` из дерева.
+
+Подробнее про convention — [llmstxt.org](https://llmstxt.org/), про rationale — [`knowledge/research/agentic-memory-supplement.md` §4 «gbrain»](../knowledge/research/agentic-memory-supplement.md).
+
+---
+
 ## Фаза R — Research
 
 **Цель:** выйти с письменным, отревьюенным планом того, что и как будем строить.
@@ -53,6 +70,15 @@
 5. **Pre-commit** — `.pre-commit-config.yaml` с ruff, eol, whitespace, markdownlint.
 6. **Knowledge note** в Devin со ссылкой на Makefile — шаблон в
    [devin-reference.md § Knowledge Notes](./devin-reference.md#knowledge-notes).
+7. **`llms.txt` auto-generator.** Скрипт, который регенерирует
+   [`knowledge/llms.txt`](../knowledge/llms.txt) из текущего дерева
+   `docs/` + `knowledge/`, плюс хук в pre-commit и CI-проверка
+   `git diff --exit-code knowledge/llms.txt` после регенерации.
+   Снимает риск drift'а из manual maintenance — сейчас
+   `AGENTS.md` §PR Checklist #7 ловит drift только если человек
+   не забыл; pre-commit ловит автоматически. Зависимость: после
+   шагов 1–5 (нужен Python проект + pre-commit + CI). Пока этого
+   нет — действует ручное правило #7.
 
 ### Критерии выхода из фазы S
 
