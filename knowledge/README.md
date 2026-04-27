@@ -4,7 +4,7 @@ Durable project knowledge for First-Agent. Everything here is:
 
 1. **Committed** to the repo so it is versioned and reviewable.
 2. **Cross-referenced** from Devin Knowledge notes where useful (see
-   [`docs/devin-reference.md`](../docs/devin-reference.md#1-knowledge-notes--долговременная-память)).
+   [`docs/devin-reference.md`](../docs/devin-reference.md#1-knowledge-notes--long-term-memory)).
 
 ## Layout
 
@@ -25,16 +25,12 @@ knowledge/
 
 - One concept per file.
 - Markdown only. **Two line-length tiers:**
-  - **Simple summaries / overviews** — keep under **~500 lines**. Если
-    файл стабильно лезет за 500 — это сигнал, что внутри живут две
-    разные темы; тогда расщепляем по теме, а не по объёму.
-  - **Deep-dive / detailed research** — keep under **~1 200 lines**.
-    Глубокие исследования (multi-source critique, per-project verdicts,
-    cross-cutting analysis) часто требуют 600–1 000 строк без потери
-    связности. Дробление deep-dive ради соблюдения ~500 вредит
-    читаемости больше, чем лишний размер. Если deep-dive лезет за
-    1 200 — это уже сигнал, что внутри две разные темы.
-  - Раньше здесь стояло ~250 (повышено до ~500 в PR #9).
+  - **Simple summaries / overviews** — keep under **~500 lines**.
+    If a summary pushes >600 lines — think of splitting it topic-wise.
+  - **Deep-dive / detailed research** — keep under **~1,200 lines**.
+    Deep reviews (multi-source critique, per-project verdicts,
+    cross-cutting analysis) often require 600–1,200 lines without losing
+    coherence. If a deep-dive is >1,300 lines — think of splitting it topic-wise.
 - Link to source URLs for any non-obvious claim.
 - **Never silently overwrite.** When a file is superseded: mark the old
   file with `> **Status:** superseded by <link>` at the top, add a
@@ -42,10 +38,10 @@ knowledge/
   content for audit. See the critique-driven rationale in
   [`research/llm-wiki-critique.md`](./research/llm-wiki-critique.md).
 
-### Provenance-frontmatter (для `research/` и любых summary-заметок)
+### Provenance-frontmatter (for `research/` and any summary notes)
 
-Любая заметка, которая *синтезирует* несколько источников или содержит
-конкретные числа/даты/имена, должна нести frontmatter:
+Any note that *synthesizes* multiple sources or contains
+specific numbers/dates/names must carry a frontmatter:
 
 ```yaml
 ---
@@ -53,18 +49,18 @@ title: "<title>"
 source:
   - "<url or repo path>"
 compiled: "<YYYY-MM-DD>"
-chain_of_custody: "<где искать первоисточник для конкретных фактов>"
+chain_of_custody: "<where to find the primary source for specific facts>"
 claims_requiring_verification:
   - "<claim 1>"
 superseded_by: "<path, if any>"
 ---
 ```
 
-Минимум — `source` и `compiled`. `chain_of_custody` обязателен, если в
-заметке есть числа, даты, цитаты или решения, на которые кто-то может
-сослаться. Цель — не потерять связь между LLM-написанной summary и
-первоисточником. Подробнее — в
-[`research/llm-wiki-critique-first-agent.md §9`](./research/llm-wiki-critique-first-agent.md#9-конкретные-правки-в-существующие-файлы).
+The minimum required fields are `source` and `compiled`. `chain_of_custody` is mandatory if
+the note contains numbers, dates, quotes, or decisions that someone might
+reference. The goal is not to lose the connection between the LLM-written summary and
+the primary source. For more details, see
+[`research/llm-wiki-critique-first-agent.md §9`](./research/llm-wiki-critique-first-agent.md#9-specific-edits-to-existing-files).
 
 ## What goes where
 
@@ -76,14 +72,14 @@ superseded_by: "<path, if any>"
 | Project-wide context (mission, scope, users) | `knowledge/project-overview.md` |
 | How-to / guide / reference | `docs/` (not here) |
 
-## Routing — куда агент смотрит за ответом
+## Routing — Where the agent looks for an answer
 
-| Тип вопроса | Первичный источник | Вторичный / верификация |
+| Question type | Primary source | Secondary / verification |
 |---|---|---|
-| «Какая у нас архитектура X?» | `docs/architecture.md` | ADR в `knowledge/adr/` |
-| «Какое решение приняли по Y и почему?» | `knowledge/adr/` | — |
-| «Что мы нашли при исследовании Z?» | `knowledge/research/<Z>.md` | Первоисточники из `source:` frontmatter |
-| Конкретное число / дата / цитата | **Всегда** первоисточник (`source:` заметки), а не summary | — |
-| Процедура / how-to | `docs/` | Будущие `SKILL.md` |
+| "What is our architecture for X?" | `docs/architecture.md` | ADRs in `knowledge/adr/` |
+| "What decision did we make regarding Y and why?" | `knowledge/adr/` | — |
+| "What did we find during the research of Z?" | `knowledge/research/<Z>.md` | Primary sources from `source:` frontmatter |
+| Specific number / date / quote | **Always** the primary source (`source:` of the note), not the summary | — |
+| Procedure / how-to | `docs/` | Future `SKILL.md` |
 
-Это же правило зафиксировано в [`AGENTS.md`](../AGENTS.md#query-routing).
+This same rule is documented in [`AGENTS.md`](../AGENTS.md#query-routing).
