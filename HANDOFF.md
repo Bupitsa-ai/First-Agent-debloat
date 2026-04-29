@@ -3,8 +3,8 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-04-28 by Devin session
-> [`c9a88fb8`](https://app.devin.ai/sessions/c9a88fb811fd4891b7f932aaeee9ad26).
+> **Last updated:** 2026-04-29 by Devin session
+> [`2b3711d6`](https://app.devin.ai/sessions/2b3711d6b29c497fba602cb48f850e4d).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -65,6 +65,18 @@ manually beyond this point.
   - [`research/chunker-design.md`](./knowledge/research/chunker-design.md)
     — five tool classes, coverage matrix, ten open questions
     (input to ADR-5).
+- **Research notes added 2026-04-29 (no ADR yet, inputs for v0.1+
+  implementation and v0.2 roadmap):**
+  - [`research/how-to-build-an-agent-ampcode-2026-04.md`](./knowledge/research/how-to-build-an-agent-ampcode-2026-04.md)
+    — inner-loop micro-architecture from Thorsten Ball / Amp;
+    three-tool baseline (`read_file` / `list_files` / `edit_file`);
+    mapping to ADR-1 / ADR-2 and UC1.
+  - [`research/sliders-structured-reasoning-2026-04.md`](./knowledge/research/sliders-structured-reasoning-2026-04.md)
+    — SLIDERS framework (Stanford OV AL, arXiv:2604.22294) for
+    QA over long document sets; aggregation-bottleneck framing,
+    contextualized chunking, schema induction, relevance gate,
+    primary-key reconciliation, SQL-QA; mapping to ADR-3 / ADR-4
+    / ADR-5 and v0.2 extraction-layer roadmap.
 
 ## Next steps (intended order)
 
