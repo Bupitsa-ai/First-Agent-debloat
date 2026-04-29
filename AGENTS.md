@@ -41,8 +41,9 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
 1. **Code fences have language tags.** No bare ` ``` ` at opening! See rule above.
 2. **Frontmatter uses `compiled:`, not `date:`.** Schema: [`knowledge/README.md`](./knowledge/README.md#conventions).
 3. **File length within tier limits.**
-   - Summaries / overviews: **~600 lines**.
-   - Deep-dive research: **~1 300 lines**.
+   - Summaries / overviews: **400-1000 lines**.
+   - Deep-dive research: **<2000 lines**.
+   - Readability > size
 4. **`compiled:` date ≥ all dates cited in text.** No temporal impossibilities.
 5. **Supersession, not overwrite.** Mark old file `> **Status:** superseded by <link>`. Keep for audit.
 6. **PR description lists changed/new files as clickable blob-URLs**
