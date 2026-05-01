@@ -93,7 +93,8 @@ manually beyond this point.
   - [`research/chunker-design.md`](./knowledge/research/chunker-design.md)
     — five tool classes, coverage matrix, ten open questions
     (input to ADR-5).
-- **Research notes added 2026-04-29:**
+- **Research notes added 2026-04-29 (no ADR yet, inputs for v0.1+
+  implementation and v0.2 roadmap):**
   - [`research/how-to-build-an-agent-ampcode-2026-04.md`](./knowledge/research/how-to-build-an-agent-ampcode-2026-04.md)
     — inner-loop micro-architecture from Thorsten Ball / Amp;
     three-tool baseline (`read_file` / `list_files` / `edit_file`);
