@@ -9,7 +9,12 @@
 > This file is an index for LLM agents that want to ingest the
 > project documentation in one fetch. Convention: see
 > https://llmstxt.org/. Paths below are GitHub raw URLs against
-> the `main` branch.
+> the `main` branch of `GITcrassuskey-shop/First-Agent` (upstream).
+> Primary working repo is the fork
+> `GrasshopperBoy/First-Agent-fork`; both repos' `main` are kept
+> in sync by the lead via cross-fork PRs. If a URL below 404s
+> mid-cycle, replace `GITcrassuskey-shop/First-Agent` with
+> `GrasshopperBoy/First-Agent-fork` and retry.
 
 ## Repo entrypoints
 
@@ -25,7 +30,7 @@
 - [docs/prompting.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/prompting.md): T1-T5 prompt templates and anti-patterns.
 - [docs/devin-reference.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/devin-reference.md): Devin-specific reference (Knowledge notes, Skills, Playbooks).
 - [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md): Project glossary.
-- [docs/agent%20creation%20github.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/agent%20creation%20github.md): Step-by-step agent-creation tutorial.
+- [docs/agent-creation-github.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/agent-creation-github.md): Step-by-step agent-creation tutorial.
 
 ## Project knowledge (`knowledge/`)
 
@@ -41,6 +46,7 @@
 - [knowledge/adr/ADR-3-memory-architecture-variant.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-3-memory-architecture-variant.md): Memory architecture variant for v0.1 (Variant A "Mechanical Wiki").
 - [knowledge/adr/ADR-4-storage-backend.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-4-storage-backend.md): Storage backend for v0.1 (SQLite FTS5).
 - [knowledge/adr/ADR-5-chunker-tool.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-5-chunker-tool.md): Chunker tool selection for v0.1 (universal-ctags + markdown-it-py).
+- [knowledge/adr/ADR-6-tool-sandbox-allow-list.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-6-tool-sandbox-allow-list.md): Tool sandbox & path allow-list policy for v0.1 (deny-by-default read+write allow-list at `~/.fa/sandbox.toml`).
 
 ## Prompts (`knowledge/prompts/`)
 
@@ -66,3 +72,5 @@
 - [knowledge/research/chunker-design.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/chunker-design.md): Chunker design — universal-ctags vs tree-sitter vs per-language regex; recommendation for ADR-5.
 - [knowledge/research/how-to-build-an-agent-ampcode-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/how-to-build-an-agent-ampcode-2026-04.md): Разбор статьи Thorsten Ball / Amp «How to Build an Agent» — inner-loop, tool registry, 3 базовых tool'а (read_file / list_files / edit_file); mapping на ADR-1/ADR-2 и UC1.
 - [knowledge/research/sliders-structured-reasoning-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/sliders-structured-reasoning-2026-04.md): Разбор препринта SLIDERS (Stanford OV AL, arXiv:2604.22294) — aggregation-bottleneck, contextualized chunking, schema induction, relevance gate, primary-key reconciliation, SQL-QA; mapping на ADR-3 / ADR-4 / ADR-5 и UC2 / UC3.
+- [knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md): Cross-reference review двух новых research-нот (ampcode + SLIDERS) против ADR-1..5 — gaps, tensions, 10 пронумерованных рекомендаций (R-1..R-10) и 10 открытых вопросов под решение лида перед стартом Phase M.
+- [knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md): Критический разбор трёх источников по semi-autonomous LLM-агентам (deep-research-report, semi-autonomous-llm-agents research, репо `nextlevelbuilder/goclaw`) против ADR-1..6 — accept/defer/reject фильтрация; основа для ADR-2 §Amendment 2026-05-01 (MCP forward-compat) и ADR-1 §Amendment 2026-05-01 (UC5 deferred); input для будущего ADR-7 inner-loop (ACI principle, hooks primitive).

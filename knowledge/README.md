@@ -26,13 +26,14 @@ knowledge/
 ## Conventions
 
 - One concept per file.
-- Markdown only. **Two line-length tiers:**
-  - **Simple summaries / overviews** — keep under **~500 lines**.
-    If a summary pushes >600 lines — think of splitting it topic-wise.
-  - **Deep-dive / detailed research** — keep under **~1,200 lines**.
-    Deep reviews (multi-source critique, per-project verdicts,
-    cross-cutting analysis) often require 600–1,200 lines without losing
-    coherence. If a deep-dive is >1,300 lines — think of splitting it topic-wise.
+- Markdown only. **File-length tiers per
+  [AGENTS.md PR Checklist rule #3](../AGENTS.md#pr-checklist):**
+  - **Summaries / overviews:** 400–1000 lines.
+  - **Deep-dive research:** <2000 lines.
+  - **Readability > size.** Split topic-wise only when readability
+    suffers, not because a numeric threshold has been crossed.
+  - AGENTS.md rule #3 is the single source of truth for these
+    limits; do not maintain a separate threshold here.
 - Link to source URLs for any non-obvious claim.
 - **Never silently overwrite.** When a file is superseded: mark the old
   file with `> **Status:** superseded by <link>` at the top, add a
@@ -88,6 +89,7 @@ mentions:             # external entities (people, projects, papers, repos, URLs
   - "OpenRouter"
   - "https://arxiv.org/abs/2504.19413"
 confidence: extracted # extracted | inferred | ambiguous
+topic: pwsh           # corpus-grouping key for v0.2 SLIDERS-style extraction
 ---
 ```
 
@@ -106,10 +108,36 @@ Field semantics:
   copied verbatim from a primary source; `inferred` if synthesised by
   the author / LLM from multiple sources; `ambiguous` if the source-to-
   claim mapping is unclear and the note needs a verification pass.
+- **`topic`** — corpus-grouping key. Free-form short string
+  (`pwsh`, `trading`, `dotfiles`, `arxiv-rag`, …). Files that share
+  a `topic` are expected to share enough structure that a v0.2
+  SLIDERS-style extractor can amortize one schema-induction pass
+  across the whole group (see
+  [`research/sliders-structured-reasoning-2026-04.md`](./research/sliders-structured-reasoning-2026-04.md)
+  §3.2 for the why; rationale for adding the field now is in
+  [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](./research/cross-reference-ampcode-sliders-to-adr-2026-04.md)
+  §10 R-6). The chunker propagates the value into every `Chunk`
+  produced from the file (see
+  [`adr/ADR-5-chunker-tool.md`](./adr/ADR-5-chunker-tool.md)
+  Amendment 2026-04-29). v0.1 retrieval ignores it; storing it
+  now means v0.2 extraction does not require a full re-chunk.
 
 None of these fields are validated by tooling yet. They exist so that
 when v0.2 indexer lands, the additive backfill is mechanical, not a
 schema migration.
+
+### `notes/inbox/` — `topic:` is the cheap default
+
+`notes/inbox/` is the v0.2 raw-capture directory (per
+[`research/memory-architecture-design-2026-04-26.md`](./research/memory-architecture-design-2026-04-26.md)
+§4 — "drop-in inbox watcher"). Files there are short and often
+share a single subject across many entries (one PowerShell macro
+folder, one trading-strategy notebook, one paper-summaries dump).
+Tagging each file with `topic:` at capture time is the cheapest
+possible way to keep the v0.2 SLIDERS amortization path open
+without retro-tagging later. v0.1 inbox-watcher is not yet
+implemented; this is documented here so that whoever ships it
+adds the frontmatter pass-through from day one.
 
 ## What goes where
 
