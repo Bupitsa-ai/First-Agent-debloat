@@ -19,8 +19,12 @@ knowledge/
 ├── prompts/                  # reusable prompts
 │   ├── README.md
 │   ├── RESOLVER.md           # intent-to-template dispatcher
-│   └── research-topic.md
-└── research/                 # (created on demand) research notes
+│   ├── research-topic.md
+│   └── research-briefing.md  # goal-driven cross-reference workflow
+├── research/                 # research notes
+│   └── _template.md          # skeleton (frontmatter v1+v2 + §0 Decision Briefing)
+└── trace/                    # branching exploration DAG (machine-traversable
+    └── exploration_tree.yaml # overlay of which alternatives were rejected & why)
 ```
 
 ## Conventions
@@ -94,6 +98,9 @@ mentions:             # external entities (people, projects, papers, repos, URLs
   - "OpenRouter"
   - "https://arxiv.org/abs/2504.19413"
 confidence: extracted # extracted | inferred | ambiguous
+# goal_lens: one-sentence research goal; mandatory for notes from
+# prompts/research-briefing.md, optional otherwise.
+goal_lens: "Reduce session-start context noise for future agents."
 topic: pwsh           # corpus-grouping key for v0.2 SLIDERS-style extraction
 ---
 ```
@@ -113,6 +120,13 @@ Field semantics:
   copied verbatim from a primary source; `inferred` if synthesised by
   the author / LLM from multiple sources; `ambiguous` if the source-to-
   claim mapping is unclear and the note needs a verification pass.
+- **`goal_lens`** — one-sentence research goal elicited at the start
+  of a [`prompts/research-briefing.md`](./prompts/research-briefing.md)
+  session (Stage 1: goal-lens elicitation). **Mandatory** for notes
+  produced via that workflow; optional for older notes. Lets a future
+  agent reading [`llms.txt`](./llms.txt) filter the corpus by current
+  task without loading the note. Field stays additive — adding it to a
+  pre-existing note does not constitute a schema bump.
 - **`topic`** — corpus-grouping key. Free-form short string
   (`pwsh`, `trading`, `dotfiles`, `arxiv-rag`, …). Files that share
   a `topic` are expected to share enough structure that a v0.2
@@ -144,6 +158,41 @@ without retro-tagging later. v0.1 inbox-watcher is not yet
 implemented; this is documented here so that whoever ships it
 adds the frontmatter pass-through from day one.
 
+### `trace/` — exploration DAG
+
+[`trace/exploration_tree.yaml`](./trace/exploration_tree.yaml) is a
+machine-traversable overlay of the project's accepted ADRs. One
+`question` node per ADR carries the alternatives that were considered;
+the chosen alternative becomes a `decision` (`chosen: true`), and each
+rejected alternative becomes a `dead_end` with `reason:` (why rejected
+at decision time) and `lesson:` (what new evidence would make the
+branch attractive again). This lets a future session read why
+`Variant B/C` were rejected for v0.1 without re-reading every ADR
+end-to-end. Origin and rationale: research note
+[`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md)
+§9 R-1 (ARA `/trace/` Exploration Graph applied to FA's ADR set).
+
+Schema (a node is a YAML mapping in the top-level list, optionally
+nested under `alternatives:`):
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string | Stable: `Q-N` for questions, `Q-N.A` / `Q-N.B` … for alternatives, `Q-N.amend-YYYY-MM-DD` for follow-ups. |
+| `type` | enum | `question` \| `decision` \| `dead_end` \| `pivot` \| `experiment`. |
+| `text` | string | One-line description; full rationale lives in `evidence`. |
+| `date` | ISO date | `YYYY-MM-DD`. When the node was settled. |
+| `closed_by` | string | On `question` — ADR-N or note path that closes it. |
+| `evidence` | path | Repo-relative path to the primary artefact. |
+| `chosen` | bool | `true` on the `decision` child that was accepted. |
+| `reason` | string | On `dead_end` — why rejected at decision time. |
+| `lesson` | string | On `dead_end` — what new evidence would re-open the branch. |
+| `alternatives` | list | Nested children — encodes parent → child edges. |
+| `also_depends_on` | list[string] | Other node IDs — convergence / cross-question coupling. |
+
+ADR text is the source of truth for any specific decision; this DAG
+is a pointer overlay. New ADR PRs MUST add at least one node here —
+see [`AGENTS.md` PR Checklist rule #9](../AGENTS.md#pr-checklist).
+
 ## What goes where
 
 | If it is… | Put it in… |
@@ -151,6 +200,7 @@ adds the frontmatter pass-through from day one.
 | A decision we made (and why) | `knowledge/adr/` |
 | Background research / literature summary | `knowledge/research/` |
 | A reusable prompt | `knowledge/prompts/` |
+| Branching exploration trail (which alternatives were rejected & why) | `knowledge/trace/exploration_tree.yaml` |
 | Project-wide context (mission, scope, users) | `knowledge/project-overview.md` |
 | How-to / guide / reference | `docs/` (not here) |
 

@@ -61,6 +61,111 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    hand-maintained; it drifts silently if not enforced on every PR.
    A pre-commit hook or generator can be added later (see
    [`docs/workflow.md`](./docs/workflow.md) Phase S).
+8. **Research notes from the research-briefing workflow start with §0
+   Decision Briefing.** Notes under `knowledge/research/` produced via
+   [`knowledge/prompts/research-briefing.md`](./knowledge/prompts/research-briefing.md)
+   MUST place a `## 0. Decision Briefing` section as the first
+   section after the frontmatter (before TL;DR / Scope). Each
+   recommendation in §0 follows the eight-field format (What /
+   Project-axis fit (A, B) / Goal-lens fit (C) / Cost / Verdict / If
+   UNCERTAIN-ASK / Alternative-if-rejected / Concrete first step).
+   Axes (A) "reduces session-start noise" and (B) "helps LLM find
+   context" are stable project-axis criteria evaluated identically
+   for every note; axis (C) "advances chosen goal_lens" is the only
+   per-session axis and references the goal_lens elicited in Stage 1.
+   §0 closes with a 7-column summary table (R-N / Verdict /
+   Project-fit / Goal-fit / Cost / Alternative-if-rejected / User
+   decision needed?). Frontmatter MUST include a `goal_lens:` field
+   capturing the one-sentence research goal elicited at session
+   start. The agent also posts §0 verbatim in chat after handover.
+   This rule applies to **new** notes with `compiled: ≥ 2026-05-04`;
+   older notes are exempted and not retro-fitted.
+9. **New ADR PRs add at least one node to the exploration DAG.**
+   Any PR that introduces or amends an accepted ADR MUST also add at
+   least one node to
+   [`knowledge/trace/exploration_tree.yaml`](./knowledge/trace/exploration_tree.yaml).
+   The shape: one `question` node per new ADR, one `decision` child
+   for the chosen option (with `chosen: true`), and one `dead_end`
+   child per rejected option carrying `reason:` (why rejected at
+   decision time) + `lesson:` (what new evidence would re-open the
+   branch). Amendments append a follow-up `decision` or `pivot` node
+   referencing the original question via `also_depends_on:`. Schema
+   reference: [`knowledge/README.md` §`trace/`](./knowledge/README.md#trace--exploration-dag).
+   Rationale: the DAG is the cheap-read overlay agents use to
+   understand *why* alternatives were rejected without re-reading
+   every ADR end-to-end (origin: research note
+   [`ara-protocol-cross-reference-2026-05.md`](./knowledge/research/ara-protocol-cross-reference-2026-05.md)
+   §9 R-1).
+
+## PR Description Style
+
+PR descriptions are the *first reading-pass* for both human review
+and LLM agents loading repo context. They should be readable
+end-to-end (no bullet-soup), and they should be cheap to parse for
+the same agents that wrote them.
+
+**Language split:**
+
+- **Default to Russian** for analytical prose, rationale, scope
+  discussion, retro-fit notes — this matches the convention already
+  in force for research notes
+  ([`knowledge/README.md` §Conventions](./knowledge/README.md#conventions))
+  and keeps the human-review path natural.
+- **Keep in English** any *identifier* whose precision matters for
+  later grep / cross-reference: file paths, frontmatter keys
+  (`compiled:`, `goal_lens:`), AGENTS.md rule references
+  («PR Checklist rule #N»), full PR titles when referencing other
+  PRs (e.g. «PR #16 *docs: add research-briefing workflow…*»), code
+  blocks, schema examples, verdict tokens (`TAKE` / `SKIP` /
+  `DEFER` / `UNCERTAIN-ASK`).
+
+**Recommended structure:**
+
+1. **One-paragraph what+why** opening — Russian prose, what ships +
+   motivating problem. No bullets here.
+2. **Files (clickable blob-URLs)** per
+   [PR Checklist rule #6](#pr-checklist).
+3. **Design-rationale prose** for any non-obvious choice — flowing
+   paragraphs, not bullets, when explanation > 3 lines.
+4. **Scope / ordering / retro-fit** — short list (≤5 items)
+   flagging merge-order, deferrals, forward-only clauses.
+5. **Review & Testing Checklist for Human** — GitHub PR template
+   block; Russian for action items, English for technical referents.
+6. **Notes** — Russian; mention follow-up PRs and any session-
+   continuity context. AI-Session trailer is appended automatically.
+
+**Avoid:**
+
+- Long English-only bullet trees. Если list > 5 items × 2-3 lines
+  каждый — develop в прозу.
+- Duplicating the commit-message body verbatim. Reference the
+  commit SHA + summarise.
+- Self-references that won't resolve at read-time (open PR / issue
+  numbers). For cross-PR coupling, use
+  [§Stacked / sequenced PRs](#stacked--sequenced-prs).
+
+**Inline review comments / replies** follow the same language split:
+Russian prose for the response; keep the cited identifier (file
+path / line / suggestion code-block) in English. Bot threads
+respond in English when matching the bot's own language.
+
+**Canonical examples (post-merge of this PR):**
+
+- [PR #17 *docs: add knowledge/trace/exploration_tree.yaml backfilling ADR-1..6 (R-1)*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/17)
+  — DAG backfill PR; description retro-rewritten in this style as a
+  demonstration before this convention merged.
+- [PR #18 *docs(AGENTS): add §PR Description Style — Russian prose +
+  English identifiers*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/18)
+  — this PR; self-demonstrating description.
+
+[PR #16 *docs: add research-briefing workflow + §0 Decision Briefing
+convention*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/16)
+was the *source of inspiration* for this convention but predates it
+(its description is in the older English-bullet style); not cited as
+a canonical example.
+
+This rule applies **forward-only** from the merge of this PR; older
+PR descriptions are not retro-translated.
 
 ## Stacked / sequenced PRs
 
