@@ -1,42 +1,22 @@
 ---
-title: "Latent Space / CUA Verifiers / Squeeze Evolve — разбор трёх paper'ов и репо vs ADR-1..6 (2026-05-04)"
-compiled: "2026-05-04"
+title: "Latent Space / CUA Verifiers / Squeeze Evolve vs First-Agent ADR-1..6"
 source:
-  - "https://arxiv.org/abs/2604.02029v1"
-  - "https://arxiv.org/abs/2604.06240v1"
-  - "https://arxiv.org/abs/2604.07725v2"
+  - "https://arxiv.org/html/2604.02029v1"
+  - "https://arxiv.org/html/2604.06240v1"
+  - "https://arxiv.org/html/2604.07725v2"
   - "https://github.com/squeeze-evolve/squeeze-evolve"
+  - "https://huggingface.co/datasets/microsoft/CUAVerifierBench"
+compiled: "2026-05-04"
 chain_of_custody: >
-  Факты из paper'ов цитируются по arxiv HTML-версиям (v1/v2); факты по
-  squeeze-evolve — из README репозитория на момент 2026-05-04.
-  Все mapping'и на First-Agent ADR выведены из текущих версий
-  ADR-1..6 в этом репо. Рекомендации — research input, не ADR.
-claims_requiring_verification:
-  - "Числа по Squeeze Evolve (3× cost reduction, 10× throughput) — из abstract
-    paper'а. Конкретные цифры зависят от выбранных моделей и задач; до
-    применения в First-Agent нужно воспроизвести на целевых tier'ах из ADR-2."
-  - "Утверждение о 70% expert quality auto-research (CUA Verifier paper)
-    основано на Cohen's κ ~0.55 vs ~0.7 для эксперта. Метрика — agreement
-    с human labels на CUAVerifierBench; переносимость на другие task-типы
-    не проверена."
-  - "Latent Space Survey — обзорная работа с ~400 цитатами. Конкретные
-    performance-числа по отдельным methods (Coconut, LSRL, etc.) не
-    верифицировались здесь; они вторичны для наших целей."
-status: research
+  Primary facts are taken from the arXiv HTML pages, the squeeze-evolve
+  README, and the CUAVerifierBench dataset card. Mapping to First-Agent is
+  inferred from current ADR-1..6, HANDOFF.md, AGENTS.md, and the research
+  briefing/template rules on main as of 2026-05-04. Recommendations below are
+  research input only, not accepted ADRs.
+goal_lens: >
+  Form a list of research artifacts that strengthen First-Agent and identify
+  source ideas worth carrying forward.
 tier: stable
-supersedes: none
-extends:
-  - knowledge/research/cutting-edge-agent-research-radar-2026-05.md
-  - knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md
-related:
-  - knowledge/adr/ADR-1-v01-use-case-scope.md
-  - knowledge/adr/ADR-2-llm-tiering.md
-  - knowledge/adr/ADR-3-memory-architecture-variant.md
-  - knowledge/adr/ADR-4-storage-backend.md
-  - knowledge/adr/ADR-5-chunker-tool.md
-  - knowledge/adr/ADR-6-tool-sandbox-allow-list.md
-  - knowledge/research/cutting-edge-agent-research-radar-2026-05.md
-  - knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md
 links:
   - "../adr/ADR-1-v01-use-case-scope.md"
   - "../adr/ADR-2-llm-tiering.md"
@@ -49,452 +29,525 @@ links:
   - "./semi-autonomous-agents-cross-reference-2026-05.md"
 mentions:
   - "Latent Space Survey"
-  - "Coconut"
-  - "LSRL"
-  - "SoftCoT"
   - "Universal Verifier"
   - "CUAVerifierBench"
   - "Squeeze Evolve"
   - "squeeze-evolve/squeeze-evolve"
-  - "Microsoft Research"
-  - "Together AI"
-  - "UC Berkeley"
-  - "Qwen"
+  - "Coconut"
+  - "SoftCoT"
+  - "LSRL"
+  - "Fara-7B"
+  - "Online-Mind2Web"
   - "vLLM"
 confidence: inferred
+claims_requiring_verification:
+  - >
+    Latent-space mechanisms are summarized at survey/taxonomy level only. No
+    individual latent reasoning or latent memory method was re-benchmarked for
+    First-Agent.
+  - >
+    CUA Verifier numbers such as near-zero false positives, 70% expert quality,
+    and dataset sizes are copied from the paper abstract/dataset card and not
+    independently reproduced.
+  - >
+    Squeeze Evolve cost/throughput claims and registry/config details are copied
+    from the paper abstract and README. Transfer to First-Agent depends on actual
+    target models exposing logprobs and stable cost metadata.
+superseded_by: none
 ---
 
-# Latent Space / CUA Verifiers / Squeeze Evolve — разбор трёх paper'ов vs ADR-1..6
+> **Status:** active. Note produced via
+> [`knowledge/prompts/research-briefing.md`](../prompts/research-briefing.md)
+> as a corrective continuation of a shallower prior pass. §0 is the Decision
+> Briefing; later sections hold the deeper source analysis.
 
-> **Статус:** research note, 2026-05-04.
->
-> **Что внутри:** критический разбор трёх свежих sources (latent-space survey,
-> CUA-verifier paper от Microsoft, Squeeze-Evolve framework от Together AI /
-> UC Berkeley) и companion-репозитория squeeze-evolve. Для каждого source —
-> summary, mapping на ADR-1..6, принять / отложить / отклонить, вопросы,
-> и конкретные артефакты для First-Agent.
+## 0. Decision Briefing
 
----
+### R-1 — Acceptance rubric fixtures before verifier machinery
 
-## 1. Обзор источников
+- **What:** Перенести из CUA Verifier не «Universal Verifier как модель»,
+  а cheap artefact: набор First-Agent acceptance rubric fixtures, где
+  каждый пример разделяет `process`, `outcome`, `controllable_failure`,
+  `uncontrollable_failure`, `evidence`, `side_effect`. Это усиливает
+  Acceptance Taxonomy и будущий ADR-7 без нового runtime.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (~400-800 tokens per future
+    verification discussion; один fixture-файл заменяет пересказ paper'а)
+  - (B) helps LLM find context when needed: YES (fixtures are a pointer-shape
+    source for future Coder/Eval agents)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    YES (directly produces a concrete research artefact from the CUA paper)
+- **Cost:** cheap (<1h)
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE)
+- **Alternative-if-rejected:** Keep CUA Verifier as background reading only
+  and let ADR-7 invent verification fields ad hoc.
+- **Concrete first step (if TAKE):** Add
+  `knowledge/research/acceptance-rubric-fixtures-2026-05.md` with 5-8
+  coding-agent examples.
 
-| # | Source | Тип | Авторы | Дата |
-|---|---|---|---|---|
-| S1 | [arXiv:2604.02029v1](https://arxiv.org/abs/2604.02029v1) | Survey (120+ pp.) | Yu, Chen, He et al. (NUS, Fudan, Tsinghua, DeepWisdom) | Apr 2026 |
-| S2 | [arXiv:2604.06240v1](https://arxiv.org/abs/2604.06240v1) | Paper + benchmark | Rosset, Sharma, Zhao et al. (Microsoft Research) | Apr 2026 |
-| S3 | [arXiv:2604.07725v2](https://arxiv.org/abs/2604.07725v2) | Paper + code | Maheswaran, Lakhani, Zhou et al. (UC Berkeley, Together AI, Stanford, Princeton) | Apr 2026 |
-| S4 | [squeeze-evolve/squeeze-evolve](https://github.com/squeeze-evolve/squeeze-evolve) | Repo (Apache-2.0) | Nietzsche2000, bronyayang | Apr 2026 |
+### R-2 — ADR-7 tool registry should be per-session, registry-by-name
 
----
+- **What:** Borrow the Squeeze Evolve operator-registry pattern
+  (`@registry.register("name")` + config string resolution), but scope it
+  per session/run rather than global singleton. This fits ADR-6 sandboxing:
+  allowed tools can differ by session and by path allow-list.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (~300-600 tokens saved in ADR-7
+    design passes; one registry shape replaces repeated API debate)
+  - (B) helps LLM find context when needed: YES (stable names let agents
+    grep tool definitions, config references, and audit logs)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    YES (turns a repo implementation pattern into an ADR-7 artefact)
+- **Cost:** medium (1-4h)
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE)
+- **Alternative-if-rejected:** Use an implicit Python module of tool functions;
+  cheaper now, worse for audit and config-driven routing.
+- **Concrete first step (if TAKE):** In future ADR-7, add a `ToolRegistry`
+  contract: `register(name, input_schema, fn)`, config lookup by `name`,
+  and per-session registry construction after sandbox load.
 
-## 2. S1 — The Latent Space: Foundation, Evolution, Mechanism, Ability, and Outlook
+### R-3 — Minimal trace/eval schema should separate process and outcome
 
-### 2.1 Суть paper'а
+- **What:** First-Agent should not wait for a full verifier. Start with a
+  trace/eval JSONL shape that records `process_result`, `outcome_result`,
+  `failure_class`, `evidence_refs`, `tool_calls`, and `side_effects`.
+  CUA Verifier shows why process/outcome separation matters; Squeeze Evolve
+  shows why cheap fitness/eval signals become routing inputs later.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (~500-1000 tokens saved when future
+    agents ask "what does a good run record?")
+  - (B) helps LLM find context when needed: YES (trace fields become stable
+    retrieval anchors across tests, audit logs, and future eval notes)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    YES (a direct architecture artefact for ADR-7 and Phase M modules)
+- **Cost:** medium (1-4h)
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE)
+- **Alternative-if-rejected:** Keep pytest/lint as the only signals and add
+  trace semantics later when failures are already inconsistent.
+- **Concrete first step (if TAKE):** Add a compact schema block to ADR-7 or a
+  pre-ADR note `knowledge/research/trace-eval-schema-2026-05.md`.
 
-Масштабный survey (~400 цитат) по latent-space computation в language-based
-models. Организован вокруг двумерной таксономии:
+### R-4 — Keep latent-space methods as v0.2 watch-list, not v0.1 architecture
 
-- **Mechanism axis:** Architecture, Representation, Computation, Optimization.
-- **Ability axis:** Reasoning, Planning, Modeling, Perception, Memory,
-  Collaboration, Embodiment.
+- **What:** The Latent Space survey is strategically interesting but should
+  not change ADR-3/4/5 now. Latent reasoning/memory are mostly model-internal
+  or training-time mechanisms; First-Agent v0.1 needs auditable,
+  filesystem-canonical context, not opaque hidden-state memory.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (explicitly prevents re-litigating
+    embeddings/latent memory during chunker work)
+  - (B) helps LLM find context when needed: PARTIAL (watch-list pointer helps,
+    but no immediate file/API shape)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    PARTIAL (worthy signal, but mainly as a non-goal guardrail)
+- **Cost:** cheap (<1h)
+- **Verdict:** DEFER
+- **If UNCERTAIN-ASK:** n/a (DEFER)
+- **Alternative-if-rejected:** Remove latent-space coverage entirely from the
+  active research backlog.
+- **Concrete first step (if TAKE):** n/a (DEFER; keep as one watch-list row in
+  this note and do not amend ADR-3).
 
-Ключевой тезис: latent space — не скрытый implementation detail, а
-*machine-native substrate* для вычислений. Token-level reasoning
-(chain-of-thought, ReAct) — лингвистически избыточный; computation
-в continuous latent space может быть более compact, expressive и
-вычислительно efficient.
+### R-5 — Do not add dynamic model routing to ADR-2 before trace data exists
 
-### 2.2 Ключевые механизмы (релевантные для First-Agent)
+- **What:** Squeeze Evolve's confidence routing is attractive, but First-Agent
+  should not amend ADR-2 from static role routing to dynamic routing yet.
+  Without local traces, logprob availability checks, and fuzzy-task fitness
+  rules, dynamic routing would add a control loop we cannot evaluate.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (pins "not now" and prevents
+    premature ADR-2 churn)
+  - (B) helps LLM find context when needed: YES (points future routing work to
+    the prerequisites: traces, logprobs, cost metadata, fuzzy acceptance)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    YES (records a valuable idea with explicit gating conditions)
+- **Cost:** cheap (<1h)
+- **Verdict:** DEFER
+- **If UNCERTAIN-ASK:** n/a (DEFER)
+- **Alternative-if-rejected:** Amend ADR-2 now with `logprobs` and N-model
+  routing fields, accepting speculative schema churn.
+- **Concrete first step (if TAKE):** n/a (DEFER; revisit after R-3 traces
+  exist for at least one Phase M module).
 
-**Latent Reasoning (Coconut, SoftCoT, LSRL):**
+### R-6 — Add CUAVerifierBench as eval-design reference, not benchmark target
 
-- Coconut (Chain of Continuous Thought) — reasoning переносится из
-  текстовых токенов в continuous latent states. Вместо `<think>...</think>`
-  модель оперирует hidden representations, которые не нужно декодировать
-  в текст.
-- SoftCoT — аналогичный подход через soft prompting reasoning states.
-- Практический результат: **5–10× снижение числа generated tokens** при
-  сохранении или улучшении accuracy на reasoning-задачах.
+- **What:** CUAVerifierBench should be cited as an example of verifier
+  dataset shape: trajectories, screenshots, logs, human labels, rubric scores.
+  It should not become a First-Agent benchmark because FA v0.1 is not a browser
+  CUA project.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (keeps future eval discussions from
+    confusing "reference shape" with "target benchmark")
+  - (B) helps LLM find context when needed: YES (dataset-card fields are a
+    concrete schema reference for trace/eval notes)
+- **Goal-lens fit (per session, dynamic):**
+  - (C) advances chosen goal_lens "Form a list of research artifacts that
+    strengthen First-Agent and identify source ideas worth carrying forward.":
+    YES (clear artifact/reference boundary)
+- **Cost:** cheap (<1h)
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE)
+- **Alternative-if-rejected:** Treat CUA verifier work as unrelated because FA
+  is not browser-control-first.
+- **Concrete first step (if TAKE):** In the R-1 fixture note, add a short
+  "reference fields from CUAVerifierBench" table.
 
-**Latent Memory:**
+### Summary
 
-- MemGen / VisMem — memory retrieval через latent representations вместо
-  token-level text search.
-- Ключевой insight: latent memory representations сохраняют семантику
-  лучше, чем текстовые chunks, особенно при длинных контекстах.
+| R-N | Verdict | Project-fit (A / B) | Goal-fit (C) | Cost | Alternative-if-rejected | User decision needed? |
+|-----|---------|---------------------|--------------|------|--------------------------|------------------------|
+| R-1 | TAKE | YES / YES | YES (fixtures) | cheap | Background-only CUA paper | No (TAKE) |
+| R-2 | TAKE | YES / YES | YES (ADR-7 API) | medium | Implicit function module | No (TAKE) |
+| R-3 | TAKE | YES / YES | YES (trace schema) | medium | Pytest/lint only | No (TAKE) |
+| R-4 | DEFER | YES / PARTIAL | PARTIAL (watch-list) | cheap | Drop latent-space from backlog | No (DEFER) |
+| R-5 | DEFER | YES / YES | YES (gated routing) | cheap | Speculative ADR-2 amendment | No (DEFER) |
+| R-6 | TAKE | YES / YES | YES (eval reference) | cheap | Treat CUA work as unrelated | No (TAKE) |
 
-**Latent Collaboration:**
+## 1. TL;DR
 
-- ThoughtExchange / LatentComm — multi-agent communication через latent
-  vectors вместо verbose text messages.
-- Снижает bandwidth и reduces hallucination propagation между агентами.
+- Предыдущий shallow pass был полезен как source list, но нарушал новый
+  repo-template contract: не было §0 Decision Briefing / `goal_lens:`, а branch
+  diff accidental удалял unrelated files from main. Эта версия исправляет форму
+  и углубляет mapping.
+- CUA Verifier — самый практичный источник для v0.1: не как full verifier, а как
+  язык acceptance/eval artefacts: process vs outcome, controllable vs
+  uncontrollable failures, evidence refs, side effects.
+- Squeeze Evolve — второй практичный источник: не как evolutionary inference
+  loop, а как API pattern for registries/config and future confidence routing.
+- Latent Space Survey — стратегический watch-list. Он подтверждает, что
+  explicit token traces не всегда efficient, но FA v0.1 deliberately optimizes
+  for auditability and filesystem-canonical memory.
+- Следующий immediate artefact: `acceptance-rubric-fixtures-2026-05.md`
+  (cheap), затем ADR-7 включает registry + trace schema (medium).
+- Dynamic routing by confidence/logprobs следует отложить до появления trace
+  data from real Phase M modules; иначе ADR-2 станет speculative.
 
-**Latent Planning:**
+## 2. Scope, метод
 
-- ThinkAct / SwiftVLA — планирование в latent space без explicit
-  step-by-step verbalization.
+**Goal-lens (verbatim):** "Form a list of research artifacts that strengthen
+First-Agent and identify source ideas worth carrying forward."
 
-### 2.3 Mapping на First-Agent ADR
+Метод:
 
-| Concept из S1 | FA ADR | Fit | Действие |
-|---|---|---|---|
-| Latent Reasoning (Coconut) | ADR-2 (tiering) | Слабый для v0.1 — требует fine-tuned models | **Отложить.** Мониторить когда OpenRouter/vLLM models начнут поддерживать latent reasoning modes |
-| Latent Memory | ADR-3 (mechanical wiki) | Средний — complementary к filesystem-first approach | **Отложить до v0.2.** Mechanical Wiki выбрана intentionally (no embeddings, deterministic). Latent memory — альтернативный path для v0.2 volatile store |
-| Latent Collaboration | ADR-1 (UC5 deferred) | Низкий для v0.1 — UC5 deferred | **Записать.** Если UC5 когда-то вернётся, latent comm снижает token costs multi-agent coordination |
-| Latent Planning | ADR-2 (Planner role) | Низкий — требует custom model support | **Мониторить.** Интересно если Planner-tier model получит native latent planning |
-| Token efficiency gains | ADR-2 (cost routing) | Высокий по direction | **Принять direction.** Latent reasoning подтверждает, что explicit CoT — не единственный path. Confidence signals (см. S3) — более practical proxy сегодня |
+1. Перечитаны primary sources: три arXiv HTML страницы, squeeze-evolve README,
+   CUAVerifierBench dataset card.
+2. Сверены выводы с current FA constraints: ADR-1..6, HANDOFF next steps,
+   AGENTS.md PR rules, research-briefing template.
+3. Каждый source разделён на:
+   - directly actionable artefacts for v0.1;
+   - deferred v0.2/watch-list ideas;
+   - non-fit / avoid importing.
+4. Recommendations in §0 use the repo's eight-field Decision Briefing shape.
 
-### 2.4 Критические вопросы
+Out-of-method:
 
-**Q-S1.1.** Latent reasoning methods (Coconut, SoftCoT) требуют
-специально fine-tuned models. Ни один из tier'ов ADR-2 (Qwen 3.6,
-Kimi 2.6, GLM 5.1, Claude, Nemotron) пока не предлагает latent
-reasoning mode через API. Когда это станет доступно через
-OpenRouter/vLLM — нужно пересмотреть token-budget assumptions.
+- Не воспроизводились benchmark numbers.
+- Не читался full codebase squeeze-evolve beyond README/API surface.
+- Не предлагается менять accepted ADRs directly in this PR.
 
-**Q-S1.2.** Latent memory (MemGen-style) — это embedding-based
-retrieval. ADR-3 intentionally отложил embeddings до v0.2.
-Вопрос: если latent memory representations стабильно лучше FTS5
-для code retrieval — это аргумент за ускорение v0.2 volatile store.
-Нужна фикстура-тест: 50 queries по project codebase, FTS5 vs
-simple embedding recall.
+## 3. Key concepts
 
----
+- **Latent space:** continuous hidden-state substrate where model computation
+  can happen without being decoded into human-readable tokens.
+- **Explicit / verbal space:** generated text tokens, including CoT/ReAct traces;
+  auditable but sequential and linguistically redundant.
+- **Universal Verifier:** CUA paper's verifier system combining rubric creation,
+  multimodal scoring over trajectory screenshots, outcome judgment, and failure
+  diagnosis.
+- **Process reward / outcome reward:** process asks whether the agent followed a
+  good path; outcome asks whether the final task succeeded. They can disagree.
+- **Controllable / uncontrollable failure:** whether failure is attributable to
+  the agent/tool choice vs external environment constraints.
+- **CUAVerifierBench:** dataset measuring verifiers, not agents; rows include
+  trajectories, screenshots, logs, human labels, and Universal Verifier outputs.
+- **Verifier-free evolution:** iterative population refinement without an
+  external correctness verifier.
+- **Fitness-based routing:** Squeeze Evolve routes candidate groups to cheap/mid/
+  expensive models based on confidence or diversity signals.
+- **Operator registry:** functions registered by string name and selected from
+  config, e.g. `routing.fitness: confidence`.
 
-## 3. S2 — The Art of Building Verifiers for Computer Use Agents
+## 4. Source analysis and mapping
 
-### 3.1 Суть paper'а
+### 4.1 S1 — Latent Space Survey
 
-Microsoft Research описывает итеративный процесс создания Universal
-Verifier для CUA (Computer Use Agent) trajectories. 4 design principles:
+The survey frames latent space as a machine-native substrate and explicit token
+reasoning as only one interface to model computation. Its abstract identifies
+four mechanism lines — Architecture, Representation, Computation, Optimization —
+and seven ability areas — Reasoning, Planning, Modeling, Perception, Memory,
+Collaboration, Embodiment.
 
-1. **Rubrics с non-overlapping criteria.** Каждый criterion оценивает
-   ровно один aspect задачи. Overlapping criteria → noise → disagreement
-   между annotators и с ground truth.
+**Useful signal for FA:** the paper is a reminder that token-visible reasoning
+is not free. Long CoT and verbose agent traces burn context. This supports FA's
+existing bias toward compact, structured artefacts: `llms.txt`, ADRs,
+Mechanical Wiki chunks, and HANDOFF rather than full transcript replay.
 
-2. **Process + Outcome rewards (раздельно).** Process reward: агент делал
-   правильные шаги? Outcome reward: результат корректен? Два сигнала
-   complementary: агент может делать правильные шаги, но environment
-   блокирует; или добиться результата unexpected path'ом.
+**Non-fit for v0.1:** latent reasoning and latent memory are model-internal or
+training-time mechanisms. FA v0.1 is a local coding-agent project whose key
+constraint is auditability. Hidden-state memory would conflict with ADR-3's
+filesystem-canonical choice and ADR-4's SQLite FTS5 baseline.
 
-3. **Controllable vs uncontrollable failures + cascading-error-free scoring.**
-   Если агент столкнулся с uncontrollable failure (например, сайт лежит),
-   downstream шаги не штрафуются. Cascading-error-free = каждый шаг
-   оценивается в контексте «мог ли агент здесь реально повлиять на
-   outcome?»
+| Latent-space idea | FA fit | Action |
+|---|---|---|
+| Token traces are inefficient | High | Keep notes/ADR/trace schemas concise and structured. |
+| Latent memory | Low for v0.1 | Defer; do not replace Mechanical Wiki. |
+| Latent planning/reasoning | Medium future | Watch model-provider features; no local architecture change. |
+| Multi-agent latent collaboration | Low now | Out of ADR-1 v0.1 scope. |
 
-4. **Divide-and-conquer context management.** Длинные trajectory'и
-   (десятки screenshots) обрабатываются блоками, а не truncated
-   context-window'ом. Каждый блок оценивается independently, результаты
-   агрегируются.
+### 4.2 S2 — The Art of Building Verifiers for Computer Use Agents
 
-**Ключевой результат:** Universal Verifier достигает Cohen's κ ≈ 0.7
-(human inter-annotator agreement level). False positive rate снижен
-до 1–8% (vs 30%+ у WebVoyager/WebJudge).
+The paper's abstract gives four design principles:
 
-**Auto-research finding:** автоматический research-агент достигает
-~70% quality эксперта за ~5% времени, но не находит все structural
-design decisions. Когда auto-research инициализирован с лучшей
-конфигурации эксперта — превосходит peak эксперта. Вывод: **human
-expertise + auto-optimization complementary.**
+1. rubrics with meaningful, non-overlapping criteria;
+2. process and outcome rewards as complementary signals;
+3. controllable vs uncontrollable failure diagnosis;
+4. divide-and-conquer context management over screenshot evidence.
 
-### 3.2 Mapping на First-Agent ADR
+It also reports that the Universal Verifier agrees with humans as often as
+humans agree with each other, reduces false positives near zero compared with
+WebVoyager/WebJudge baselines, and that an auto-research agent reached 70% of
+expert quality in 5% of the time while missing key structural decisions.
 
-| Principle из S2 | FA ADR | Fit | Действие |
-|---|---|---|---|
-| Non-overlapping rubrics | Acceptance Taxonomy (project convention) | **Высокий.** Directly validates «literal predicates» approach | **Принять.** Формализовать: каждый acceptance criterion в task spec — atomic, non-overlapping |
-| Process + Outcome rewards | ADR-2 (Eval role), Radar §5 (eval traces) | **Высокий.** FA уже планирует trace-like eval | **Принять.** Eval role должен оценивать process (tool choice sequence) И outcome (task completion) раздельно |
-| Cascading-error-free scoring | ADR-7 (inner-loop, future) | **Высокий.** Критично для inner-loop retry logic | **Принять для ADR-7 prep.** Если tool call fails из-за env issue — не штрафовать subsequent decisions |
-| Divide-and-conquer context | ADR-5 (chunker), ADR-4 (FTS5) | **Средний.** Parallel: long-doc retrieval тоже выигрывает от блочной обработки | **Записать.** При будущем eval длинных agent sessions — chunked evaluation, не truncated |
-| Human + auto-research complementary | Project workflow | **Высокий.** Validates current pattern: human lead + Devin agent | **Принять direction.** Подтверждает, что auto-research хорош для tuning/expansion, но core structural decisions — за human lead |
+For First-Agent, the paper is not a call to build a CUA verifier. FA v0.1 is
+not browser-control-first. The transferable artifact is the *evaluation
+language*.
 
-### 3.3 Критические вопросы
+| CUA verifier principle | FA equivalent | Why it matters |
+|---|---|---|
+| Non-overlapping rubric criteria | Acceptance Taxonomy fixtures | Prevents vague PR acceptance like "looks good". |
+| Process reward | Tool-call / plan-following trace fields | Separates good path blocked by external issue from bad path. |
+| Outcome reward | Tests/lint/typecheck/manual check result | Keeps final user-facing success explicit. |
+| Controllable failure | Agent/tool/design bug | Actionable for Coder/Debug. |
+| Uncontrollable failure | missing secret, flaky CI, unavailable API | Should trigger escalation, not code churn. |
+| Screenshot evidence | file/snippet/log/test evidence refs | Same shape without browser screenshots. |
+| Side-effect detection | sandbox/audit log + git diff scope | Prevents hidden repo/environment damage. |
 
-**Q-S2.1.** Cascading-error-free scoring предполагает classification
-каждого failure как controllable / uncontrollable. В First-Agent inner-loop
-(ADR-7 prep) — кто классифицирует? Варианты:
+CUAVerifierBench strengthens this mapping because its dataset card exposes
+fields FA can mimic at a smaller scale: `web_surfer_log`, `screenshots`,
+`uv_rubric_score`, `uv_outcome_success`, `final_human_outcome_label`, and
+`final_human_process_label`. FA substitutes code/test/log artefacts for
+screenshots, but the schema split is directly useful.
 
-- a) Pre-tool hook (из ADR-6 sandbox) проверяет environment availability
-  и маркирует failure заранее.
-- b) Post-tool hook анализирует error output и классифицирует по taxonomy.
-- c) Eval role (отдельный LLM call) классифицирует failure post-hoc.
+### 4.3 S3/S4 — Squeeze Evolve paper and repo
 
-Рекомендация: **(a)** cheapest и most reliable — environment check до
-tool call. Сочетается с ADR-6 sandbox audit log.
+The paper/repo present a multi-model evolutionary loop:
 
-**Q-S2.2.** Process + outcome separation предполагает, что мы можем
-записывать intermediate tool-call decisions как trace. Это совпадает
-с Radar §5 (eval traces) и cross-reference R-3 (structured tool results).
-ADR-7 prep должен зафиксировать trace schema, включающий:
-`step_id`, `tool_name`, `input`, `output`, `duration_ms`, `error_class`,
-`controllable: bool`.
+1. expensive model initializes candidate population;
+2. candidates are scored by confidence or diversity;
+3. groups are routed by difficulty to cheap/mid/expensive models;
+4. outputs are recombined and population updates across loops.
 
----
-
-## 4. S3 + S4 — Squeeze Evolve: Multi-Model Orchestration
-
-### 4.1 Суть paper'а и репо
-
-Squeeze Evolve — framework для verifier-free evolutionary test-time
-scaling с multi-model orchestration. Ключевой принцип:
-
-> **Allocate model capability where it has the highest marginal utility.**
-
-Stronger (дорогие) models — на high-impact stages; cheaper models —
-на остальное. Подход решает одновременно diversity collapse и
-cost-efficiency.
-
-**Unified evolutionary framework** представляет существующие methods
-как instances одного evolutionary loop:
-
-- **Majority Voting** (Wang et al.) = shallow single-step evolution.
-- **Recursive Self-Aggregation (RSA)** = verifier-free multi-step evolution.
-- **AlphaEvolve** = feedback-driven evolutionary search с verifier.
-
-**Core findings:**
-
-1. **Diversity collapse** — central bottleneck verifier-free evolution.
-   Без external correction повторная evolution коллапсирует к narrow modes.
-2. **Initialization quality** — strongest predictor of final accuracy.
-   Expensive model на init, cheap на recombination — best cost-quality.
-3. **Confidence signals** из token log-probabilities = reliable fitness
-   proxy. Не нужен отдельный verifier — model's own confidence достаточно
-   для routing.
-4. **3× cost reduction, 10× throughput** при equivalent or better accuracy.
-
-### 4.2 Squeeze Evolve repo — архитектурные паттерны
-
-Репозиторий [`squeeze-evolve/squeeze-evolve`](https://github.com/squeeze-evolve/squeeze-evolve)
-(Python, Apache-2.0) содержит несколько design patterns, интересных
-для First-Agent:
-
-**Operator Registry Pattern:**
-
-```python
-from squeeze_evolve import fitness
-
-@fitness.register("entropy")
-def entropy_fitness(scores, **kwargs):
-    p = np.array(scores) / sum(scores)
-    return float(-np.sum(p * np.log(p + 1e-10)))
-```
-
-Каждый operator (fitness, selection, recombination, evaluation, update)
-регистрируется по имени через декоратор. Orchestrator resolves operators
-из config strings at initialization. Config — YAML:
+The README is more immediately useful than the algorithm itself. It documents
+config-driven routing and operator registries:
 
 ```yaml
 routing:
+  confidence_percentiles: [50.0]
   fitness: confidence
   selection: uniform
   recombination: aggregate
-  evaluation: exact_match
+  evaluation: none
 ```
 
-**Confidence-based Routing:**
+It also states that confidence can use token log-probabilities already produced
+during inference, while diversity can be a zero-cost answer-level signal. For N
+models, the README uses N-1 percentile thresholds.
 
-Per-problem adaptive thresholds at configurable percentiles разделяют
-groups на N tiers. Low fitness (hard) → expensive model; high fitness
-(easy) → cheap model; full consensus → lightweight non-LLM aggregation.
+For First-Agent:
 
-**N-model support:**
+- **Take now:** registry-by-name for tools/eval plugins in ADR-7.
+- **Take later:** optional `supports_logprobs` / cost metadata after trace data
+  exists.
+- **Do not take now:** evolutionary inference loop. UC1 coding + PR-write is
+  fuzzy and expensive to score; chunker Phase M does not need population
+  evolution.
+
+| Squeeze Evolve concept | FA mapping | Verdict |
+|---|---|---|
+| Operator registries | ADR-7 tool registry / eval plugin registry | TAKE |
+| YAML config resolves operators | `~/.fa/models.yaml` and future tool config | TAKE shape, not exact fields |
+| Confidence routing | future v0.2 role-internal routing | DEFER |
+| Diversity preservation | useful for multi-candidate planning/eval | DEFER |
+| Expensive initialization | supports elite Planner role in ADR-2 | TAKE as rationale |
+| Evolutionary loop | not needed for first chunker/module | SKIP for v0.1 |
+
+## 5. Cross-source synthesis
+
+### 5.1 Convergences
+
+1. **Structured artefacts beat raw transcripts.** Latent-space work criticizes
+   verbose token traces; CUA Verifier needs structured rubrics/evidence; Squeeze
+   Evolve needs config-resolved operators. This supports FA's Mechanical Wiki
+   and explicit ADR/research artefact discipline.
+2. **Evaluation needs typed signals.** CUA Verifier separates process/outcome;
+   Squeeze Evolve turns fitness into routing; FA should start with trace fields
+   before adding smarter routing.
+3. **Strong models should be spent on high-leverage decisions.** Squeeze
+   Evolve's expensive initialization aligns with ADR-2's elite Planner. CUA's
+   auto-research result also warns that weaker autonomous research may miss
+   structural choices even when it is fast.
+4. **Plugin/registry shape is recurring.** MCP tools, Squeeze operators, future
+   eval plugins, and FA tools all want stable names, schemas, and config
+   resolution.
+
+### 5.2 Tensions
+
+| Tension | Source side | FA side | Resolution |
+|---|---|---|---|
+| Hidden-state efficiency vs auditability | Latent-space methods prefer compact hidden computation | FA needs inspectable repo memory | Defer latent memory. |
+| Browser-CUA verification vs coding-agent verification | CUA Verifier uses screenshots and UI trajectory evidence | FA uses code diff, tests, logs, snippets | Translate fields, not benchmark. |
+| Dynamic routing vs static ADR-2 roles | Squeeze Evolve routes by confidence | FA chose static role routing | Gate on traces and logprobs. |
+| Evolutionary loops vs focused PRs | Squeeze Evolve optimizes candidate populations | FA optimizes reviewable PRs | Skip for v0.1. |
+
+## 6. Risks and caveats
+
+- **Benchmark transfer risk:** CUA and Squeeze Evolve numbers are from their
+  own domains. They are not evidence that FA's coding tasks will improve.
+- **Schema churn risk:** Adding `logprobs` / N-model routing to `models.yaml`
+  before real traces may create unstable config surface.
+- **Verifier overbuild risk:** A full CUA-style verifier is too large for v0.1.
+  The cheap useful artefact is a fixture/rubric note.
+- **Latent-space hype risk:** Survey scope is broad. Treat it as trend radar,
+  not an implementation recipe.
+- **Singleton registry risk:** Squeeze Evolve's registry examples look global.
+  FA should prefer per-session registry construction because ADR-6 sandbox rules
+  are session/environment dependent.
+
+## 7. Numbered recommendations (R-1..R-6)
+
+### R-1 — Acceptance rubric fixtures before verifier machinery (cost: cheap)
+
+Create a small research artefact of examples. Each example should show:
+
+- user request / task;
+- expected outcome predicate;
+- acceptable process evidence;
+- unacceptable side effect;
+- controllable failure example;
+- uncontrollable failure example;
+- evidence refs expected from the agent.
+
+This is the highest-value immediate artifact because it converts CUA Verifier's
+paper-level ideas into a repo-local language future agents can reuse.
+
+### R-2 — Per-session registry-by-name for ADR-7 (cost: medium)
+
+ADR-7 should specify tool registration and lookup by stable name. The shape is
+simple:
+
+```text
+ToolRegistry(session_config, sandbox)
+  .register(name, input_schema, fn)
+  .resolve(name) -> ToolSpec
+```
+
+The exact implementation should not copy Squeeze Evolve's global singleton
+style. A per-session registry is safer: sandbox permissions, tool allow-lists,
+and audit-log destinations can differ between runs.
+
+### R-3 — Process/outcome trace schema (cost: medium)
+
+Before building Eval role behavior, define the minimal event shape a Phase M
+module can emit or save:
 
 ```yaml
-routing:
-  confidence_percentiles: [33.0, 66.0]  # N-1 thresholds for N models
-models:
-  - name: cheap-model      # easiest groups
-  - name: mid-model        # medium groups
-  - name: expensive-model  # hardest groups
+task_id: "<stable id>"
+process_result: pass | fail | blocked | unknown
+outcome_result: pass | fail | unknown
+failure_class: controllable | uncontrollable | mixed | none
+evidence_refs:
+  - "tests/test_chunker.py::test_markdown_headings"
+tool_calls: []
+side_effects: []
 ```
 
-### 4.3 Mapping на First-Agent ADR
+This is intentionally smaller than CUA Verifier. It gives future agents enough
+structure to compare runs without introducing a model judge.
 
-| Concept из S3/S4 | FA ADR | Fit | Действие |
-|---|---|---|---|
-| Multi-model routing by difficulty | ADR-2 (static role routing) | **Высокий.** ADR-2 = static routing; SE добавляет dynamic confidence-based routing | **Принять direction.** v0.1 — static roles; v0.2 — confidence-based dynamic routing внутри каждого role |
-| Confidence from log-probabilities | ADR-2 (models.yaml) | **Средний.** Требует access к logprobs (vLLM: да; OpenRouter: зависит от provider) | **Записать.** Добавить `logprobs: bool` field в models.yaml spec. Если logprobs доступны — использовать как difficulty signal для routing |
-| Diversity collapse prevention | ADR-2 (multi-tier) | **Средний.** Для single-pass agent (UC1) не critical; для UC3 multi-retrieval — relevant | **Отложить.** Если FA начнёт iterative refinement (R-3 self-correction), diversity collapse — реальный risk. Мониторить |
-| Initialization quality → best predictor | ADR-2 (Planner role) | **Высокий.** Validates: Planner (expensive model) для init, Coder (mid) для execution | **Принять.** Подтверждает: не экономить на Planner tier. Quality планирования определяет quality execution |
-| Operator Registry pattern | ADR-7 (tool registry, future) | **Высокий.** Clean, extensible pattern для tool registration | **Принять pattern.** `@registry.register("name")` + YAML config — хороший API surface для FA tool registry |
-| YAML config with N-model support | ADR-2 (models.yaml) | **Высокий.** Совпадает с `~/.fa/models.yaml` convention | **Записать.** SE's config structure — reference для models.yaml schema evolution |
-| Pluggable evaluation | Radar §5 (eval) | **Высокий.** `@evaluation.register("math_boxed")` — clean eval-plugin pattern | **Принять pattern.** Eval plugins через registry для будущей Eval role |
+### R-4 — Latent-space watch-list only (cost: cheap)
 
-### 4.4 Критические вопросы
+Do not change ADR-3/4/5. If future models expose reliable latent-memory or
+latent-planning APIs, evaluate them after the filesystem-canonical baseline has
+measured failure modes. Until then, latent-space work is a justification for
+concise external artefacts, not a replacement for them.
 
-**Q-S3.1.** Squeeze Evolve оптимизирован под math/code benchmarks с
-clear correct answers. FA UC1 (coding + PR write) — задача с
-*fuzzy acceptance*: PR может быть «correct» по-разному. Confidence
-routing работает хуже когда ground truth ambiguous. Вопрос: нужен ли
-FA собственный fitness signal, отличный от logprob confidence?
-Кандидаты: test-pass rate, lint-pass rate, diff-size heuristic.
+### R-5 — Dynamic routing gated on traces/logprobs (cost: cheap now, expensive later)
 
-**Q-S3.2.** Operator registry pattern в SE — global singletons
-(`from squeeze_evolve import fitness`). В FA tool registry — нужен
-ли instance-level scoping (per-session tool registry) или global
-достаточен? Рекомендация: per-session, потому что ADR-6 sandbox
-может restrict tools per-session.
+Record the prerequisites for any future ADR-2 amendment:
 
----
+1. at least one Phase M module produces trace/eval data;
+2. target providers expose logprobs or equivalent confidence signals;
+3. `models.yaml` has cost metadata that is true enough for routing;
+4. fuzzy acceptance is mapped to a fitness signal.
 
-## 5. Cross-source синтез: tensions и convergences
+Only after those four exist should confidence-based routing move from research
+note to ADR.
 
-### 5.1 Convergences (сходимости)
+### R-6 — CUAVerifierBench as schema reference (cost: cheap)
 
-1. **Multi-tier model allocation работает.** S1 (latent space efficiency
-   varies by task complexity), S3 (confidence-based routing), и FA ADR-2
-   (static role routing) — три independent signals в одном направлении:
-   expensive compute → high-impact decisions, cheap compute → routine.
+Use CUAVerifierBench as an eval-design reference because it measures verifier
+agreement against human labels and stores both trajectory and annotation
+configs. Do not run FA against it as a benchmark; it is browser-task-specific.
 
-2. **Structured eval > unstructured judgement.** S2 (rubrics + process/outcome
-   separation) и S3 (fitness signals + pluggable evaluation) оба
-   показывают, что structured evaluation frameworks значительно
-   превосходят ad-hoc judgement. FA Acceptance Taxonomy уже на
-   этом пути.
+## 8. Open questions (Q-1..Q-4)
 
-3. **Registry/plugin patterns для extensibility.** S3 (operator registry)
-   и S2's iterative development approach оба указывают на: core framework
-   должен быть pluggable, не monolithic. FA ADR-7 tool registry →
-   следовать этому pattern'у.
+### Q-1 — Should acceptance fixtures be standalone or folded into ADR-7?
 
-4. **Human + AI complementary.** S2 explicit: auto-research agent
-   достигает 70% quality за 5% time, но не находит structural insights.
-   FA workflow (human lead + Devin) уже в этом pattern'е.
+Standalone research note is cheaper and reviewable before ADR-7. Folding into
+ADR-7 reduces file count but risks overloading the ADR. Recommendation: start
+standalone, cite it from ADR-7.
 
-### 5.2 Tensions (напряжения)
+### Q-2 — What is the smallest evidence ref shape for code tasks?
 
-1. **Latent vs Explicit reasoning.** S1 advocates latent (token-efficient).
-   FA ADR-2/ADR-7 предполагают explicit reasoning traces для audit.
-   **Tension:** latent reasoning не оставляет human-readable traces →
-   conflict с chain-of-custody principle FA.
-   **Resolution:** для v0.1 — explicit traces mandatory (audit > efficiency).
-   Для v0.2 — hybrid: latent reasoning с periodic explicit checkpoints.
+Candidate fields: `file`, `lines`, `command`, `exit_code`, `log_excerpt`,
+`pr_url`. This should be settled when writing the trace/eval schema.
 
-2. **Static vs dynamic routing.** ADR-2 = static roles (Planner, Coder,
-   Debug). S3 = dynamic confidence-based routing. **Tension:** static
-   simpler и predictable; dynamic efficient но less auditable.
-   **Resolution:** v0.1 static; v0.2 dynamic routing *within* each role
-   (не заменяя roles, а выбирая model *tier* внутри role по difficulty).
+### Q-3 — Are logprobs available for the actual ADR-2 model tiers?
 
-3. **Verifier-free vs verifier-based.** S3 shows verifier-free evolution
-   can match verifier-based on discovery tasks. S2 shows robust verifier
-   = critical for training signal. FA UC1 — somewhere in between:
-   tests и lint = partial verifier; overall PR quality = fuzzy.
-   **Resolution:** FA should treat test-pass + lint-pass as hard verifiers
-   и use confidence signals as soft fitness for tool-choice routing.
+Squeeze-style confidence routing is only useful if providers expose comparable
+confidence data. Need a provider capability check before any config amendment.
 
----
+### Q-4 — Should Eval role exist in v0.1 or remain post-v0.1?
 
-## 6. Артефакты для First-Agent (рекомендации)
+R-1/R-3 do not require a separate Eval LLM. They only create artefacts and
+trace fields. A dedicated Eval role can remain deferred until traces exist.
 
-### 6.1 Список research-артефактов для усиления репо
+## 9. Files used
 
-| # | Артефакт | Тип | Приоритет | Blocking? | Input от |
-|---|---|---|---|---|---|
-| A1 | Trace schema для inner-loop eval | ADR-7 prep input | High | Блокирует Eval role design | S2 (process+outcome), Radar §5 |
-| A2 | Operator Registry pattern note | Design pattern reference | High | Блокирует tool-registry API | S3/S4 (registry), ADR-7 prep |
-| A3 | Acceptance rubric формализация | Convention update | Medium | Не блокирует, но reduces review noise | S2 (non-overlapping criteria) |
-| A4 | models.yaml schema evolution note | ADR-2 amendment input | Medium | Не блокирует v0.1 | S3 (logprobs, N-model support) |
-| A5 | Eval plugin interface sketch | ADR-7 prep input | Medium | Не блокирует v0.1 | S3 (evaluation registry) |
-| A6 | Latent reasoning watch-list | Research radar appendix | Low | Не блокирует | S1 (Coconut, SoftCoT) |
-| A7 | Confidence-based routing design note | v0.2 roadmap input | Low | Не блокирует v0.1 | S3 (confidence routing) |
-| A8 | CUA Verifier benchmark reference | Research bookmark | Low | Не блокирует | S2 (CUAVerifierBench) |
+- `https://arxiv.org/html/2604.02029v1`
+- `https://arxiv.org/html/2604.06240v1`
+- `https://arxiv.org/html/2604.07725v2`
+- `https://github.com/squeeze-evolve/squeeze-evolve`
+- `https://raw.githubusercontent.com/squeeze-evolve/squeeze-evolve/main/README.md`
+- `https://huggingface.co/datasets/microsoft/CUAVerifierBench`
+- `AGENTS.md`
+- `HANDOFF.md`
+- `knowledge/prompts/research-briefing.md`
+- `knowledge/research/_template.md`
+- `knowledge/adr/ADR-1-v01-use-case-scope.md`
+- `knowledge/adr/ADR-2-llm-tiering.md`
+- `knowledge/adr/ADR-3-memory-architecture-variant.md`
+- `knowledge/adr/ADR-4-storage-backend.md`
+- `knowledge/adr/ADR-5-chunker-tool.md`
+- `knowledge/adr/ADR-6-tool-sandbox-allow-list.md`
 
-### 6.2 Конкретные предложения для ближайших PR
+## 10. Out of scope
 
-**Для ADR-7 prep (inner-loop + tool-registry):**
-
-- Trace schema: включить `step_id`, `tool_name`, `input_hash`,
-  `output_summary`, `duration_ms`, `error_class`,
-  `controllable: bool`, `model_tier`, `confidence_score`.
-  Source: S2 cascading-error-free + S3 confidence signals.
-
-- Tool registry API: `@tool.register("name")` decorator +
-  JSON Schema input validation + structured result type.
-  Source: S3/S4 operator registry pattern, ADR-2 MCP-shaped convention.
-
-- Eval separation: process reward (was the tool sequence reasonable?)
-  + outcome reward (did the task succeed?). Оба — required fields
-  в eval output. Source: S2 Universal Verifier.
-
-**Для models.yaml schema (ADR-2 addendum):**
-
-- Добавить optional fields: `logprobs: bool`, `cost_per_1k_tokens: float`,
-  `max_concurrent: int`. Source: S3 confidence routing needs logprobs;
-  cost field enables budget-aware routing.
-
-**Для Acceptance Taxonomy convention:**
-
-- Каждый acceptance criterion в task description должен быть:
-  (a) atomic — оценивает ровно один aspect;
-  (b) non-overlapping — не пересекается с другими criteria;
-  (c) binary — pass/fail, не graduated scale.
-  Source: S2 rubric design principle #1.
-
----
-
-## 7. Что ещё стоит внимания (авторская оценка)
-
-### 7.1 Squeeze Evolve как reference implementation
-
-Repo squeeze-evolve — один из чистейших примеров pluggable
-multi-model orchestration. Даже если FA не будет делать evolutionary
-inference, **architectural patterns** (registry, YAML config, N-model
-routing, pluggable evaluation) — directly reusable для FA tool registry
-и model routing. Стоит сохранить как reference.
-
-### 7.2 Auto-research insight из CUA Verifier paper
-
-Самый неочевидный finding S2: auto-research agent, initialized с
-expert configuration, **превосходит** peak эксперта. Это значит:
-
-1. Для FA: после того как human lead принял structural decisions
-   (ADR-1..7), AI-agent может заниматься **incremental optimization**
-   (parameter tuning, config exploration, edge-case coverage) и будет
-   делать это лучше human'а.
-
-2. Практическое следствие: не пытаться заменить human lead на agent
-   для architectural decisions. Но после ADR зафиксирован —
-   agent > human для tuning.
-
-### 7.3 Latent Space Survey как roadmap
-
-S1 — не actionable для v0.1, но это самый полный mapping
-«что latent space может» на domain capabilities. Если в v0.2+
-FA начнёт собственный inference pipeline (vLLM self-hosted),
-survey — reference для выбора между explicit и latent reasoning
-modes по задаче.
-
-Конкретный watch item: **latent memory для code retrieval.**
-Если появятся embedding-free latent retrieval methods, совместимые
-с FTS5-style deterministic indexing — это natural extension для
-ADR-3/ADR-4 mechanical wiki.
-
----
-
-## 8. Open questions для project lead
-
-**Q1.** A1 (trace schema) — приоритет High. Нужно ли включить его
-в ADR-7 prep note или оформить как отдельный mini-ADR?
-
-**Q2.** A2 (Operator Registry pattern) — стоит ли зафиксировать
-`@tool.register("name")` как binding convention уже сейчас, до
-implementation chunker'а? Это позволит chunker'у сразу
-регистрироваться через этот pattern.
-
-**Q3.** A4 (models.yaml schema) — добавить `logprobs`, `cost`, `max_concurrent`
-как optional fields в ADR-2 amendment, или отложить до ADR-7?
-
-**Q4.** S1 latent reasoning — ставить ли в v0.2 roadmap explicit
-item «evaluate latent reasoning modes when available via API»?
-
----
-
-## 9. Итоговая radar-таблица
-
-| Source | Accept для v0.1 | Defer до v0.2 | Reject / Monitor |
-|---|---|---|---|
-| S1 Latent Space Survey | Token efficiency direction | Latent memory, latent collaboration | Latent reasoning (requires custom models) |
-| S2 CUA Verifiers | Process+outcome eval separation; cascading-error-free; rubric design; human+AI complementary | Divide-and-conquer long-session eval | CUAVerifierBench as benchmark (different task domain) |
-| S3 Squeeze Evolve | Operator registry pattern; initialization quality > routing; YAML N-model config | Confidence-based dynamic routing; diversity monitoring | Evolutionary inference loop (over-engineered for UC1) |
-| S4 squeeze-evolve repo | Registry decorator pattern; pluggable eval interface | Full multi-model orchestration | vLLM fork (too heavy for v0.1) |
+- Implementing the acceptance fixture note.
+- Writing ADR-7.
+- Changing `models.yaml` schema.
+- Reproducing CUA Verifier or Squeeze Evolve benchmarks.
+- Importing latent-space methods into First-Agent runtime.
