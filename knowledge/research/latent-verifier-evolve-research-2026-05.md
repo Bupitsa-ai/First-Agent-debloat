@@ -23,7 +23,7 @@ claims_requiring_verification:
     performance-числа по отдельным methods (Coconut, LSRL, etc.) не
     верифицировались здесь; они вторичны для наших целей."
 status: research
-tier: deep-dive
+tier: stable
 supersedes: none
 extends:
   - knowledge/research/cutting-edge-agent-research-radar-2026-05.md
