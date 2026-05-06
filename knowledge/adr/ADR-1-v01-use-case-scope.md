@@ -145,6 +145,62 @@ section so future sessions do not need to guess its status.
 A v0.2 ADR (`ADR-N — UC5 multi-LLM eval-harness`) will be
 drafted when v0.1 ships.
 
+## Amendment 2026-05-06 — UC5 expanded to eval-driven harness iteration
+
+**Context.** Project goal corrected (см.
+[`project-overview.md` §1.1](../project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars)
+Pillar 3 + Pillar 4) — efficient-claim verified through measurement.
+UC5 must therefore extend beyond «прогнать research-задачу через 4
+модели» (formulation 2026-05-01) to a closed iteration loop
+benchmark → trace → modify → re-benchmark → leaderboard.
+
+**Decision (additive, supersedes formulation in Amendment 2026-05-01).**
+
+UC5 v0.2 expanded scope:
+
+1. **(5a) Local benchmark suite.** Детерминированные fixtures под UC1
+   + UC3, scoring без LLM-as-judge dependency где возможно. Storage:
+   `eval/fixtures/<task_id>.md` (Markdown с frontmatter:
+   `task_id`, `scoring_kind: exact | edit_distance | llm_judge | hybrid`,
+   `expected:` блок).
+2. **(5b) Trace consumption.** Eval reads
+   `~/.fa/state/runs/<run_id>/events.jsonl` (per ADR-7 trace-shape) и
+   produces structured eval report (`eval/reports/<run_id>.md`)
+   с per-task verdict + aggregate metrics: tokens/task, tool-calls/task,
+   tools-in-context, API cost/task, success-rate.
+3. **(5c) Iteration interface.** Предлагаемые модификации harness —
+   через config files (`~/.fa/sandbox.toml`, `models.yaml`,
+   `knowledge/prompts/*.md`, `~/.fa/skills/*.md`). **Не** через code
+   rewrites в v0.2.
+4. **(5d) Score tracking.** `eval/leaderboard.md` —
+   append-only Markdown table; каждая итерация = новая строка с
+   `iteration_id`, datestamp, KPI snapshot, citation на eval report
+   и на изменённые config files.
+5. **(5e) Out-of-scope для UC5 v0.2.** **Без** автоматического
+   Meta-Harness-style proposer (это v0.3+); человек продолжает
+   driving iterations на основе eval report. **Без**
+   prompt-mutation-via-code (only manual / YAML edits). **Без**
+   trans-model harness search (один target-model на iteration в
+   v0.2).
+
+**Связь с Pillar 4.** База Pillar 4 (skill-writing) реализуется в
+v0.1 как функциональность агента — отдельный ADR-8 (TBD). UC5 v0.2
+**опирается** на существующую к этому моменту skill-writing
+capability как один из supported config-modification channels (5c).
+
+**Notes.**
+
+- KPI numbers Pillar 3 ([`project-overview.md` §3](../project-overview.md#3-success-metrics))
+  фиксируются по результатам первого baseline-run UC5; до того стоят
+  как `TBD`.
+- Old Amendment 2026-05-01 формулировка не удаляется; expanded scope
+  здесь — её superset (multi-LLM comparison остаётся подмножеством
+  5a-5b при варьировании target-model).
+- `eval/` directory is a **new top-level repo directory** (sibling
+  to `src/`, `docs/`, `knowledge/`) created in the UC5 implementation
+  PR (v0.2). Forward-references here are intentional.
+- `exploration_tree.yaml` получает узел `Q-1.amend-2026-05-06`.
+
 ## Consequences
 
 - **Positive:** Clear scope for scaffolding (Phase S of the roadmap

@@ -23,6 +23,109 @@ agent** for a single power-user. It exists because:
   adding capability (BM25 → vectors → graph) only when the corpus
   justifies it.
 
+## 1.1. Четыре столпа цели (project goal — four pillars)
+
+> **Status:** added 2026-05-06 как явная фиксация project goal.
+> Заменяет неявную trifecta «учебный + working + token-efficient метрика»
+> из исходного `README` §1 / §3 формулировок. Старые формулировки
+> сохраняются в git history; новые — canonical с этой даты.
+
+Goal проекта формулируется в 4 явных столпах:
+
+### Pillar 1 — Research-backed implementation-first reference
+
+First-Agent — implementation-first проект с явной целью стать
+open-source reference implementation для locally orchestrated coding
+agents. Каждое архитектурное решение фиксируется через ADR
+([`knowledge/adr/`](./adr/)) + research note
+([`knowledge/research/`](./research/)). Этот ригор делает репо
+одновременно учебным инструментом и forkable reference: fork-нувший
+читает не «как сделано», а «почему именно так и какие альтернативы
+отвергнуты».
+
+### Pillar 2 — Pragmatic single-user product
+
+v0.1 ships как locally orchestrated, mixed-tier coding agent для
+single power-user под UC1 (coding+PR) + UC3 (local-docs-to-wiki).
+Hybrid-shape (filesystem-canon Markdown + lazy search-side scaling
+BM25 → vectors → graph) — sustained design choice, не временное
+решение. Архитектура зафиксирована в ADR-1..ADR-6.
+
+### Pillar 3 — Most token/tool-call efficient harness (open-source scope)
+
+Один из главных проектных axes — построить **наиболее token- и
+tool-call-efficient harness** среди известных open-source /
+open-design агент-стэков под целевые UC1+UC3 при single-user
+single-workstation use. «Эффективный» означает измеримое:
+
+1. Median tokens / completed task (UC1).
+2. Median tool-calls / completed task (UC1).
+3. Tools-in-context при старте session (UC1).
+4. API cost (USD) / completed task (UC1).
+
+Числа фиксируются после landing UC5 (eval-harness) и первого
+baseline-run. До baseline KPI-numbers стоят как `TBD` и не
+блокируют v0.1 deliverable.
+
+**Scope-ограничение явно:** «efficient» = **относительно open-source
+agents**. Сравнение с closed-source (Devin, Cursor, Copilot Workspace)
+не входит в обязательство — у них недокументированы internal
+harness-shape и нет reproducible eval. Verifiable claim требует open
+code-base на обеих сторонах сравнения; это **structural property**
+проекта, не конкурентное самоограничение.
+
+### Pillar 4 — Iteration via measurement
+
+Эффективность не декларируется — она измеряется и улучшается
+итерациями. **База в v0.1:** способность агента писать собственные
+skills (`SKILL.md`-файлы под `~/.fa/skills/` или
+`knowledge/skills/`) по итогам решённых задач и найденных улучшений.
+Pattern взят из Anthropic Claude Skills + Devin `.devin/skills/`,
+адаптирован под Mechanical Wiki shape (frontmatter + FTS5-индекс
+по ADR-3 / ADR-4). Skill-writing capability требует **ADR-8 (TBD)**;
+здесь фиксируется как v0.1 commitment, конкретный design — в
+последующем PR.
+
+**Поверх в UC5 v0.2:** benchmark-suite → eval report → manual or
+skill-write-based modification → re-benchmark → leaderboard.
+Подробнее expanded scope — ADR-1 §Amendment 2026-05-06.
+
+## 1.2. Enforceable principle — minimalism-first
+
+> **Принцип, не goal.** Каждый предлагаемый новый компонент harness
+> (тулзов, prompt-уровня, retrieval-стадия) должен пройти 3-вопросный
+> тест перед добавлением:
+>
+> 1. Какая research-evidence (peer-reviewed paper, primary-source
+>    blog от lab/foundation, eval-report) поддерживает необходимость
+>    этого компонента под наш UC1+UC3 single-user scope?
+> 2. Существует ли open-source агент-стэк, который **уже** удалил
+>    или не добавил похожий компонент, и какой был результат?
+> 3. Если компонент не добавить — какой конкретный capability мы
+>    теряем, и можно ли заменить его существующим тулом или
+>    config-настройкой?
+>
+> Если ответ на (1) — «нет evidence» или (2) — «удалили без потерь»,
+> или (3) — «можно заменить» — компонент **rejected** в v0.1.
+>
+> После UC5 landing — re-check: новый компонент должен снизить хотя
+> бы один KPI Pillar 3 на reproducible benchmark; иначе rejected.
+
+**Зачем minimalism-first, а не subtraction-first.** Greenfield-проект
+v0.1 не унаследовал «лишних компонентов», которые надо вырезать.
+«Subtraction» (вырезать post-hoc после improving models) —
+retrofit-стратегия, осмысленная для legacy harness. **Minimalism**
+(не добавлять без evidence) — prevention-стратегия, осмысленная при
+старте с чистого листа. Проект выбирает prevention: читаем research
+papers, изучаем опыт чужих ошибок (failure modes других harness'ов,
+overengineering Critic-loops, dynamic prompt-assembly без cache-
+invariant), не добавляем сами.
+
+References supporting principle: см.
+[`research/efficient-llm-agent-harness-deep-dive-2026-05.md`](./research/efficient-llm-agent-harness-deep-dive-2026-05.md)
+§3.5 + §0 R-7 (Anthropic «code execution with MCP» subtraction
+principle, Tsinghua module-ablation `arXiv:2603.25723`).
+
 ## 2. Users
 
 - **v0.1 user:** a single power-user (project owner) running FA on a
@@ -38,10 +141,14 @@ agent** for a single power-user. It exists because:
 
 ## 3. Success metrics
 
-v0.1 is a prototype, so metrics are deliberately coarse:
+v0.1 — это prototype, поэтому большая часть metrics deliberately
+coarse. **Однако** с введением Pillar 3 (см. §1.1) efficient-harness
+claim требует **measurable** KPIs, фиксируемых после UC5 baseline-run.
 
-- **End-to-end UC1 demo passes**: agent ingests a folder, answers a
-  scoped question by retrieval, edits a code file in a controlled
+### Coarse v0.1 gates (manually verified)
+
+- **End-to-end UC1 demo passes**: agent ingests a folder, answers
+  a scoped question by retrieval, edits a code file in a controlled
   side project, opens a PR. Manually verified — no automated eval
   bar yet.
 - **Token-efficiency in casual API calls**: each retrieval-augmented
@@ -55,6 +162,24 @@ v0.1 is a prototype, so metrics are deliberately coarse:
   fixture set of search/edit tasks. Set baseline, regulate
   iteratively. No labelled gold-set yet (none exists for our
   corpora).
+
+### Pillar 3 KPI baseline (TBD, после UC5 landing)
+
+Числа — `TBD`; фиксируются по результатам UC5 первого baseline-run:
+
+1. Median tokens / completed task (UC1) ≤ TBD.
+2. Median tool-calls / completed task (UC1) ≤ TBD.
+3. Tools-in-context при старте session (UC1) ≤ TBD.
+4. API cost (USD) / completed task (UC1) ≤ TBD.
+
+Baseline-run сам — UC5 deliverable, см. ADR-1 §Amendment 2026-05-06.
+
+### Acceptance gate per minimalism-first
+
+Каждый PR, добавляющий новый harness-компонент, проходит 3-вопросный
+test из §1.2 (pre-UC5) или KPI-delta-test (post-UC5). Test reference
+ожидается в PR description как explicit answers на 3 вопроса
+(per AGENTS.md PR Checklist rule #10).
 
 ## 4. Scope
 
@@ -129,8 +254,12 @@ v0.1 is a prototype, so metrics are deliberately coarse:
 - **Not a self-hosted LLM serving stack.** Local models (vLLM, Ollama)
   are an *access path*, not a deliverable. We assume the user has
   the model running or available via a remote API.
-- **Not a research benchmark.** No published eval numbers; LLM-as-judge
-  baseline is for our own iteration, not for paper-grade comparison.
+- **Not a peer-reviewed research benchmark.** Не публикуем
+  benchmark-papers. **Однако** под Pillar 3 + Pillar 4 публикуем
+  reproducible local-eval reports (`eval/reports/`) и leaderboard
+  (`eval/leaderboard.md`) под UC5; efficient-claim относительно
+  open-source agents подтверждается этими отчётами
+  (reproducible code-base + reproducible eval), не peer-review.
 - **Not a permanent / immutable archive.** `knowledge/` is curated,
   but `notes/` and `hot.md` are designed for churn; supersession is
   the lifecycle, not deletion-prevention.
