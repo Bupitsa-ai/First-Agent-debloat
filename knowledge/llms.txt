@@ -34,13 +34,13 @@
 ## Project knowledge (`knowledge/`)
 
 - [knowledge/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md): Knowledge folder conventions, frontmatter schema, query routing.
-- [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md): One-page product/scope snapshot for v0.1.
+- [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md): Product/scope snapshot for v0.1; §1.1 four-pillar goal (research-backed implementation + pragmatic single-user + most efficient open-source harness + iteration-via-measurement); §1.2 minimalism-first principle.
 
 ## ADRs (`knowledge/adr/`)
 
 - [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md): ADR process and index.
 - [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md): ADR template (copy when adding a new decision).
-- [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort).
+- [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort); Amendment 2026-05-01 deferred UC5; Amendment 2026-05-06 expanded UC5 to eval-driven harness iteration (5a-5e).
 - [knowledge/adr/ADR-2-llm-tiering.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-2-llm-tiering.md): LLM tiering and access (static role routing; Planner / Coder / Debug / Eval).
 - [knowledge/adr/ADR-3-memory-architecture-variant.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-3-memory-architecture-variant.md): Memory architecture variant for v0.1 (Variant A "Mechanical Wiki").
 - [knowledge/adr/ADR-4-storage-backend.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-4-storage-backend.md): Storage backend for v0.1 (SQLite FTS5).
