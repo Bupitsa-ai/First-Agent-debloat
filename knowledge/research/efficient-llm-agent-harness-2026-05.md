@@ -45,11 +45,7 @@ chain_of_custody: |
   Конкретные ablation-numbers Tsinghua (-0.8 / -8.4 / -5.6) видны только
   в видео-нарративе и помечены как inferred-from-secondary; full text
   paper не парсился построчно (HTML truncated в fetch). Все ADR-факты —
-  из локального git checkout fork2 main HEAD на 2026-05-07. Эта нота
-  объединяет и улучшает две ранние редакции (PR #37 commit d03f7a3 +
-  PR #38 commit 1aec3e2 в upstream `GITcrassuskey-shop/First-Agent`) в
-  единый source-of-truth для ADR-7 prep; обе ранние PR закрываются
-  лидом без merge — см. §7 Methodology за audit-trail. Атрибуция
+  из локального git checkout fork2 main HEAD на 2026-05-07. Атрибуция
   Meta-Harness к Stanford в Video 3 — это video-claim; arxiv submitter
   Yoonho Lee (Stanford ML PhD lineage), DSPy reference в нарративе
   совпадает с Khattab, но affiliation в abstract явно не выписан —
@@ -93,11 +89,7 @@ claims_requiring_verification:
 topic: "harness-engineering, tool-disclosure, mcp-forward-compat, adr-7-prep, gap-analysis-pr37"
 ---
 
-> **Status:** active. Single source-of-truth для harness research под
-> ADR-7 prep. Объединяет и улучшает две ранние редакции из upstream
-> `GITcrassuskey-shop/First-Agent` (PR #37 — initial draft, commit
-> `d03f7a3`; PR #38 — углублённое продолжение с gap analysis, commit
-> `1aec3e2`); обе закрываются лидом без merge при cross-fork sync.
+> **Status:** active. Single source-of-truth для harness research под ADR-7 prep.
 > §7 Methodology фиксирует, какие substantive и methodological
 > уроки прежних редакций интегрированы здесь. Произведено через
 > [`knowledge/prompts/research-briefing.md`](../prompts/research-briefing.md)
@@ -105,12 +97,9 @@ topic: "harness-engineering, tool-disclosure, mcp-forward-compat, adr-7-prep, ga
 
 ## 0. Decision Briefing
 
-Девять рекомендаций (`R-1..R-9`) для ADR-7 prep — все resolved до
-verdict, без выживших `UNCERTAIN-ASK`. R-8 и R-9 ранее (в PR #38)
-стояли как UNCERTAIN-ASK; project-lead зафиксировал по обеим Option (i)
-— rationale интегрирован в §9 R-8 (static layered prompt + migration
-trigger через UC5) и §9 R-9 (ADR-2 evidence-base extension с явным
-benchmark-family caveat). Goal-lens см. в frontmatter и §2.
+8 рекомендаций (`R-1..R-8`) для ADR-7 prep — все resolved до
+verdict. Rrationale интегрирован в §9 R-8 (static layered prompt + migration
+trigger через UC5) ). Goal-lens см. в frontmatter и §2.
 
 ### R-1 — Зафиксировать MCP forward-compat для tool-disclosure (3 уровня) на shape-уровне
 
@@ -119,10 +108,9 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (A) reduces session-start noise: YES (в первом prompt только descriptors, не full schemas — экономия порядка размера типичного `~55k`-tools-definitions baseline из Anthropic docs).
   - (B) helps LLM find context when needed: YES (pointer-shape: descriptor → schema → tool-call dispatch — три hop вместо одного gigantic upfront blob).
 - **Goal-lens fit (per session, dynamic):**
-  - (C) advances chosen goal_lens: YES (это **прямое** дополнение к ADR-2 §Amendment 2026-05-01 §point 4 — «ADR-7 inherits convention; MAY add fields but MUST NOT change»; PR #37 §6 это inheritance-constraint не вытащил как hard-rule).
+  - (C) advances chosen goal_lens: YES (это **прямое** дополнение к ADR-2 §Amendment 2026-05-01 §point 4 — «ADR-7 inherits convention; MAY add fields but MUST NOT change».
 - **Cost:** cheap (это shape-decision на бумаге, ~0 LoC сверх того, что ADR-2 §Amendment уже фиксирует).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** ADR-7 фиксирует одну форму (`name + full schema upfront`) и при v0.2 catalog-роста нужно будет ломать `models.yaml` и `~/.fa/sandbox.toml` consumers. Cost-of-rejection: 1-2 дня на v0.2 cleanup vs 0 дней сейчас.
 - **Concrete first step (if TAKE):** В ADR-7 §Decision добавить блок `### Tool disclosure tiers` с тремя shape-таблицами и явной ссылкой на ADR-2 §Amendment 2026-05-01 §point 4 («inherits convention»).
 
@@ -133,10 +121,9 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (A) reduces session-start noise: YES (новая сессия читает small `hot.md` для context; raw trace доступен по path, не по pre-load).
   - (B) helps LLM find context when needed: YES (pointer-shape — `hot.md` cite-ит `events.jsonl` paths/byte-offsets; selective `grep`/replay возможны).
 - **Goal-lens fit (per session, dynamic):**
-  - (C) advances chosen goal_lens: YES (закрывает gap PR #37 §5.3, где raw-traces-vs-summaries упомянуты, но invariant «summary-MUST-NOT-replace-trace» не вытащен как hard-rule на уровне ADR-3 amendment surface).
+  - (C) advances chosen goal_lens: YES ( «summary-MUST-NOT-replace-trace» вытащен как hard-rule на уровне ADR-3 amendment surface).
 - **Cost:** medium (trace schema + writer + retention rule + `hot.md` ↔ `events.jsonl` cite-format в существующем ADR-3 hot.md spec).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Хранить только summaries (`hot.md` + handoff); accept Meta-Harness paper-warning о signal loss и допустить, что v0.2 self-evolution / failure-diagnosis работа будет упираться в перепрогон сессий с нуля.
 - **Concrete first step (if TAKE):** В ADR-7 §Decision добавить `### Trace separation invariant` с JSON-схемой `events.jsonl` event и формальной формулировкой инварианта; в ADR-3 §Decision добавить one-line amendment-stub: «`hot.md` cite-ит paths в `events.jsonl`; `events.jsonl` — canonical source-of-truth для replay/eval» (или оставить amendment в follow-up ADR).
 
@@ -150,7 +137,6 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (C) advances chosen goal_lens: YES (ADR-7 inheritance pattern — пере-использовать существующее ADR-4 решение, а не вводить новую dependency; это subtraction-первый принцип в чистом виде).
 - **Cost:** cheap (decision-only; реальная реализация — v0.2 при росте catalog, отдельный PR).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Когда tool-search станет нужен, ввести `rank-bm25` или внешний embedding-сервис как новую dependency; нарушить «zero new deps» обещание ADR-4 §Option B.
 - **Concrete first step (if TAKE):** В ADR-7 §Notes добавить one-paragraph ссылку: «If/when tool-search lands, use ADR-4 FTS5 index with `tools` virtual table — no new dependency».
 
@@ -164,7 +150,6 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (C) advances chosen goal_lens: YES (это прямое расширение ADR-6 без изменения существующего `[read]/[write]` semantics; ADR-6 §Re-evaluation triggers явно оставляет место для дополнительных allow-lists).
 - **Cost:** medium (TOML schema + dispatcher hook + миграция всех future tools на обязательный `tags` field).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Reuse `[read]/[write]` allow-list для tool-scoping (не подходит: filesystem path и tool-name — разные namespaces). Или вводить session-scope в самом ADR-7 registry (получится дубль allow-list-механизма с ADR-6).
 - **Concrete first step (if TAKE):** В ADR-7 §Decision добавить «каждый ToolSpec обязан декларировать `tags: list[str]`»; в ADR-6 (или follow-up amendment ADR-6.1) добавить `[tool_groups]` секцию с примером.
 
@@ -175,10 +160,9 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (A) reduces session-start noise: YES (no Critic role → no extra system prompt + role config block).
   - (B) helps LLM find context when needed: PARTIAL (меньше LLM-generated critique для search; больше зависимость от deterministic logs).
 - **Goal-lens fit (per session, dynamic):**
-  - (C) advances chosen goal_lens: YES (закрывает аргументационный gap PR #37 §8 R-5, который cite-ит транскрипт но не arxiv).
+  - (C) advances chosen goal_lens: YES.
 - **Cost:** cheap (это формулировка цитаты; numbers нужно сверить с full paper PDF — см. `claims_requiring_verification`).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Ввести always-on Reflector/Critic role в v0.1, измерить (что требует eval-harness, который сам по себе deferred — UC5).
 - **Concrete first step (if TAKE):** В ADR-7 §Notes добавить subsection «Why no Critic / verifier in v0.1» со ссылкой на ADR-2 amendment + arxiv link + caveat про verification-of-numbers (см. `claims_requiring_verification` пункт #1).
 
@@ -192,7 +176,6 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (C) advances chosen goal_lens: YES (защита forward-compat, как и R-1).
 - **Cost:** cheap (decision + 1 abstract directory layout); expensive если строить (~3-5 ADRs: code-execution, sandbox-OS-level, redaction policy, MCP-server-distribution, Skills format). v0.1 не строит.
 - **Verdict:** DEFER
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Строить code-execution-over-MCP сейчас (требует ADR-6 §Option C OS-level sandbox, что по самой ADR-6 «cross-platform cost is high, friction defeats use»; нарушает ADR-1 «pragmatic medium-weight hybrid»).
 - **Concrete first step (if DEFER):** В ADR-7 §Notes добавить one-paragraph: «Future code-execution exposes tool registry as filesystem at `~/.fa/state/tools/<server>/<tool>.<ext>`; v0.1 registry produces this layout on demand from ToolSpec descriptors but does not execute. Triggers: `run_command` lands; OS-level sandbox lands; network-redaction lands.»
 
@@ -206,7 +189,6 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (C) advances chosen goal_lens: YES (это процедурный механизм; работает как `claims_requiring_verification` для дизайн-решений).
 - **Cost:** cheap (это §Acceptance block в ADR-7).
 - **Verdict:** TAKE
-- **If UNCERTAIN-ASK:** n/a
 - **Alternative-if-rejected:** Полагаться на review-PR culture, что reviewer сам спросит «зачем эта компонента». Рискованно — Tsinghua/Stanford evidence в abstract Meta-Harness прямо говорит, что harness-design-by-default-add превращается в 14× compute waste без user-visible benefit (16.3M vs 1.2M tokens per sample на одинаковом результате SWE-bench Verified, see §4.1).
 - **Concrete first step (if TAKE):** В ADR-7 §Acceptance добавить четыре пункта чек-листа дословно из Video 3.
 
@@ -220,23 +202,8 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
   - (C) advances chosen goal_lens: YES (закрывает prompt-assembly + prefix-cache invariant как hard rule для ADR-7).
 - **Cost:** cheap (это shape-decision на бумаге для v0.1; runtime cost — выигрыш от prefix-cache).
 - **Verdict:** TAKE — Option (i) static layered prompt
-- **If UNCERTAIN-ASK:** n/a (project-lead резолвил 2026-05-07)
-- **Alternative-if-rejected:** Option (ii) two-segment assembly (provider-зависимый partial prefix-cache, Anthropic-yes / OpenRouter-variable / vLLM-yes); Option (iii) no assembly + retrieval-only (риск default conventions не загружены).
+- **Alternative-if-rejected:** Option (ii) two-segment assembly (provider-зависимый partial prefix-cache, Anthropic-yes / OpenRouter-variable / vLLM-yes).
 - **Concrete first step (if TAKE):** В ADR-7 §Decision добавить subsection `### Prompt assembly` с формальным invariant: «system-prompt собирается один раз при старте session и не пересобирается в ходе session; при изменении AGENTS.md или ADR amendments — новая session» + migration trigger для v0.2: UC5 metrics покажут ≥ N% degradation на staleness-sensitive tasks.
-
-### R-9 — Harness-transferability claim как evidence-base extension для ADR-2 (Option (i))
-
-- **What:** Abstract Meta-Harness paper говорит: «retrieval-augmented math reasoning, single discovered harness improves accuracy on 200 IMO-level problems by 4.7 points on average across five held-out models». ADR-2 §Decision выбирает static role routing (один harness, разные модели per role); harness-transferability фиксируется как одна из причин этого выбора через future ADR-2 «evidence base extended» amendment-stub. С явным caveat: «verified for one benchmark family per Meta-Harness abstract».
-- **Project-axis fit (stable across notes):**
-  - (A) reduces session-start noise: NO (это design-decision evidence-base, не context-noise).
-  - (B) helps LLM find context when needed: NO (не про context).
-- **Goal-lens fit (per session, dynamic):**
-  - (C) advances chosen goal_lens: PARTIAL (это про ADR-2 evidence-base, не напрямую ADR-7; но укрепляет cross-reference quality, чего ранние редакции не делали).
-- **Cost:** cheap (research-only; one-paragraph amendment-stub в ADR-2).
-- **Verdict:** TAKE — Option (i) ADR-2 evidence-base extension с caveat
-- **If UNCERTAIN-ASK:** n/a (project-lead резолвил 2026-05-07)
-- **Alternative-if-rejected:** Option (ii) — только пометить в `claims_requiring_verification` без ADR-цитаты (cost: zero, но слабее обосновывает ADR-2 §Decision-form). Option (iii) — trigger для нового research note о cross-model harness стабильности (cost: medium, deferred).
-- **Concrete first step (if TAKE):** При ближайшем amendment ADR-2 добавить one-paragraph «Evidence base extended (2026-05-07)» со ссылкой на Meta-Harness abstract + caveat «verified for one benchmark family» + ссылкой на эту ноту §4.2.
 
 ### Сводная таблица
 
@@ -250,19 +217,18 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
 | R-6 | DEFER | YES / YES | YES (forward-compat) | cheap now / expensive if built | Build now (violates ADR-1, ADR-6) | No (DEFER) |
 | R-7 | TAKE | YES / PARTIAL | YES (procedural) | cheap | Rely on review culture | No (TAKE) |
 | R-8 | TAKE Option (i) | YES / YES | YES | cheap | Option (ii) two-segment / (iii) no-assembly | No (resolved 2026-05-07) |
-| R-9 | TAKE Option (i) | NO / NO | PARTIAL | cheap | Option (ii) `claims_requiring_verification`-only | No (resolved 2026-05-07) |
 
 ## 1. TL;DR
 
-- Эта нота — single source-of-truth для harness research под ADR-7 prep, объединяющая две ранние редакции (PR #37 + PR #38) в единый cross-reference на ADR-1..6 с 9 резолвленными рекомендациями (R-1..R-9; 8 TAKE + 1 DEFER, ни одного выжившего UNCERTAIN-ASK).
+- Эта нота — single source-of-truth для harness research под ADR-7 prep, единый cross-reference на ADR-1..6 с резолвленными рекомендациями (R-1..R-8; 7 TAKE + 1 DEFER).
 - Tsinghua paper (`arXiv:2603.25723`, *Natural-Language Agent Harnesses*, March 2026) и Meta-Harness paper (`arXiv:2603.28052v1`, March 2026) **резолвятся**; abstract обоих парсится. Атрибуция Meta-Harness к Stanford из Video 3 — partial: arxiv submitter Yoonho Lee, нарратив указывает на Khattab/DSPy lineage, но affiliation в abstract HTML явно не выписан (см. §8.3).
 - Anthropic engineering blog «Code execution with MCP» (Nov 04, 2025) даёт 98.7% reduction (150k → 2k tokens) на конкретном Google-Drive-→-Salesforce example. Это самый сильный efficiency-lever в наборе и одновременно самый рискованный для FA v0.1 (требует sandbox, redaction, OS-level isolation — всё out-of-scope per ADR-6 §Re-evaluation triggers). R-6 = DEFER, но добавлен явный export-path forward-compat shape.
 - Tool-search API в Claude API docs (`tool_search_tool_regex_20251119` / `_bm25_20251119`) — это November 2025 stable shape, не proposal; FA имеет zero-new-deps мост к нему через ADR-4 SQLite FTS5 (R-3).
 - Bright Data MCP `GROUPS` env-var + `tools` env-var — конкретная workable форма для ADR-6 расширения на tool-tag allow-list (R-4); design analogy из ранней редакции конкретизирована до TOML-shape.
 - **MCP-compat ≠ context-efficiency.** MCP задаёт ecosystem standard boundary (hosts/clients/servers; resources/prompts/tools; JSON-RPC; capability negotiation; user consent + tool safety, см. §4.7–4.8); но следование MCP-shape не гарантирует token-efficient context. ADR-2 amendment 2026-05-01 правильно выбрал *MCP shape, not MCP transport*; ADR-7 должен сохранить это разделение и добавить progressive disclosure (R-1) поверх.
 - Subtraction-principle (Anthropic) переведён в R-7 как 4-вопросный self-audit acceptance-block для ADR-7. Это разница между «design-philosophy в ноте» и «testable рубрик в ADR».
-- R-8 (system-prompt assembly + prefix-cache) и R-9 (harness-transferability claim) резолвлены project-leadом как TAKE Option (i): static layered prompt (frozen at session start) + ADR-2 evidence-base extension с caveat «verified for one benchmark family». ADR-7 готов к written drafting (§10 contains contract sketch).
-- ADR-7 contract sketch (§10) — фактическая выжатие всех R-1..R-9 в single read-friendly artifact: ToolSpec / ToolResult / Trace pseudo-schema + prompt-assembly invariant + acceptance-block.
+- R-8 (system-prompt assembly + prefix-cache). ADR-7 готов к written drafting (§10 contains contract sketch).
+- ADR-7 contract sketch (§10) — фактическая выжатие всех R-1..R-8 в single read-friendly artifact: ToolSpec / ToolResult / Trace pseudo-schema + prompt-assembly invariant + acceptance-block.
 
 ## 2. Scope, метод, goal_lens (verbatim)
 
@@ -277,8 +243,8 @@ benchmark-family caveat). Goal-lens см. в frontmatter и §2.
 1. **Stage 1 — Goal-lens elicitation.** В предыдущем сообщении пользователь подтвердил вариант (c) implicitly («cross-reference new note with existing adr's» + «find that is not researched deeply enough or skipped»). Уточнили формулировку до form в frontmatter; пользователь не блокировал.
 2. **Stage 2 — Source ingestion.** Прочитаны: full attachment `youtube_transcripts.md` (3 видео, 321 line); arxiv abstract HTML обоих papers; полный текст Anthropic `code-execution-with-mcp` blog; Claude API tool-search docs (через quick-start + how-it-works section); Bright Data tools reference (Rapid/Pro/groups + 11 групп); Anthropic MCP launch announcement (Nov 25 2024); Anthropic donation announcement (Dec 09 2025); MCP spec page (2025-11-25, fetched body-целиком на 2026-05-07); полные тексты обеих ранних редакций (PR #37 commit `d03f7a3` + PR #38 commit `1aec3e2`); review-комментарии PR #37; ADR-1..6 с amendments; adjacent research notes (`how-to-build-an-agent-ampcode-2026-04.md` head + frontmatter; `cutting-edge-agent-research-radar-2026-05.md` head; `semi-autonomous-agents-cross-reference-2026-05.md`).
 3. **Stage 3 — Relevance gate.** Соответствие goal_lens проверено явно: каждый источник ≥ один ADR cross-reference либо одна R-N рекомендация.
-4. **Stage 4 — Deep-dive note + Decision Briefing.** Этот файл. Объединение PR #37 + PR #38 выполнено по PR #38 базе (9 рекомендаций + cross-reference depth) + 3 инъекции из PR #37 (ADR-7 contract sketch §10, NLAH text-half synthesis §3, MCP-boundary nuance §6.2); §7 переписан как «Методология / lessons from prior drafts» (без ghost line-references на never-merged file).
-5. **Stage 5 — Chat handover.** §0 Сводная таблица постится verbatim в чате при создании PR. UNCERTAIN-ASK нет (R-8 и R-9 резолвлены project-leadом).
+4. **Stage 4 — Deep-dive note + Decision Briefing.** Этот файл. 9 рекомендаций + cross-reference depth + 3 инъекции из PR #37 (ADR-7 contract sketch §10, NLAH text-half synthesis §3, MCP-boundary nuance §6.2); §7 переписан как «Методология / lessons from prior drafts» (без ghost line-references на never-merged file).
+5. **Stage 5 — Chat handover.** §0 Сводная таблица постится verbatim в чате при создании PR.
 
 **Не-делается этой нотой.** Не пишется сам ADR-7. Не реализуется inner-loop. Не модифицируются PR #37 и PR #38 (обе закрываются лидом без merge при cross-fork sync). Не изменяются существующие ADRs (только cross-reference).
 
@@ -308,12 +274,11 @@ agents natural-language слой — то есть **text half of NLAH у нас
 contract: tool-registry shape, sandbox pre-tool hook, trace folder shape,
 pre-tool validation gates. Generic NLAH-runtime — out-of-scope для v0.1; v0.1
 inner-loop исполняет текущий natural-language harness layer через простой
-deterministic Python harness вокруг провайдер-API. Этот synthesis перенесён
-из ранней редакции (PR #37 §5.2), потому что прямо влияет на scope ADR-7.
+deterministic Python harness вокруг провайдер-API.
 
 ## 4. Primary-source numbers (sweep)
 
-Числа из ранних редакций часто помечались как «from transcript, secondary». Ниже sweep по primary URL-ам, которые **резолвятся** на 2026-05-07.
+sweep по primary URL-ам, которые **резолвятся** на 2026-05-07.
 
 ### 4.1 Tsinghua NLAH paper (`arXiv:2603.25723`)
 
@@ -429,7 +394,7 @@ Spec overview-факты, которые прямо влияют на ADR-7:
 
 ## 5. Tool-disclosure design space — пять паттернов и их ADR-fit
 
-Этот раздел расширяет PR #37 §5.4 mapping-таблицу до **shape-уровня** и явного ADR-фит-вердикта. PR #37 предложил «descriptor → schema» split в одном предложении (§5.4 row «Dynamic context loading»), но не разобрал каждый pattern против каждого ADR.
+Этот раздел - mapping-таблица на каждый pattern против каждого ADR.
 
 ### 5.1 Pattern A — Group/scope loading (Bright Data shape)
 
@@ -493,7 +458,7 @@ Spec overview-факты, которые прямо влияют на ADR-7:
 
 **Вердикт.** DEFER в R-6, но с явным forward-compat shape.
 
-### 5.6 Свод «pattern × ADR» (расширенный vs PR #37 §5.4)
+### 5.6 Свод «pattern × ADR»
 
 | Pattern | A (noise reduction) | B (find context) | ADR-1 fit | ADR-2 fit | ADR-3 fit | ADR-4 fit | ADR-6 fit | v0.1 in-scope? |
 |---------|---------------------|-------------------|-----------|-----------|-----------|-----------|-----------|----------------|
@@ -506,7 +471,7 @@ Spec overview-факты, которые прямо влияют на ADR-7:
 
 ## 6. Cross-reference: ADR-1..6 — глубокий проход
 
-PR #37 §6 присутствует и cite-ит ADR-1..6, но в pointer-shape («совместимо», «не нарушает»). Этот раздел нацелен на каждый ADR с явным указанием: какой пункт ADR'а **прямо** требует/разрешает/запрещает что-то относительно findings из §4-§5.
+Этот раздел нацелен на каждый ADR с явным указанием: какой пункт ADR'а **прямо** требует/разрешает/запрещает что-то относительно findings из §4-§5.
 
 ### 6.1 ADR-1 (v0.1 use-case scope)
 
@@ -537,10 +502,10 @@ PR #37 §6 присутствует и cite-ит ADR-1..6, но в pointer-shape
 Релевантные пункты:
 
 - **§Decision: «Filesystem-canonical Markdown + frontmatter; deterministic write-time chunker; read = grep → SQLite FTS5 BM25; no embeddings/graph/Mem0 в v0.1.»** Подтверждает R-2: `events.jsonl` живёт на filesystem, как canon. `hot.md` — Markdown summary. Read-side для traces — `grep` (через path) + опционально BM25 (через FTS5, см. R-3 reuse).
-- **§Decision: «`hot.md` session summary, auto-archived to `notes/sessions/<date>.md` at session end.»** — это **именно** место, где R-2 invariant нужен: `hot.md` cite-ит paths в `events.jsonl`, а не **заменяет** их. PR #37 §5.3 и §8 R-4 говорят про raw traces, но не явно соединяют это с ADR-3 hot.md mechanism.
+- **§Decision: «`hot.md` session summary, auto-archived to `notes/sessions/<date>.md` at session end.»** — это **именно** место, где R-2 invariant нужен: `hot.md` cite-ит paths в `events.jsonl`, а не **заменяет** их. raw traces, соединяя это с ADR-3 hot.md mechanism.
 - **§Decision: «Volatile-store hooks: `src/fa/memory/volatile/` exists as empty namespace.»** — Meta-Harness style self-evolution в v0.2 будет писать **в этот namespace**, читая raw `events.jsonl`. R-2 защищает forward-compat.
 
-**Lesson from prior drafts.** Ранние редакции говорили про raw traces vs summaries, но не строили явный мост к ADR-3 hot.md mechanism (тот же файл, который user обозревает после сессии). R-2 в этой ноте делает это explicit: `hot.md` cite-ит paths в `events.jsonl`, не заменяет их.
+**Lesson from prior drafts.** явный мост к ADR-3 hot.md mechanism. R-2 в этой ноте делает raw traces vs summaries explicit: `hot.md` cite-ит paths в `events.jsonl`, не заменяет их.
 
 ### 6.4 ADR-4 (storage backend — SQLite FTS5)
 
@@ -572,7 +537,7 @@ PR #37 §6 присутствует и cite-ит ADR-1..6, но в pointer-shape
 
 **Lesson from prior drafts.** Ранние редакции цитировали ADR-6 generally, но не вытягивали `~/.fa/state/sandbox.jsonl` как прецедент для R-2 shape (FA **уже** делает append-only JSONL trace на одном under-system; общий trace — обобщение). R-2 в этой ноте делает это explicit.
 
-### 6.7 Свод cross-reference (расширенный vs PR #37 §6)
+### 6.7 Свод cross-reference
 
 | ADR | PR #37 cite | Этот файл cite | Углубление | Hard-constraint cite |
 |-----|-------------|----------------|------------|----------------------|
@@ -600,7 +565,7 @@ upstream `GITcrassuskey-shop/First-Agent`), которые **не сливают
 концептуальные («что прежняя редакция упустила»), а не line-numbered cite в
 отсутствующий blob.
 
-### 7.1 Substantive lessons (какие cross-reference-связи раньше были упущены и теперь интегрированы)
+### 7.1 Substantive lessons (cross-reference-связи теперь интегрированы)
 
 1. **ADR-2 §Amendment 2026-05-01 §point 4 («inherits convention; MAY add fields but MUST NOT change»)** — ранние редакции цитировали ADR-2 как «MCP-shaped» generally, но не выписывали point 4 как hard-constraint surface для ADR-7. Now anchored: см. R-1 + §6.2. Risk-if-skipped: ADR-7-author может неосознанно нарушить point 4 (изменить `name`/`params`/`result`/`error` без отдельного ADR-2 amendment).
 2. **Bright Data конкретный shape** (`GROUPS=` env-var; `tools=` env-var; 11 групп) — ранние редакции упоминали Bright Data как «design analogy», но не предлагали конкретный TOML-shape расширения ADR-6. Now concrete: см. R-4 + §6.6. Risk-if-skipped: «design analogy» без shape — пустой указатель.
@@ -887,7 +852,7 @@ ephemeral`; layer 1+2 (dynamic) → suffix без cache; `hot.md` →
 ADR-7-amendment), не v0.1 scope. Migration — non-breaking config
 change, не code rewrite, при условии что layered shape сохранён.
 
-**Why Option (i), not Option (ii) или (iii) на v0.1.**
+**Why Option (i), not Option (ii) на v0.1.**
 
 - Option (i) даёт самый предсказуемый token-cost (provider caches
   full prefix; one-time assembly cost), стабильное качество, и
@@ -900,57 +865,8 @@ change, не code rewrite, при условии что layered shape сохра
   provider per ADR-2 §Decision) это работало бы, но добавляет
   config-complexity без measurable benefit до того как есть UC5
   measurements.
-- Option (iii) (no assembly в v0.1, retrieval-only) — radically
-  simpler, но agent теряет default conventions без вызова
-  `read_file(AGENTS.md)` каждую сессию; это противоречит R-1
-  progressive disclosure principle (default conventions — это
-  tier-1 always-loaded context, не tier-3 on-demand).
 
-### R-9 — TAKE Option (i): ADR-2 evidence-base extension с caveat
-
-См. §0 R-9 за full 8-field decision-briefing. Project-lead резолвил
-2026-05-07 как **Option (i) ADR-2 evidence-base extension с caveat
-«verified for one benchmark family per Meta-Harness abstract»**.
-
-**Формальный one-paragraph amendment-stub** для ADR-2 (при
-ближайшем amendment, не часть этой ноты scope):
-
-```text
-### Amendment 2026-05-07 — Evidence base extended
-
-Meta-Harness paper (arXiv:2603.28052v1, March 2026) reports that a
-single discovered harness improved accuracy on 200 IMO-level math
-problems by 4.7 points on average across five held-out models.
-This is one piece of evidence for the §Decision-form choice of a
-single harness with role-based model routing rather than per-model
-harness. Caveat: transferability is verified for one benchmark
-family per the abstract; broader transferability across coding,
-computer-use, or agentic-ops benchmarks remains future work.
-
-See: knowledge/research/efficient-llm-agent-harness-2026-05.md §4.2.
-```
-
-**Caveat rationale.** Meta-Harness abstract говорит про math
-reasoning benchmark family (IMO-level + retrieval-augmented); Video 3
-narrative расширяет до «coding agents», но primary-source это **не
-подтверждает**. ADR-2 amendment должен зафиксировать caveat явно,
-чтобы будущий ADR-N (UC5 multi-LLM eval-harness) знал, что
-transferability claim — strong-for-math, not-yet-verified-for-other.
-
-**Why Option (i), not Option (ii) или (iii).**
-
-- Option (i) (ADR-2 evidence-base extension) — cheap, one-paragraph,
-  делает evidence-base ADR-2 сильнее для будущих audits. Caveat
-  защищает от ошибочной экстраполяции.
-- Option (ii) (только пометить в `claims_requiring_verification`) —
-  cost: zero, но evidence-base ADR-2 §Decision-form останется
-  слабее, чем возможно. ADR-2 не получит evidence-extension даже
-  при том, что primary-source зафиксирован.
-- Option (iii) (отдельный research note про cross-model harness
-  стабильность) — cost: medium, deferred; полезно при v0.2 ADR-N
-  для UC5, но избыточно для текущего ADR-7 prep cycle.
-
-## 10. ADR-7 contract sketch — выжатие R-1..R-9 в single read-friendly artifact
+## 10. ADR-7 contract sketch — выжатие R-1..R-8 в single read-friendly artifact
 
 Этот pseudo-schema собирает invariants из R-1..R-9 в одну place-to-look-at form.
 Это **draft shape**, не сам ADR-7; цель — дать ADR-7 author готовый starting
