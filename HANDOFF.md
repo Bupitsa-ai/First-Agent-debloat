@@ -149,6 +149,9 @@ manually beyond this point.
    request/response per ADR-2 amendment 2026-05-01**, and a
    minimal **hook pipeline** primitive (pre-tool / post-tool;
    pre-run / post-run / on-event deferred to v0.2). Inputs:
+   - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
+     — single source-of-truth для harness research под ADR-7 prep
+     (R-1..R-9 resolved + §10 ADR-7 contract sketch).
    - cross-reference §10 R-1 / R-3 / R-7.
    - semi-autonomous-agents cross-reference §7.1 (R-1 input
      summary), §7.3 (edit-format two shapes), §8.4 (large-file
