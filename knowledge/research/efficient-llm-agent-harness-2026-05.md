@@ -706,7 +706,7 @@ ADR-7 author **должен** explicit cite ADR-2 §Amendment 2026-05-01 §point
   "run_id": "<uuid>",
   "turn": 17,
   "kind": "tool_request" | "tool_response" | "permission_decision" | "model_call" | "compaction" | "stop",
-  "actor": "planner" | "coder" | "debug" | "judge" | "sandbox" | "harness",
+  "actor": "planner" | "coder" | "debug" | "eval" | "sandbox" | "harness",
   "payload": { ... kind-specific ... },
   "artifact_path": "<optional: filesystem path with raw blob>",
   "model": "<optional: model slug>",
