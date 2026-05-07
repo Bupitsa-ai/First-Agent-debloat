@@ -59,6 +59,14 @@
   evidence: knowledge/adr/ADR-1-v01-use-case-scope.md#amendment-2026-05-01--uc5-added-to-deferred-list
   also_depends_on:
     - Q-1
+- id: Q-1.amend-2026-05-06
+  type: decision
+  text: "UC5 expanded to eval-driven harness iteration (5a-5e: benchmark suite + trace consumption + config-level iteration interface + leaderboard); base for Pillar 3 KPI verification per project-overview §1.1."
+  date: 2026-05-06
+  evidence: knowledge/adr/ADR-1-v01-use-case-scope.md#amendment-2026-05-06--uc5-expanded-to-eval-driven-harness-iteration
+  also_depends_on:
+    - Q-1
+    - Q-1.amend-2026-05-01
 
 - id: Q-2
   type: question

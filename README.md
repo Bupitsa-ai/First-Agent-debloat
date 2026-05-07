@@ -12,14 +12,35 @@
 
 ## 1. Зачем это
 
-**First-Agent** — учебно-исследовательский проект по созданию автономного
-LLM-агента. Цель — пройти весь путь от формулировки задачи до работающего
-прототипа: выбрать модель, придумать архитектуру, собрать минимальный набор
-инструментов, завести память между сессиями, написать первый модуль и
-раскрутиться оттуда итеративно.
+**First-Agent** — research-backed implementation-first проект, стремящийся
+стать open-source reference implementation для locally orchestrated coding
+agents. Помимо самого факта построения работающего harness, проект ставит
+4 явных цели (полная формулировка —
+[`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars)):
 
-Опора — экосистема Devin (как референс для хороших практик) и официальные
-гайды Cognition:
+1. Пройти весь путь от формулировки до working prototype, документируя
+   каждое архитектурное решение через ADR + research note. Ригор делает
+   репо одновременно учебным инструментом и forkable reference.
+2. Выпустить v0.1 как pragmatic single-user product под UC1 (coding+PR) +
+   UC3 (local-docs-to-wiki) с hybrid-shape (filesystem-canon + lazy
+   search-side scaling).
+3. Построить **наиболее token- и tool-call-efficient harness** среди
+   известных open-source / open-design агент-стэков под целевые UC1+UC3
+   при single-user single-workstation use. KPI-числа фиксируются после
+   landing UC5 (eval-harness) и первого baseline-run; до того стоят
+   как `TBD`.
+4. **Iteration via measurement.** База в v0.1 — способность агента писать
+   собственные skills (`SKILL.md`-файлы) по итогам решённых задач и
+   найденных улучшений. UC5 (post-v0.1) расширяется до eval-driven
+   harness iteration.
+
+**Принцип построения — minimalism-first.** Не «вырезать лишнее потом», а
+не добавлять без research-evidence или измеренного KPI-impact. Подробнее:
+[`knowledge/project-overview.md` §1.2](./knowledge/project-overview.md#12-enforceable-principle--minimalism-first).
+
+Опора — research papers (Tsinghua module-ablation `arXiv:2603.25723`,
+Stanford / Khattab Meta-Harness `arXiv:2603.28052v1`, Anthropic engineering
+posts), MCP-экосистема, и Devin / Claude Code как reference-агенты:
 
 - [When to use Devin](https://docs.devin.ai/essential-guidelines/when-to-use-devin)
 - [Coding Agents 101](https://devin.ai/agents101)

@@ -4,9 +4,13 @@ Instructions for AI agents (Devin and similar) working in this repo.
 
 ## Project Overview
 
-**First-Agent** — LLM agent research project.
-Stage: `research → start of module creation`. No code in `src/` yet.
-Details: [`README.md`](./README.md).
+**First-Agent** — research-backed implementation-first LLM agent project,
+aimed at becoming the most token/tool-call efficient open-source
+coding-agent harness under UC1+UC3 single-user scope. Stage:
+`research → start of module creation`. No code in `src/` yet.
+Goal-formulation in 4 pillars + minimalism-first principle:
+[`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md).
+README intro: [`README.md`](./README.md).
 
 ## Repository Structure
 
@@ -96,6 +100,28 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    every ADR end-to-end (origin: research note
    [`ara-protocol-cross-reference-2026-05.md`](./knowledge/research/ara-protocol-cross-reference-2026-05.md)
    §9 R-1).
+10. **Harness-component PRs cite minimalism-first evidence.** PRs
+    that introduce or amend a harness component (tool, prompt-layer,
+    retrieval-stage, executor, sandbox-rule) MUST include in the
+    description **explicit answers** to the 3-question minimalism-first
+    test from
+    [`knowledge/project-overview.md` §1.2](./knowledge/project-overview.md#12-enforceable-principle--minimalism-first):
+
+    1. Research-evidence supporting the component's necessity under
+       UC1+UC3 single-user scope (paper / primary-source post /
+       eval-report citation).
+    2. Open-source agent-stack precedent that **already** removed or
+       did not add a similar component, and the observed result.
+    3. Concrete capability lost if the component is omitted, and
+       whether it can be replaced by an existing tool or config
+       setting.
+
+    After UC5 landing, KPI-delta on a reproducible benchmark replaces
+    the 3-question test for harness components measurably evaluated.
+    Documentation-only or non-harness PRs (research notes, README
+    updates, lint fixes) are exempted. This rule applies to **new**
+    PRs from the merge of this PR forward; older PRs are not
+    retro-fitted.
 
 ## PR Description Style
 
