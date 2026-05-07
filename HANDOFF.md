@@ -35,7 +35,7 @@ changes the project state, update **both**.
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-03)
+## Current state (as of 2026-05-07)
 
 - **Stage:** Phase S scaffolding complete; design layer
   consolidating before first feature-module PR (Phase M).
