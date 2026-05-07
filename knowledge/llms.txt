@@ -15,7 +15,37 @@
 > mid-cycle, replace `GITcrassuskey-shop/First-Agent` with
 > `GrasshopperBoy/First-Agent-fork` and retry.
 
-## Repo entrypoints
+> **Tiered layout.** §MUST READ FIRST is the smallest path that
+> bootstraps a session (six files, in order). §TASK ROUTING points
+> task-types at the right primary entrypoint. §BY-DEMAND INDEX
+> below is the full per-folder file list — open only the entries
+> relevant to the task at hand.
+
+## MUST READ FIRST
+
+Six files cover ~90% of session-start context. Read in order:
+
+1. [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md) — project overview (Russian).
+2. [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md) — rules, PR checklist, query routing, **§Pre-flight checklist** (run BEFORE any non-trivial task).
+3. [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md) — §1.1 four-pillar goal; §1.2 minimalism-first principle.
+4. [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) — current state, next steps, recently-landed research notes.
+5. [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) — one-paragraph cheat-sheet for ADR-1..6 + amendments. Authoritative source remains the per-ADR files.
+6. [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md) — canonical definitions for project-specific terms (axis, lens, pillar, NLAH, ACI, harness, hook, UC1..UC5, MCP, subtraction-first, minimalism-first, R-S-M).
+
+## TASK ROUTING
+
+Task type → primary entrypoint, then secondary:
+
+- **ADR-7 prep / inner-loop / tool-registry contract** → [research/efficient-llm-agent-harness-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/efficient-llm-agent-harness-2026-05.md) (§0 Decision Briefing + §10 ADR-7 contract sketch). Secondary: [research/cutting-edge-agent-research-radar-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/cutting-edge-agent-research-radar-2026-05.md), [research/semi-autonomous-agents-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md).
+- **New ADR or amendment** → [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md) + [AGENTS.md PR Checklist rule #9](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist) (must add a node to `exploration_tree.yaml` and update `DIGEST.md` row in the same PR).
+- **New module / Phase M PR** → [research/memory-architecture-design-2026-04-26.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/memory-architecture-design-2026-04-26.md) §9 roadmap + [ADR DIGEST](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md). Cite minimalism-first per [AGENTS.md PR Checklist rule #10](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist).
+- **Research-briefing note** → [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md), then [knowledge/research/_template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/_template.md) (§0 Decision Briefing pre-filled). Output rule: [AGENTS.md PR Checklist rule #8](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist).
+- **Edit `knowledge/trace/exploration_tree.yaml`** → schema in [knowledge/README.md §`trace/`](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md); origin in [research/ara-protocol-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/ara-protocol-cross-reference-2026-05.md) §9 R-1.
+- **Specific number / date / quote** → primary source from `source:` frontmatter, NOT a summary. Per [AGENTS.md §Query Routing](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#query-routing).
+
+## BY-DEMAND INDEX
+
+### Repo entrypoints
 
 - [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md): Project overview, current status, roadmap (Russian).
 - [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md): Instructions for AI agents working in this repo (English).
@@ -39,6 +69,7 @@
 ## ADRs (`knowledge/adr/`)
 
 - [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md): ADR process and index.
+- [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
 - [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md): ADR template (copy when adding a new decision).
 - [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort); Amendment 2026-05-01 deferred UC5; Amendment 2026-05-06 expanded UC5 to eval-driven harness iteration (5a-5e).
 - [knowledge/adr/ADR-2-llm-tiering.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-2-llm-tiering.md): LLM tiering and access (static role routing; Planner / Coder / Debug / Eval).

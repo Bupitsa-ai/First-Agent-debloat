@@ -20,6 +20,31 @@ README intro: [`README.md`](./README.md).
   prompting, devin-reference, glossary, agent creation tutorial).
 - [`knowledge/`](./knowledge/README.md) — durable memory (project-overview, ADR, prompts, research).
 
+## Pre-flight checklist
+
+Run BEFORE making any edits, opening a branch, or writing analysis on
+non-trivial tasks. Output is cheap; skipping is the failure mode.
+
+```bash
+# 1. Recency surface — read top 5 commits; for any new 2026-MM-DD
+#    research note, skim its §0 Decision Briefing.
+git log --since="7 days" --oneline -- knowledge/ docs/ AGENTS.md
+
+# 2. Term expansion — for every project-specific noun in the prompt
+#    (e.g. "axis", "lens", "pillar", "harness", "UC*"), check the
+#    glossary; fall back to project-overview.md §1.1-§1.2.
+grep -ri "^| \*\*<term>\*\*" docs/glossary.md
+
+# 3. Symmetric reading — if you cite a research note as evidence,
+#    grep adjacent notes by key term and read them too.
+grep -ril "<key-term>" knowledge/research/
+```
+
+Then state in your analysis (not silently): (a) inferred `goal_lens`,
+(b) project-axes advanced (A noise / B context / C goal_lens),
+(c) subtraction evaluated — *would removing this artefact / rule /
+field instead achieve the same goal?* If not, why not.
+
 ## Working in This Repo
 
 - **Session bootstrap.** At the start of any new agent session, fetch
@@ -84,9 +109,9 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    start. The agent also posts §0 verbatim in chat after handover.
    This rule applies to **new** notes with `compiled: ≥ 2026-05-04`;
    older notes are exempted and not retro-fitted.
-9. **New ADR PRs add at least one node to the exploration DAG.**
-   Any PR that introduces or amends an accepted ADR MUST also add at
-   least one node to
+9. **New ADR PRs add at least one node to the exploration DAG and
+   a DIGEST.md row.** Any PR that introduces or amends an accepted
+   ADR MUST also add at least one node to
    [`knowledge/trace/exploration_tree.yaml`](./knowledge/trace/exploration_tree.yaml).
    The shape: one `question` node per new ADR, one `decision` child
    for the chosen option (with `chosen: true`), and one `dead_end`
@@ -99,7 +124,12 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    understand *why* alternatives were rejected without re-reading
    every ADR end-to-end (origin: research note
    [`ara-protocol-cross-reference-2026-05.md`](./knowledge/research/ara-protocol-cross-reference-2026-05.md)
-   §9 R-1).
+   §9 R-1). **In the same PR**, also update
+   [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) — add a
+   one-paragraph row for a new ADR or extend the **Amendments**
+   bullet of the matching ADR's row. DIGEST.md is the agent-reading
+   cheat-sheet (one paragraph per ADR ≈ 80 lines for all six);
+   stale rows defeat the purpose.
 10. **Harness-component PRs cite minimalism-first evidence.** PRs
     that introduce or amend a harness component (tool, prompt-layer,
     retrieval-stage, executor, sandbox-rule) MUST include in the

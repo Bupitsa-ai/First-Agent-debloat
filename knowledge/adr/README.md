@@ -30,3 +30,11 @@ You do **not** need an ADR for routine code-level choices.
 | [4](./ADR-4-storage-backend.md) | Storage backend for v0.1 | accepted |
 | [5](./ADR-5-chunker-tool.md) | Chunker tool selection for v0.1 | accepted |
 | [6](./ADR-6-tool-sandbox-allow-list.md) | Tool sandbox & path allow-list policy for v0.1 | accepted |
+
+## Cheat-sheet
+
+[`DIGEST.md`](./DIGEST.md) — one-paragraph summary per accepted ADR
+plus its amendments. Cheap-read overlay for agents and humans;
+authoritative source remains the per-ADR file. Updated in the same
+PR whenever an ADR amendment lands
+([AGENTS.md PR Checklist rule #9](../../AGENTS.md#pr-checklist)).
