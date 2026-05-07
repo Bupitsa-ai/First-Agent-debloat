@@ -788,7 +788,7 @@ ADR-7 §Notes должен содержать subsection:
 
 ADR-2 §Amendment 2026-04-29 §point 5 already states: "v0.1 inner-loop has
 no Critic / Reflector role." This subsection adds primary-source evidence
-from research note knowledge/research/efficient-llm-agent-harness-deep-dive-2026-05.md §4.1:
+from research note knowledge/research/efficient-llm-agent-harness-2026-05.md §4.1:
 
 - Tsinghua arXiv:2603.25723 (NLAH paper, March 2026) module-ablation
   reportedly shows verifiers harm performance (-0.8 SWE-bench Verified,
@@ -1001,7 +1001,7 @@ ToolResult (response, MCP-shape per ADR-2 §Amendment 2026-05-01 §point 4):
 Trace (R-2 invariant):
   ~/.fa/state/runs/<run_id>/events.jsonl             # append-only, JSONL-shaped
   ~/.fa/state/runs/<run_id>/artifacts/*              # raw payloads, hot.md cites paths
-  Each event has: ts, role, kind, content, tool_name?, tool_call_id?,
+  Each event has: ts, actor, kind, content, tool_name?, tool_call_id?,
                   parent_event_id?, harness_id (cf. Q-6 v0.2 amendment)
 
 Acceptance (R-7 subtraction-first self-audit, in PR description):
