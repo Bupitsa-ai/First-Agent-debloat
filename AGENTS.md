@@ -177,35 +177,32 @@ the same agents that wrote them.
 
 **Recommended structure:**
 
-1. **One-paragraph what+why** opening — Russian prose, what ships +
-   motivating problem. No bullets here.
-2. **Files (clickable blob-URLs)** per
-   [PR Checklist rule #6](#pr-checklist).
-3. **Design-rationale prose** for any non-obvious choice — flowing
-   paragraphs, not bullets, when explanation > 3 lines.
-4. **Scope / ordering / retro-fit** — short list (≤5 items)
-   flagging merge-order, deferrals, forward-only clauses.
-5. **Review & Testing Checklist for Human** — GitHub PR template
-   block; Russian for action items, English for technical referents.
-6. **Notes** — Russian; mention follow-up PRs and any session-
-   continuity context. AI-Session trailer is appended automatically.
+One-paragraph what+why opening — Russian prose, what ships +
+motivating problem. No bullets here.
+Files (clickable blob-URLs) per
+PR Checklist rule #6.
+Design-rationale prose for any non-obvious choice — flowing
+paragraphs, not bullets, when explanation > 3 lines.
+Scope / ordering / retro-fit — short list (≤5 items)
+flagging merge-order, deferrals, forward-only clauses.
+Review & Testing Checklist for Human — GitHub PR template
+block; Russian for action items, English for technical referents.
+Notes — Russian; mention follow-up PRs and any session-
+continuity context. AI-Session trailer is appended automatically.
 
-**Avoid:**
+**Execution Rules:**
 
-- Long English-only bullet trees. Если list > 5 items × 2-3 lines
-  каждый — develop в прозу.
-- Duplicating the commit-message body verbatim. Reference the
-  commit SHA + summarise.
-- Self-references that won't resolve at read-time (open PR / issue
-  numbers). For cross-PR coupling, use
-  [§Stacked / sequenced PRs](#stacked--sequenced-prs).
-
-**Inline review comments / replies** follow the same language split:
+Develop complex lists into prose: If a sequence exceeds 5 items, requires 2-3 lines per item,
+write cohesive Russian paragraphs.
+Reserve bullet points strictly for short, scannable lists.
+Synthesize the commit history: Write a fresh, high-level summary and explicitly reference the commit SHA.
+Treat the PR body as an independent overview rather than a verbatim copy of the commit log.
+Only reference identifiers (like PRs or issues) that already exist and resolve perfectly at read-time.
+Inline review comments / replies follow the same language split:
 Russian prose for the response; keep the cited identifier (file
-path / line / suggestion code-block) in English. Bot threads
-respond in English when matching the bot's own language.
+path / line / suggestion code-block) in English.
 
-**Canonical examples (post-merge of this PR):**
+**Canonical examples:**
 
 - [PR #17 *docs: add knowledge/trace/exploration_tree.yaml backfilling ADR-1..6 (R-1)*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/17)
   — DAG backfill PR; description retro-rewritten in this style as a
@@ -213,47 +210,6 @@ respond in English when matching the bot's own language.
 - [PR #18 *docs(AGENTS): add §PR Description Style — Russian prose +
   English identifiers*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/18)
   — this PR; self-demonstrating description.
-
-[PR #16 *docs: add research-briefing workflow + §0 Decision Briefing
-convention*](https://github.com/GrasshopperBoy/First-Agent-fork/pull/16)
-was the *source of inspiration* for this convention but predates it
-(its description is in the older English-bullet style); not cited as
-a canonical example.
-
-This rule applies **forward-only** from the merge of this PR; older
-PR descriptions are not retro-translated.
-
-## Stacked / sequenced PRs
-
-Some PRs intentionally reference files, sections, or amendments that
-are added in a parallel PR not yet merged to `main`. Example: a
-`HANDOFF.md` update PR pointing to ADR amendments that live in a
-sibling research-note PR. This is a normal part of the project's
-small-PR review style, not a defect. The convention:
-
-1. **Document the dependency.** In the dependent PR (`B`)
-   description, state explicitly: «Recommended merge order: PR `A`
-   → PR `B`». Reference `A` by number and link.
-2. **Expect "broken reference" findings from review tooling.**
-   Devin Review and other reference-checkers will flag links / file
-   references that are not yet on `main` as broken. This is
-   expected. Reply in-thread «Resolves on merge order PR `A` →
-   PR `B`» with the link to PR `A`. Do not silence the bot or
-   change the PR to remove the reference.
-3. **Do not pre-emptively rebase `B` onto `A`.** Rebasing creates
-   a fragile chain that breaks when `A` is squash-merged (commit
-   hashes differ on `main` vs in the rebase base). Only rebase if
-   (i) `A` is days away from merging and (ii) reviewer explicitly
-   requests it.
-4. **Atomic-coupling exception.** If `A` and `B` must merge
-   together because separating them would leave `main` in a
-   broken state — combine them into a single PR. Stacked PRs are
-   only for cases where `B` is *useful but stale-looking* without
-   `A`, not where `B` is *broken* without `A`.
-5. **Each PR must still pass its own pre-commit / lint / format
-   checks.** Stacked-PR convention covers cross-PR semantic
-   references; it does **not** waive code-quality or
-   AGENTS.md-rules in either PR individually.
 
 ## Development Workflow
 
