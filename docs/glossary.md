@@ -2,7 +2,7 @@
 
 Короткие определения терминов, встречающихся в First-Agent и в этой вики.
 
-| Термин | Значение |
+| Term | Description  |
 |---|---|
 | **ACI** | Agent–Computer Interface. Минимальная поверхность, через которую агент взаимодействует с computational env (tools, files, shell). См. [`research/cutting-edge-agent-research-radar-2026-05.md`](../knowledge/research/cutting-edge-agent-research-radar-2026-05.md). |
 | **ADR** | Architecture Decision Record. Каноничное место — [`knowledge/adr/`](../knowledge/adr/); процесс — [`knowledge/adr/README.md`](../knowledge/adr/README.md). Cheat-sheet — [`knowledge/adr/DIGEST.md`](../knowledge/adr/DIGEST.md). |
