@@ -15,6 +15,7 @@ knowledge/
 ├── project-overview.md       # one-page product + scope snapshot
 ├── adr/                      # architecture decision records
 │   ├── README.md
+│   ├── DIGEST.md             # one-paragraph cheat-sheet per accepted ADR (rule #9)
 │   └── ADR-template.md
 ├── prompts/                  # reusable prompts
 │   ├── README.md

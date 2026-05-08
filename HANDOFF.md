@@ -3,8 +3,8 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-03 by Devin session
-> [`29c3918494a44a68aaa3757a68f2dfa9`](https://app.devin.ai/sessions/29c3918494a44a68aaa3757a68f2dfa9).
+> **Last updated:** 2026-05-07 by Devin session
+> [`12fcdba610dd474480b1c03906a8e304`](https://app.devin.ai/sessions/12fcdba610dd474480b1c03906a8e304).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -35,7 +35,7 @@ changes the project state, update **both**.
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-03)
+## Current state (as of 2026-05-07)
 
 - **Stage:** Phase S scaffolding complete; design layer
   consolidating before first feature-module PR (Phase M).
@@ -129,6 +129,16 @@ manually beyond this point.
     Pi surfaces/packages, OpenClaw gateway/UI forks, and
     Magentic-UI / DuetUI / AXIS research. Input for future
     UI/control-plane pre-ADR work.
+- **Research note added 2026-05-07:**
+  - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
+    — consolidated research note for ADR-7 prep combining two
+    upstream drafts (PR #37 + PR #38) into single source of
+    truth. Nine resolved recommendations (R-1..R-9; 8 TAKE +
+    1 DEFER, no surviving UNCERTAIN-ASK). Ships ADR-7 contract
+    sketch (§10) — ToolSpec / ToolResult / Trace pseudo-schema +
+    static layered prompt-assembly invariant + subtraction-first
+    self-audit acceptance-block. Both upstream PR #37 and PR #38
+    close without merge at cross-fork sync (lead action).
 
 ## Next steps (intended order)
 
@@ -139,6 +149,9 @@ manually beyond this point.
    request/response per ADR-2 amendment 2026-05-01**, and a
    minimal **hook pipeline** primitive (pre-tool / post-tool;
    pre-run / post-run / on-event deferred to v0.2). Inputs:
+   - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
+     — single source-of-truth для harness research под ADR-7 prep
+     (R-1..R-9 resolved + §10 ADR-7 contract sketch).
    - cross-reference §10 R-1 / R-3 / R-7.
    - semi-autonomous-agents cross-reference §7.1 (R-1 input
      summary), §7.3 (edit-format two shapes), §8.4 (large-file
