@@ -19,13 +19,14 @@ claims_requiring_verification:
   - "Reflexion / Self-Verifying Reflection: формальная гарантия улучшения при
     ограниченных ошибках верификации — теоретический результат, перепроверить
     по оригинальной статье."
+superseded_by: "knowledge/prompts/architect-fa-compact.md"
 ---
 
 # Architect/Planner — рефакторинг системного промпта (v2.1)
 
-> **Status:** archived 2026-05-08
+> **Status:** superseded by [`knowledge/prompts/architect-fa-compact.md`](../prompts/architect-fa-compact.md) (archived 2026-05-08).
 >
-> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. It is the design diary for the Architect/Planner system prompt; the final prompts shipped in [`knowledge/prompts/architect-fa-compact.md`](../prompts/architect-fa-compact.md) (default) and [`knowledge/prompts/architect-fa.md`](../prompts/architect-fa.md) (full). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the prompt files instead.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Design diary for the Architect/Planner system prompt; the final prompts shipped in `architect-fa-compact.md` (default) and [`architect-fa.md`](../prompts/architect-fa.md) (full). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the prompt files instead.
 
 > **Статус:** active research note. Описывает рефакторинг системного промпта
 > для роли Architect/Planner в multi-agent стэке Agent-FA. Конечный артефакт

@@ -53,13 +53,14 @@ scope: |
 
   Цель — закрыть пробелы первого прохода и связать community-паттерны
   с research-grade архитектурой Mem0.
+superseded_by: "knowledge/adr/ADR-3-memory-architecture-variant.md"
 ---
 
 # Agentic Memory — supplement
 
-> **Status:** archived 2026-05-08
+> **Status:** superseded by [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) (archived 2026-05-08).
 >
-> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey delta to ADR-3 (memory architecture variant); decision and rationale are in [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md), with cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey delta to ADR-3 (memory architecture variant); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
 
 > **Статус:** research note, 2026-04-26.
 > **Что внутри:** дельты к существующим нотам и одна крупная новая

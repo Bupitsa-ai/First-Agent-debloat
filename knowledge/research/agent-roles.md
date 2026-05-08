@@ -1,8 +1,8 @@
 # Research — Agent Roles: graphify, CAMEL, и research-backed паттерны
 
-> **Status:** archived 2026-05-08
+> **Status:** superseded by [`adr/ADR-2-llm-tiering.md`](../adr/ADR-2-llm-tiering.md) (archived 2026-05-08).
 >
-> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Role-routing decision shipped in [`adr/ADR-2-llm-tiering.md`](../adr/ADR-2-llm-tiering.md); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the superseder instead.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Role-routing decision shipped in ADR-2 (cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md)). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the superseder instead.
 
 > **Статус:** research note, 2026-04-23. Написан до принятия ADR-1..ADR-6 как
 > фундамент под role-routing. Разбирает два референс-репозитория

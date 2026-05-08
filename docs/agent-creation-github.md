@@ -8,13 +8,14 @@ tags:
   - architecture
   - openclaw
 created: 2026-04-23
+superseded_by: "knowledge/research/efficient-llm-agent-harness-2026-05.md"
 ---
 
 # Создание агента: разбор `build-your-own-openclaw`
 
-> **Status:** archived 2026-05-08
+> **Status:** superseded by [`knowledge/research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08).
 >
-> This doc is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. It is a tutorial transcript of an external repo with no live ADR / prompt / harness consumer in First-Agent. Original tutorial: <https://github.com/czl9707/build-your-own-openclaw>. Live ADR-7 (inner-loop / tool-contract) input is now [`knowledge/research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md) and [`knowledge/research/how-to-build-an-agent-ampcode-2026-04.md`](../knowledge/research/how-to-build-an-agent-ampcode-2026-04.md). Original content preserved below for human reading; **do not load top-to-bottom** — open the upstream tutorial or the active harness notes instead.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Tutorial transcript of an external repo with no live ADR / prompt / harness consumer in First-Agent. Original tutorial: <https://github.com/czl9707/build-your-own-openclaw>. Live ADR-7 (inner-loop / tool-contract) inputs are the harness note above and [`knowledge/research/how-to-build-an-agent-ampcode-2026-04.md`](../knowledge/research/how-to-build-an-agent-ampcode-2026-04.md). Original content preserved below for human reading; **do not load top-to-bottom** — open the upstream tutorial or the active harness notes instead.
 
 > Статья-конспект туториала
 > [`czl9707/build-your-own-openclaw`](https://github.com/czl9707/build-your-own-openclaw)

@@ -15,13 +15,14 @@ claims_requiring_verification:
   - "jDocMunch benchmark numbers (19.9× / 95%)"
   - "Claim that Karpathy wiki runs at ~100 articles / 400K words"
   - "rohitg00's list of eight extensions matches the current gist revision"
+superseded_by: "knowledge/research/llm-wiki-critique.md"
 ---
 
 # Research — Разбор источников критики LLM Wiki
 
-> **Status:** archived 2026-05-08
+> **Status:** superseded by [`research/llm-wiki-critique.md`](./llm-wiki-critique.md) (archived 2026-05-08).
 >
-> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Companion source-list to [`research/llm-wiki-critique.md`](./llm-wiki-critique.md), which remains the active routing entry. Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the active critique note instead.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Companion source-list to the parent critique note. Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the active critique note instead.
 
 > **Статус:** research note, 2026-04-24.
 > **Parent:** [`llm-wiki-critique.md`](./llm-wiki-critique.md) — содержит
