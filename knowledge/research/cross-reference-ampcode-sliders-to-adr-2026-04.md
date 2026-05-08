@@ -89,6 +89,10 @@ claims_requiring_verification:
 
 # Cross-reference review — ampcode + SLIDERS vs ADR-1..5
 
+> **Status:** archived 2026-05-08
+>
+> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Recommendations were absorbed into ADR-2 amendments (2026-04-29 `tool_protocol`, 2026-05-01 MCP shape) and the active inner-loop research at [`research/efficient-llm-agent-harness-2026-05.md`](./efficient-llm-agent-harness-2026-05.md) §10. Cheat-sheet rows in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR amendments or the active harness note instead.
+
 > **Статус:** research note, 2026-04-29.
 > **Что внутри:** систематический проход по двум недавно вмердженым
 > research-нотам (ampcode, SLIDERS) и пяти принятым ADR (ADR-1 ..

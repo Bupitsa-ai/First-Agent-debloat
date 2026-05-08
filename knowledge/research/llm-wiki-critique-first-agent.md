@@ -14,6 +14,10 @@ claims_requiring_verification: []
 
 # Research — LLM Wiki критика: применимость к First-Agent
 
+> **Status:** archived 2026-05-08
+>
+> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Active critique routing entry is [`research/llm-wiki-critique.md`](./llm-wiki-critique.md); provenance-frontmatter schema (T1) is in [`knowledge/README.md`](../README.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the active critique note or the README schema instead.
+
 > **Статус:** research note, 2026-04-24.
 > **Parent:** [`llm-wiki-critique.md`](./llm-wiki-critique.md) — TL;DR,
 > факты, фактчек.

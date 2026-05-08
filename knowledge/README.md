@@ -3,8 +3,10 @@
 Durable project knowledge for First-Agent. Everything here is:
 
 1. **Committed** to the repo so it is versioned and reviewable.
-2. **Cross-referenced** from Devin Knowledge notes where useful (see
-   [`docs/devin-reference.md`](../docs/devin-reference.md#1-knowledge-notes--long-term-memory)).
+2. **Cross-referenced** from Devin Knowledge notes where useful.
+   (`docs/devin-reference.md` was archived 2026-05-08 — see header banner
+   for the rationale; restored as a per-host gated entry once `llms.txt`
+   learns to gate by agent host.)
 
 ## Layout
 

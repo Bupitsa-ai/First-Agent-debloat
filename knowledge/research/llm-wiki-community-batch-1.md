@@ -47,6 +47,10 @@ related:
 
 # Сообщество LLM-Wiki — батч 1
 
+> **Status:** archived 2026-05-08
+>
+> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey input to ADR-3 (memory architecture variant); decision and rationale are in [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) and the cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
+
 > **Статус:** research note, 2026-04-26.
 > **Что внутри:** разбор шести проектов сообщества, выросших вокруг идеи
 > Карпатого о «LLM-вики». Цель — *production-ориентированный* отбор: что

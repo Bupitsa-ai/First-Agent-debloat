@@ -19,6 +19,10 @@ claims_requiring_verification:
 
 # Research — Разбор источников критики LLM Wiki
 
+> **Status:** archived 2026-05-08
+>
+> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Companion source-list to [`research/llm-wiki-critique.md`](./llm-wiki-critique.md), which remains the active routing entry. Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the active critique note instead.
+
 > **Статус:** research note, 2026-04-24.
 > **Parent:** [`llm-wiki-critique.md`](./llm-wiki-critique.md) — содержит
 > TL;DR, факты о gist'е, кросс-резку и фактчек.

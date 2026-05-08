@@ -57,6 +57,10 @@ scope: |
 
 # Agentic Memory — supplement
 
+> **Status:** archived 2026-05-08
+>
+> This note is **excluded** from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey delta to ADR-3 (memory architecture variant); decision and rationale are in [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md), with cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
+
 > **Статус:** research note, 2026-04-26.
 > **Что внутри:** дельты к существующим нотам и одна крупная новая
 > ссылка (Mem0 paper). Батч-1 и батч-2 остаются каноном для первичного
