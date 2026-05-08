@@ -51,7 +51,7 @@ Task type → primary entrypoint, then secondary:
 - [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md): Instructions for AI agents working in this repo (English).
 - [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md): Cross-LLM session handoff — current state, next steps, bootstrap pointer (mirrors the Devin Knowledge note).
 
-## Docs (`docs/`)
+### Docs (`docs/`)
 
 - [docs/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/README.md): Wiki index.
 - [docs/architecture.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/architecture.md): Three-layer agent architecture (Interface / Cognitive / Execution).
@@ -61,12 +61,12 @@ Task type → primary entrypoint, then secondary:
 - [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md): Project glossary.
 - [docs/agent-creation-github.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/agent-creation-github.md): Step-by-step agent-creation tutorial.
 
-## Project knowledge (`knowledge/`)
+### Project knowledge (`knowledge/`)
 
 - [knowledge/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md): Knowledge folder conventions, frontmatter schema, query routing.
 - [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md): Product/scope snapshot for v0.1; §1.1 four-pillar goal (research-backed implementation + pragmatic single-user + most efficient open-source harness + iteration-via-measurement); §1.2 minimalism-first principle.
 
-## ADRs (`knowledge/adr/`)
+### ADRs (`knowledge/adr/`)
 
 - [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md): ADR process and index.
 - [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
@@ -78,11 +78,11 @@ Task type → primary entrypoint, then secondary:
 - [knowledge/adr/ADR-5-chunker-tool.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-5-chunker-tool.md): Chunker tool selection for v0.1 (universal-ctags + markdown-it-py).
 - [knowledge/adr/ADR-6-tool-sandbox-allow-list.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-6-tool-sandbox-allow-list.md): Tool sandbox & path allow-list policy for v0.1 (deny-by-default read+write allow-list at `~/.fa/sandbox.toml`).
 
-## Exploration DAG (`knowledge/trace/`)
+### Exploration DAG (`knowledge/trace/`)
 
 - [knowledge/trace/exploration_tree.yaml](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/trace/exploration_tree.yaml): Branching exploration DAG — one `question` node per ADR-1..6 with `decision` (chosen) and `dead_end` (rejected) children carrying `reason:` + `lesson:`. Schema in [`knowledge/README.md` §`trace/`](./README.md#trace--exploration-dag); origin in research note [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md) §9 R-1.
 
-## Prompts (`knowledge/prompts/`)
+### Prompts (`knowledge/prompts/`)
 
 - [knowledge/prompts/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/README.md): Prompts library conventions and index.
 - [knowledge/prompts/RESOLVER.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/RESOLVER.md): Intent-to-template dispatcher (T1-T5 plus role prompts).
@@ -91,7 +91,7 @@ Task type → primary entrypoint, then secondary:
 - [knowledge/prompts/architect-fa-compact.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa-compact.md): Architect / Planner system prompt (compact).
 - [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md): Research-briefing workflow — goal-lens elicitation, deep-dive note with §0 Decision Briefing, chat handover. Use for cross-reference / paper-vs-architecture reviews.
 
-## Research (`knowledge/research/`)
+### Research (`knowledge/research/`)
 
 > Convention: rows for notes produced via the research-briefing
 > workflow lead with a `[goal: <one-sentence>]` prefix so an agent
