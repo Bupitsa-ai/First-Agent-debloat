@@ -128,20 +128,10 @@ src/<module_name>/
 
 ### Параллельная работа нескольких агентов / форков
 
-Если два агента работают одновременно, не стройте цепочку merge'ей
-через форк другого агента. У каждого агента своя ветка и свой PR
-прямо в главный репозиторий:
-
-```text
-GITcrassuskey-shop/First-Agent:main
-├─ GrasshopperBoy/First-Agent-fork:<branch>
-└─ MondayInRussian/First-Agent-fork2:<branch>
-```
-
-Даже если GitHub UI показывает fork-chain вида
-`First-Agent → First-Agent-fork → First-Agent-fork2`, рабочая база
-для новых веток всё равно должна быть `GITcrassuskey-shop/First-Agent:main`.
-То есть в дочернем форке:
+Если два агента работают одновременно — у каждого своя ветка и свой PR
+прямо в главный репозиторий `GITcrassuskey-shop/First-Agent:main`, даже
+если GitHub UI показывает fork-chain. Базу для новых веток берём из
+`upstream/main`:
 
 ```bash
 git remote add upstream https://github.com/GITcrassuskey-shop/First-Agent.git
@@ -149,16 +139,11 @@ git fetch upstream
 git checkout -b devin/<task-slug> upstream/main
 ```
 
-Перед стартом явно делим ownership по файлам:
-
-- агент A: coordination / docs / handoff files;
-- агент B: feature module files, например `src/fa/chunker/**` и
-  `tests/test_chunker*.py`.
-
-Если PR B зависит от PR A, не ребейзим заранее. В описании PR B пишем:
-`Recommended merge order: PR A → PR B`. После merge PR A агент B
-обновляет ветку от нового `upstream/main` и решает только реальные
-конфликты.
+Делим ownership по файлам заранее (например: агент A — docs/handoff,
+агент B — `src/fa/chunker/**`). Если PR B зависит от PR A — не ребейзим
+заранее, пишем в описании `Recommended merge order: PR A → PR B`, после
+merge PR A агент B обновляет ветку от нового `upstream/main` и решает
+только реальные конфликты.
 
 ---
 
