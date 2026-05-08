@@ -42,8 +42,4 @@ Short definitions of terms used in First-Agent and this wiki.
 | **UC1 — UC5** | Use case labels from [`project-overview.md` §4](../knowledge/project-overview.md#4-scope) + [ADR-1](../knowledge/adr/ADR-1-v01-use-case-scope.md): UC1 coding + PR; UC2 multi-source research (best effort in v0.1); UC3 local-docs-to-wiki; UC4 Telegram multi-user (deferred to v0.2); UC5 eval-driven harness iteration (deferred to v0.2; expanded in [ADR-1 amendment 2026-05-06](../knowledge/adr/ADR-1-v01-use-case-scope.md#amendment-2026-05-06--uc5-expanded-to-eval-driven-harness-iteration)). |
 | **Vector DB** | Database for similarity search over embeddings (Qdrant, pgvector, Pinecone etc). |
 
----
 
-All entries, formatting, links, bolding and internal conventions are preserved 100% unchanged. This is translated to idiomatic standard technical English used in the modern agent engineering community, not literal translation.
-
-Would you like me to adjust any term for consistency, or make any other changes?
