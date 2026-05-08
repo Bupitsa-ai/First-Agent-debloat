@@ -15,7 +15,7 @@
 | **Draft PR** | PR в draft-состоянии; CI запускается, но он не помечен как ready-for-review. |
 | **Eval / Eval suite** | Воспроизводимый набор входов + ожидаемого поведения для измерения качества агента между изменениями. |
 | **Feedback loop** | Цикл «действие → наблюдение → рефлексия → следующее действие» — главный паттерн надёжного агента. |
-| **goal_lens** | Frontmatter v2 поле; one-sentence research goal, elicited at session start (Stage 1) per [`prompts/research-briefing.md`](../knowledge/prompts/research-briefing.md). Mandatory для нот, произведённых workflow research-briefing; optional для остальных. Лет агенту фильтровать корпус по текущей задаче без загрузки нот. См. также *Lens*. |
+| **goal_lens** | Frontmatter v2 поле; one-sentence research goal, elicited at session start (Stage 1) per [`prompts/research-briefing.md`](../knowledge/prompts/research-briefing.md). Mandatory для нот, произведённых workflow research-briefing; optional для остальных. Даёт агенту фильтровать корпус по текущей задаче без загрузки нот. См. также *Lens*. |
 | **Golden set** | Маленький, стабильный, размеченный вручную набор входов для регрессионного eval'а. |
 | **Harness** | Control layer вокруг LLM: loop / orchestration, prompts, tool registry, retrieval pipeline, sandbox. Это **не** само ML и не модель; это всё, что нужно агенту между LLM-call'ами. Pillar 3 проекта — построить most efficient open-source harness под UC1+UC3. |
 | **Hook** | Pre/post-tool extension point. В v0.1 единственный реализованный hook — sandbox check ([ADR-6](../knowledge/adr/ADR-6-tool-sandbox-allow-list.md)); v0.2+ inner-loop ADR (ADR-7) формализует hook-primitive как контракт. |
