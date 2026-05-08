@@ -26,17 +26,17 @@ Run BEFORE making any edits, opening a branch, or writing analysis on
 non-trivial tasks. Output is cheap; skipping is the failure mode.
 
 ```bash
-# 1. Recency surface — read top 5 commits; for any new 2026-MM-DD
-#    research note, skim its §0 Decision Briefing.
-git log --since="7 days" --oneline -- knowledge/ docs/ AGENTS.md
+# 1. Recency surface. For any new 2026-MM-DD research note in the
+#    output, skim its §0 Decision Briefing.
+git log -n 5 --since="7 days" --oneline -- knowledge/ docs/ AGENTS.md
 
-# 2. Term expansion — for every project-specific noun in the prompt
-#    (e.g. "axis", "lens", "pillar", "harness", "UC*"), check the
-#    glossary; fall back to project-overview.md §1.1-§1.2.
-grep -ri "^| \*\*<term>\*\*" docs/glossary.md
+# 2. Term expansion. Run once per project-specific noun in the prompt
+#    (axis, lens, pillar, harness, UC*, ...). Fall back to
+#    project-overview.md §1.1-§1.2 if the glossary row is missing.
+grep -i "^| \*\*<term>\*\*" docs/glossary.md
 
-# 3. Symmetric reading — if you cite a research note as evidence,
-#    grep adjacent notes by key term and read them too.
+# 3. Symmetric reading. Before citing a research note as evidence,
+#    read every other note that mentions the same key term.
 grep -ril "<key-term>" knowledge/research/
 ```
 
