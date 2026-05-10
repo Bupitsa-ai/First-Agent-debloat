@@ -108,7 +108,7 @@ Four named slots. Pattern-match the template exactly; do not omit
 slots, do not paraphrase keys. Rationale: the four slots compel
 explicit routing decisions before code lands; without them, mid-tier
 LLMs default to "add" and the project drifts away from the four-pillar
-goal in [`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-goal--four-pillars).
+goal in [`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars).
 `goal_lens` is universal across sessions, not just research-briefing
 ones; the elicitation in
 [`knowledge/prompts/research-briefing.md`](./knowledge/prompts/research-briefing.md)
