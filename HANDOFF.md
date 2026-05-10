@@ -3,8 +3,8 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-07 by Devin session
-> [`12fcdba610dd474480b1c03906a8e304`](https://app.devin.ai/sessions/12fcdba610dd474480b1c03906a8e304).
+> **Last updated:** 2026-05-10 by Devin session
+> [`f6d329f2152544fdbb0204e78660d7d0`](https://app.devin.ai/sessions/f6d329f2152544fdbb0204e78660d7d0).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -35,7 +35,7 @@ changes the project state, update **both**.
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-07)
+## Current state (as of 2026-05-10)
 
 - **Project stage:** **Stage 1** of the three-stage evolution
   (documentation + agent development через Devin). See
