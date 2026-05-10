@@ -58,9 +58,14 @@ related:
   - knowledge/research/llm-wiki-critique.md
   - knowledge/research/llm-wiki-critique-first-agent.md
   - knowledge/research/agent-roles.md
+superseded_by: "knowledge/adr/ADR-3-memory-architecture-variant.md"
 ---
 
 # Сообщество LLM-Wiki — батч 2 + GraphRAG
+
+> **Status:** superseded by [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey input to ADR-3 (memory architecture variant); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
 
 > **Статус:** research note, 2026-04-23.
 > **Что внутри:** разбор пяти community-проектов (gbrain, llm-wiki-kit,

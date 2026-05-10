@@ -47,9 +47,14 @@ scope: |
   нашем агенте позже. Без оценок «production-ready / нет» (это
   сделано в batch-1); фокус — что именно копировать на уровне
   кода/контракта и что — нет.
+superseded_by: "knowledge/adr/ADR-3-memory-architecture-variant.md"
 ---
 
 # AI-Context-OS (MEMM) — глубокий разбор бэкенда
+
+> **Status:** superseded by [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey input to ADR-3 (memory architecture variant); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Mem0/Memm-style deltas live in [`research/agentic-memory-supplement.md`](./agentic-memory-supplement.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
 
 > **Статус:** research note, 2026-04-26.
 > **Что внутри:** дополняет §3.3 в

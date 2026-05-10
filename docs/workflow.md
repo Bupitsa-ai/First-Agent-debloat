@@ -68,8 +68,10 @@
 3. **CI** — минимальный workflow на GitHub Actions: lint/types/tests на каждом PR.
 4. **`Makefile`** (или `justfile`) с `make lint / test / typecheck / run`.
 5. **Pre-commit** — `.pre-commit-config.yaml` с ruff, eol, whitespace, markdownlint.
-6. **Knowledge note** в Devin со ссылкой на Makefile — шаблон в
-   [devin-reference.md § Knowledge Notes](./devin-reference.md#knowledge-notes).
+6. **Knowledge note** в Devin со ссылкой на Makefile. (Шаблон жил в
+   `devin-reference.md`, который заархивирован 2026-05-08; см. баннер
+   в шапке файла. Если открываешь Devin-сессию — заведи note вручную:
+   short trigger + 1–5 буллетов про `make lint/typecheck/test/check`.)
 7. **`llms.txt` auto-generator.** Скрипт, который регенерирует
    [`knowledge/llms.txt`](../knowledge/llms.txt) из текущего дерева
    `docs/` + `knowledge/`, плюс хук в pre-commit и CI-проверка
