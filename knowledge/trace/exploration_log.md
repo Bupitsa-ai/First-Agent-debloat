@@ -1,8 +1,8 @@
 # Exploration log — alternatives rejected at decision time
 
 > One block per accepted ADR. Each block lists the question, the
-> chosen option (`chosen:`), and each rejected option with
-> `reason:` (why rejected at decision time) + `lesson:` (what new
+> chosen option (`Chosen:`), and each rejected option with
+> `Reason:` (why rejected at decision time) + `Lesson:` (what new
 > evidence would re-open the branch). Cross-question coupling
 > noted under `Coupling:`. The ADR file is the authoritative
 > source — this log is the cheap-read overlay agents use to learn
