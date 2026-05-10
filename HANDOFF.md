@@ -3,8 +3,11 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-07 by Devin session
-> [`12fcdba610dd474480b1c03906a8e304`](https://app.devin.ai/sessions/12fcdba610dd474480b1c03906a8e304).
+> **Last updated:** 2026-05-08 by Devin session
+> [`f6d329f2152544fdbb0204e78660d7d0`](https://app.devin.ai/sessions/f6d329f2152544fdbb0204e78660d7d0)
+> (`llms.txt` rewrite + `HANDOFF.md` trim; previous bump
+> [`12fcdba610dd474480b1c03906a8e304`](https://app.devin.ai/sessions/12fcdba610dd474480b1c03906a8e304)
+> 2026-05-07).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -35,7 +38,7 @@ changes the project state, update **both**.
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-07)
+## Current state (as of 2026-05-08)
 
 - **Stage:** Phase S scaffolding complete; design layer
   consolidating before first feature-module PR (Phase M).
@@ -93,52 +96,39 @@ manually beyond this point.
   - [`research/chunker-design.md`](./knowledge/research/chunker-design.md)
     — five tool classes, coverage matrix, ten open questions
     (input to ADR-5).
-- **Research notes added 2026-04-29 (no ADR yet, inputs for v0.1+
-  implementation and v0.2 roadmap):**
-  - [`research/how-to-build-an-agent-ampcode-2026-04.md`](./knowledge/research/how-to-build-an-agent-ampcode-2026-04.md)
-    — inner-loop micro-architecture from Thorsten Ball / Amp;
-    three-tool baseline (`read_file` / `list_files` / `edit_file`);
-    mapping to ADR-1 / ADR-2 and UC1.
-  - [`research/sliders-structured-reasoning-2026-04.md`](./knowledge/research/sliders-structured-reasoning-2026-04.md)
-    — SLIDERS framework (Stanford OV AL, arXiv:2604.22294)
-    for QA over long document sets; mapping to ADR-3 / ADR-4 /
-    ADR-5 and v0.2 extraction-layer roadmap.
-  - [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](./knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md)
-    — cross-reference review of the two notes above against
-    ADR-1..5: gaps, tensions, 10 numbered recommendations
-    (R-1..R-10) and 10 open questions answered by lead in §11.
-    **Q-1 / Q-2 marked superseded 2026-05-01** (ADR-6 became
-    sandbox; future inner-loop = ADR-7).
-- **Research note added 2026-05-01:**
-  - [`research/semi-autonomous-agents-cross-reference-2026-05.md`](./knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md)
-    — critical analysis of three sources on semi-autonomous LLM
-    agents (deep-research-report, semi-autonomous-llm-agents
-    research, `nextlevelbuilder/goclaw` repo) against ADR-1..6.
-    Accept / defer / reject filtering with explicit reasoning.
-    Source for ADR-2 §Amendment 2026-05-01 (MCP forward-compat)
-    and ADR-1 §Amendment 2026-05-01 (UC5 deferred). Input for
-    future ADR-7 inner-loop (ACI principle, hooks primitive).
-- **Research notes added 2026-05-03:**
-  - [`research/cutting-edge-agent-research-radar-2026-05.md`](./knowledge/research/cutting-edge-agent-research-radar-2026-05.md)
-    — radar/backlog for First-Agent v0.1/v0.2 covering MCP/tool
-    registry, ACI, hooks, memory, eval traces, sandbox/audit, and
-    multi-agent coordination. Input for ADR-7 prep and future
-    module PRs.
-  - [`research/agent-ui-research-radar-v0-2-2026-05.md`](./knowledge/research/agent-ui-research-radar-v0-2-2026-05.md)
-    — v0.2 UI radar covering Hermes Agent UI implementations,
-    Pi surfaces/packages, OpenClaw gateway/UI forks, and
-    Magentic-UI / DuetUI / AXIS research. Input for future
-    UI/control-plane pre-ADR work.
-- **Research note added 2026-05-07:**
-  - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
-    — consolidated research note for ADR-7 prep combining two
-    upstream drafts (PR #37 + PR #38) into single source of
-    truth. Nine resolved recommendations (R-1..R-9; 8 TAKE +
-    1 DEFER, no surviving UNCERTAIN-ASK). Ships ADR-7 contract
-    sketch (§10) — ToolSpec / ToolResult / Trace pseudo-schema +
-    static layered prompt-assembly invariant + subtraction-first
-    self-audit acceptance-block. Both upstream PR #37 and PR #38
-    close without merge at cross-fork sync (lead action).
+- **Research notes (no ADR yet; inputs for v0.1+ implementation,
+  v0.2 roadmap, ADR-7 prep).** One-liner each; full descriptions
+  live in `knowledge/llms.txt §BY-DEMAND INDEX` (open the file for
+  the per-row tag and goal-lens prefix). The one note that already
+  ships a contract is called out at the end.
+  - 2026-04-29 —
+    [`research/how-to-build-an-agent-ampcode-2026-04.md`](./knowledge/research/how-to-build-an-agent-ampcode-2026-04.md)
+    (inner-loop, three-tool baseline; ADR-1 / ADR-2 / UC1) and
+    [`research/sliders-structured-reasoning-2026-04.md`](./knowledge/research/sliders-structured-reasoning-2026-04.md)
+    (SLIDERS framework; ADR-3 / ADR-4 / ADR-5 + v0.2 extraction-layer).
+    The cross-reference note for these two
+    (`cross-reference-ampcode-sliders-to-adr-2026-04.md`) was
+    archived 2026-05-08; live recommendations live in ADR-2/4/5/6
+    amendments and `efficient-llm-agent-harness-2026-05.md §10`.
+    Q-1 / Q-2 marked superseded 2026-05-01 (ADR-6 became sandbox;
+    future inner-loop = ADR-7).
+  - 2026-05-01 —
+    [`research/semi-autonomous-agents-cross-reference-2026-05.md`](./knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md)
+    (semi-autonomous LLM agents critique; basis for ADR-2 / ADR-1
+    Amendment 2026-05-01; ACI / hooks input for ADR-7).
+  - 2026-05-03 —
+    [`research/cutting-edge-agent-research-radar-2026-05.md`](./knowledge/research/cutting-edge-agent-research-radar-2026-05.md)
+    (cutting-edge radar; ADR-7 prep + module PR backlog) and
+    [`research/agent-ui-research-radar-v0-2-2026-05.md`](./knowledge/research/agent-ui-research-radar-v0-2-2026-05.md)
+    (v0.2 UI/control-plane radar).
+  - 2026-05-07 —
+    [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
+    — **single source-of-truth for ADR-7 prep** (consolidates upstream
+    PR #37 + #38, both close-without-merge). §0 Decision Briefing:
+    R-1..R-9 (8 TAKE + 1 DEFER, 0 surviving UNCERTAIN-ASK). §10 ships
+    the ADR-7 contract sketch — ToolSpec / ToolResult / Trace +
+    static-layered prompt-assembly invariant + subtraction-first
+    acceptance-block. Tagged `[CONTRACT]` `[BRIEFING]` in `llms.txt`.
 
 ## Next steps (intended order)
 
@@ -219,11 +209,3 @@ blocking.
 - Also update the matching Devin Knowledge note (or replace it
   entirely with the body of this file — they are meant to be
   identical).
-
-## Why this file exists
-
-Pattern lifted from the educational angle of this project: every
-convention should be discoverable via either Devin-specific
-infrastructure (Knowledge note) **or** plain repo browsing
-(this file). Forks of this repo as a starter template do not
-necessarily use Devin; HANDOFF.md is what they get for free.

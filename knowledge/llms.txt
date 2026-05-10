@@ -16,80 +16,102 @@
 > `GrasshopperBoy/First-Agent-fork` and retry.
 
 > **Tiered layout.** §MUST READ FIRST is the smallest path that
-> bootstraps a session (six files, in order). §TASK ROUTING points
+> bootstraps a session (five files, in order). §TASK ROUTING points
 > task-types at the right primary entrypoint. §BY-DEMAND INDEX
-> below is the full per-folder file list — open only the entries
-> relevant to the task at hand.
+> below is the full per-folder file list — each row is tagged
+> (`[ENTRY]`, `[ADR]`, `[DESIGN]`, …) so an agent can filter
+> without opening the file. Open only the entries relevant to the
+> task at hand.
 
 ## MUST READ FIRST
 
-Six files cover ~90% of session-start context. Read in order:
+Five files cover ~90% of session-start context. Read in order:
 
-1. [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md) — project overview (Russian).
-2. [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md) — rules, PR checklist, query routing, **§Pre-flight checklist** (run BEFORE any non-trivial task).
-3. [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md) — §1.1 four-pillar goal; §1.2 minimalism-first principle.
-4. [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) — current state, next steps, recently-landed research notes.
-5. [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) — one-paragraph cheat-sheet for ADR-1..6 + amendments. Authoritative source remains the per-ADR files.
-6. [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md) — canonical definitions for project-specific terms (axis, lens, pillar, NLAH, ACI, harness, hook, UC1..UC5, MCP, subtraction-first, minimalism-first, R-S-M).
+1. [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md) — rules, PR checklist, query routing, **§Pre-flight checklist** (run BEFORE any non-trivial task).
+2. [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md) — §1.1 four-pillar goal; §1.2 minimalism-first principle. (Subsumes the Russian-language `README.md`; open `README.md` only if you need the public-facing overview.)
+3. [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) — current state, next steps, recently-landed research notes.
+4. [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) — one-paragraph cheat-sheet for ADR-1..6 + amendments. Authoritative source remains the per-ADR files.
+5. [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md) — canonical definitions for project-specific terms (axis, lens, pillar, NLAH, ACI, harness, hook, UC1..UC5, MCP, subtraction-first, minimalism-first, R-S-M).
 
 ## TASK ROUTING
 
-Task type → primary entrypoint, then secondary:
+Task type → primary entrypoint, then secondary. Each row is a literal
+open-this-first instruction; do not infer, do not crawl. If your task
+does not match any row, default to the **MUST READ FIRST** path above
+and declare it explicitly in your analysis.
 
 - **ADR-7 prep / inner-loop / tool-registry contract** → [research/efficient-llm-agent-harness-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/efficient-llm-agent-harness-2026-05.md) (§0 Decision Briefing + §10 ADR-7 contract sketch). Secondary: [research/cutting-edge-agent-research-radar-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/cutting-edge-agent-research-radar-2026-05.md), [research/semi-autonomous-agents-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md).
-- **New ADR or amendment** → [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md) + [AGENTS.md PR Checklist rule #9](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist) (must add a node to `exploration_tree.yaml` and update `DIGEST.md` row in the same PR).
+- **New ADR or amendment** → [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md) + [AGENTS.md PR Checklist rule #9](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist) (same PR must add one node to `exploration_tree.yaml` and update `DIGEST.md` row).
 - **New module / Phase M PR** → [research/memory-architecture-design-2026-04-26.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/memory-architecture-design-2026-04-26.md) §9 roadmap + [ADR DIGEST](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md). Cite minimalism-first per [AGENTS.md PR Checklist rule #10](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist).
 - **Research-briefing note** → [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md), then [knowledge/research/_template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/_template.md) (§0 Decision Briefing pre-filled). Output rule: [AGENTS.md PR Checklist rule #8](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist).
 - **Edit `knowledge/trace/exploration_tree.yaml`** → schema in [knowledge/README.md §`trace/`](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md); origin in [research/ara-protocol-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/ara-protocol-cross-reference-2026-05.md) §9 R-1.
+- **Bug-fix / regression** (no new feature surface) → reproduce first, then [AGENTS.md §Pre-flight checklist](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pre-flight-checklist) + [AGENTS.md §PR Checklist](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist) rules #1–#7. Skip rule #10 (non-harness PR). No new ADR unless the fix changes a documented contract.
+- **Implementation PR (existing module / contract)** → cite the matching ADR + DIGEST row + [research/efficient-llm-agent-harness-2026-05.md §10](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/efficient-llm-agent-harness-2026-05.md) for ToolSpec / ToolResult / Trace shape. Cite minimalism-first per rule #10 (harness PR).
+- **Refactor (no behaviour change)** → same primary surface as the original module. State the goal-lens explicitly («reduce X») and the absence of behaviour change in the PR description; rule #10 still applies if the refactor touches a harness component.
+- **Doc edit** (`research/`, `docs/`, `README.md`) → [knowledge/README.md §Conventions](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md) for frontmatter / file-length tiers + [AGENTS.md PR Checklist](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#pr-checklist) rules #1–#7. Documentation-only PR is exempt from rule #10.
+- **Glossary edit** (`docs/glossary.md`) → alphabetical insertion; one row per term; format `| **<Term>** | <one-line definition>. <link to canonical source>. |`. Re-grep AGENTS.md §Pre-flight Step 2 if the term is referenced elsewhere.
+- **Dependency bump** (`pyproject.toml`, `pre-commit-config.yaml`) → [docs/workflow.md §Phase S](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/workflow.md) for the toolchain pin policy. Run `make lint typecheck test` locally; cite version diff in PR description. No ADR unless the bump changes a contract.
 - **Specific number / date / quote** → primary source from `source:` frontmatter, NOT a summary. Per [AGENTS.md §Query Routing](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md#query-routing).
 
 ## BY-DEMAND INDEX
 
+Each row is tagged with one of:
+`[ENTRY]` repo entrypoint ·
+`[WIKI]` human-and-agent reference doc ·
+`[INDEX]` folder index / convention ·
+`[ADR]` accepted decision record ·
+`[DAG]` exploration trace overlay ·
+`[PROMPT]` reusable prompt or template ·
+`[DESIGN]` research note that fed an ADR ·
+`[RADAR]` open-ended research backlog ·
+`[CONTRACT]` ships a pseudo-schema or API shape ·
+`[BRIEFING]` research-briefing-format note (§0 Decision Briefing).
+
 ### Repo entrypoints
 
-- [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md): Project overview, current status, roadmap (Russian).
-- [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md): Instructions for AI agents working in this repo (English).
-- [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md): Cross-LLM session handoff — current state, next steps, bootstrap pointer (mirrors the Devin Knowledge note).
+- `[ENTRY]` [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md): Project overview, current status, roadmap (Russian).
+- `[ENTRY]` [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md): Instructions for AI agents working in this repo (English).
+- `[ENTRY]` [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md): Cross-LLM session handoff — current state, next steps, bootstrap pointer (mirrors the Devin Knowledge note).
 
 ### Docs (`docs/`)
 
-- [docs/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/README.md): Wiki index.
-- [docs/architecture.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/architecture.md): Three-layer agent architecture (Interface / Cognitive / Execution).
-- [docs/workflow.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/workflow.md): R-S-M lifecycle, Devin session conventions, and parallel-agent fork coordination.
-- [docs/prompting.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/prompting.md): T1-T5 prompt templates and anti-patterns.
-- [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md): Project glossary.
+- `[INDEX]` [docs/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/README.md): Wiki index.
+- `[WIKI]` [docs/architecture.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/architecture.md): Three-layer agent architecture (Instruction / Execution / Integration).
+- `[WIKI]` [docs/workflow.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/workflow.md): R-S-M lifecycle, Devin session conventions, and parallel-agent fork coordination.
+- `[WIKI]` [docs/prompting.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/prompting.md): T1-T5 prompt templates and anti-patterns.
+- `[WIKI]` [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md): Project glossary.
 
 *Archived 2026-05-08 (in-place stubs, excluded from this routing surface): `docs/devin-reference.md` (Devin-specific — restored once `llms.txt` learns to gate by agent host), `docs/agent-creation-github.md` (external-tutorial transcript; live ADR-7 inputs are `research/efficient-llm-agent-harness-2026-05.md` and `research/how-to-build-an-agent-ampcode-2026-04.md`).*
 
 ### Project knowledge (`knowledge/`)
 
-- [knowledge/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md): Knowledge folder conventions, frontmatter schema, query routing.
-- [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md): Product/scope snapshot for v0.1; §1.1 four-pillar goal (research-backed implementation + pragmatic single-user + most efficient open-source harness + iteration-via-measurement); §1.2 minimalism-first principle.
+- `[INDEX]` [knowledge/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/README.md): Knowledge folder conventions, frontmatter schema, query routing.
+- `[WIKI]` [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md): Product/scope snapshot for v0.1; §1.1 four-pillar goal (research-backed implementation + pragmatic single-user + most efficient open-source harness + iteration-via-measurement); §1.2 minimalism-first principle.
 
 ### ADRs (`knowledge/adr/`)
 
-- [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md): ADR process and index.
-- [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
-- [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md): ADR template (copy when adding a new decision).
-- [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort); Amendment 2026-05-01 deferred UC5; Amendment 2026-05-06 expanded UC5 to eval-driven harness iteration (5a-5e).
-- [knowledge/adr/ADR-2-llm-tiering.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-2-llm-tiering.md): LLM tiering and access (static role routing; Planner / Coder / Debug / Eval).
-- [knowledge/adr/ADR-3-memory-architecture-variant.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-3-memory-architecture-variant.md): Memory architecture variant for v0.1 (Variant A "Mechanical Wiki").
-- [knowledge/adr/ADR-4-storage-backend.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-4-storage-backend.md): Storage backend for v0.1 (SQLite FTS5).
-- [knowledge/adr/ADR-5-chunker-tool.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-5-chunker-tool.md): Chunker tool selection for v0.1 (universal-ctags + markdown-it-py).
-- [knowledge/adr/ADR-6-tool-sandbox-allow-list.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-6-tool-sandbox-allow-list.md): Tool sandbox & path allow-list policy for v0.1 (deny-by-default read+write allow-list at `~/.fa/sandbox.toml`).
+- `[INDEX]` [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md): ADR process and index.
+- `[INDEX]` [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
+- `[PROMPT]` [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md): ADR template (copy when adding a new decision).
+- `[ADR]` [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort); Amendment 2026-05-01 deferred UC5; Amendment 2026-05-06 expanded UC5 to eval-driven harness iteration (5a-5e).
+- `[ADR]` [knowledge/adr/ADR-2-llm-tiering.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-2-llm-tiering.md): LLM tiering and access (static role routing; Planner / Coder / Debug / Eval).
+- `[ADR]` [knowledge/adr/ADR-3-memory-architecture-variant.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-3-memory-architecture-variant.md): Memory architecture variant for v0.1 (Variant A "Mechanical Wiki").
+- `[ADR]` [knowledge/adr/ADR-4-storage-backend.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-4-storage-backend.md): Storage backend for v0.1 (SQLite FTS5).
+- `[ADR]` [knowledge/adr/ADR-5-chunker-tool.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-5-chunker-tool.md): Chunker tool selection for v0.1 (universal-ctags + markdown-it-py).
+- `[ADR]` [knowledge/adr/ADR-6-tool-sandbox-allow-list.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-6-tool-sandbox-allow-list.md): Tool sandbox & path allow-list policy for v0.1 (deny-by-default read+write allow-list at `~/.fa/sandbox.toml`).
 
 ### Exploration DAG (`knowledge/trace/`)
 
-- [knowledge/trace/exploration_tree.yaml](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/trace/exploration_tree.yaml): Branching exploration DAG — one `question` node per ADR-1..6 with `decision` (chosen) and `dead_end` (rejected) children carrying `reason:` + `lesson:`. Schema in [`knowledge/README.md` §`trace/`](./README.md#trace--exploration-dag); origin in research note [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md) §9 R-1.
+- `[DAG]` [knowledge/trace/exploration_tree.yaml](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/trace/exploration_tree.yaml): Branching exploration DAG — one `question` node per ADR-1..6 with `decision` (chosen) and `dead_end` (rejected) children carrying `reason:` + `lesson:`. Schema in [`knowledge/README.md` §`trace/`](./README.md#trace--exploration-dag); origin in research note [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md) §9 R-1.
 
 ### Prompts (`knowledge/prompts/`)
 
-- [knowledge/prompts/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/README.md): Prompts library conventions and index.
-- [knowledge/prompts/RESOLVER.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/RESOLVER.md): Intent-to-template dispatcher (T1-T5 plus role prompts).
-- [knowledge/prompts/research-topic.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-topic.md): T1 research-topic task prompt.
-- [knowledge/prompts/architect-fa.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa.md): Architect / Planner system prompt (full).
-- [knowledge/prompts/architect-fa-compact.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa-compact.md): Architect / Planner system prompt (compact).
-- [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md): Research-briefing workflow — goal-lens elicitation, deep-dive note with §0 Decision Briefing, chat handover. Use for cross-reference / paper-vs-architecture reviews.
+- `[INDEX]` [knowledge/prompts/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/README.md): Prompts library conventions and index.
+- `[PROMPT]` [knowledge/prompts/RESOLVER.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/RESOLVER.md): Intent-to-template dispatcher (T1-T5 plus role prompts).
+- `[PROMPT]` [knowledge/prompts/research-topic.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-topic.md): T1 research-topic task prompt.
+- `[PROMPT]` [knowledge/prompts/architect-fa.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa.md): Architect / Planner system prompt (full).
+- `[PROMPT]` [knowledge/prompts/architect-fa-compact.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa-compact.md): Architect / Planner system prompt (compact).
+- `[PROMPT]` `[BRIEFING]` [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md): Research-briefing workflow — goal-lens elicitation, deep-dive note with §0 Decision Briefing, chat handover. Use for cross-reference / paper-vs-architecture reviews.
 
 ### Research (`knowledge/research/`)
 
@@ -99,19 +121,19 @@ Task type → primary entrypoint, then secondary:
 > note. Older rows can be migrated lazily (rule #8 in AGENTS.md is
 > forward-only).
 
-- [knowledge/research/_template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/_template.md): Skeleton for new research notes — frontmatter v1+v2 + `goal_lens:` + §0 Decision Briefing pre-filled. Pair with `prompts/research-briefing.md`.
-- [knowledge/research/memory-architecture-design-2026-04-26.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/memory-architecture-design-2026-04-26.md): Memory architecture roadmap, three variants, open questions. Source for ADR-3.
-- [knowledge/research/llm-wiki-critique.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/llm-wiki-critique.md): Cross-cutting critique of LLM-Wiki / GraphRAG approaches.
-- [knowledge/research/socraticode-code-intelligence-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/socraticode-code-intelligence-2026-05.md): [goal: Identify what First-Agent can use, benefit from, or learn from SocratiCode without violating v0.1 scope or license constraints.] Cross-reference of SocratiCode's MCP code-intelligence engine against First-Agent ADR-1..6; recommends context-artifact manifests, local RRF fusion, resumable indexing contracts, graph-compatible IDs, prompt-level search discipline, and an AGPL license firewall.
+- `[PROMPT]` [knowledge/research/_template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/_template.md): Skeleton for new research notes — frontmatter v1+v2 + `goal_lens:` + §0 Decision Briefing pre-filled. Pair with `prompts/research-briefing.md`.
+- `[DESIGN]` [knowledge/research/memory-architecture-design-2026-04-26.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/memory-architecture-design-2026-04-26.md): Memory architecture roadmap, three variants, open questions. Source for ADR-3.
+- `[DESIGN]` [knowledge/research/llm-wiki-critique.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/llm-wiki-critique.md): Cross-cutting critique of LLM-Wiki / GraphRAG approaches.
+- `[BRIEFING]` [knowledge/research/socraticode-code-intelligence-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/socraticode-code-intelligence-2026-05.md): [goal: Identify what First-Agent can use, benefit from, or learn from SocratiCode without violating v0.1 scope or license constraints.] Cross-reference of SocratiCode's MCP code-intelligence engine against First-Agent ADR-1..6; recommends context-artifact manifests, local RRF fusion, resumable indexing contracts, graph-compatible IDs, prompt-level search discipline, and an AGPL license firewall.
 
 *Archived 2026-05-08 (in-place stubs, excluded from this routing surface; open the file directly for git-history / audit — banner at top points to the live superseder): `agent-roles.md` (→ ADR-2 + DIGEST.md), `agent-video-research.md` (→ `research/efficient-llm-agent-harness-2026-05.md`), `architect-fa-refactor-ru.md` (→ `knowledge/prompts/architect-fa{,-compact}.md`), `llm-wiki-community-batch-{1,2}.md` (→ ADR-3 + DIGEST.md), `llm-wiki-critique-sources.md` and `llm-wiki-critique-first-agent.md` (→ `research/llm-wiki-critique.md`), `ai-context-os-memm-deep-dive.md` and `agentic-memory-supplement.md` (→ ADR-3 + DIGEST.md), `cross-reference-ampcode-sliders-to-adr-2026-04.md` (→ ADR-2/4/5/6 amendments + `research/efficient-llm-agent-harness-2026-05.md` §10).*
 
-- [knowledge/research/chunker-design.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/chunker-design.md): Chunker design — universal-ctags vs tree-sitter vs per-language regex; recommendation for ADR-5.
-- [knowledge/research/how-to-build-an-agent-ampcode-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/how-to-build-an-agent-ampcode-2026-04.md): Разбор статьи Thorsten Ball / Amp «How to Build an Agent» — inner-loop, tool registry, 3 базовых tool'а (read_file / list_files / edit_file); mapping на ADR-1/ADR-2 и UC1.
-- [knowledge/research/sliders-structured-reasoning-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/sliders-structured-reasoning-2026-04.md): Разбор препринта SLIDERS (Stanford OV AL, arXiv:2604.22294) — aggregation-bottleneck, contextualized chunking, schema induction, relevance gate, primary-key reconciliation, SQL-QA; mapping на ADR-3 / ADR-4 / ADR-5 и UC2 / UC3.
-- [knowledge/research/ara-protocol-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/ara-protocol-cross-reference-2026-05.md): Cross-reference review Ara protocol (arXiv:2604.24658v2, Orchestra Research) против ADR-1..6 + HANDOFF.md — mapping four layers / Live Research Manager / Compiler / Seal на текущие artefact'ы FA, риски наивного заимствования, 10 пронумерованных рекомендаций (R-1..R-10) и 11 открытых вопросов под решение лида.
-- [knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md): Критический разбор трёх источников по semi-autonomous LLM-агентам (deep-research-report, semi-autonomous-llm-agents research, репо `nextlevelbuilder/goclaw`) против ADR-1..6 — accept/defer/reject фильтрация; основа для ADR-2 §Amendment 2026-05-01 (MCP forward-compat) и ADR-1 §Amendment 2026-05-01 (UC5 deferred); input для будущего ADR-7 inner-loop (ACI principle, hooks primitive).
-- [knowledge/research/cutting-edge-agent-research-radar-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/cutting-edge-agent-research-radar-2026-05.md): Радар cutting-edge исследований для First-Agent v0.1/v0.2 — MCP/tool registry, ACI, hooks, memory, eval traces, sandbox/audit и multi-agent coordination; backlog input для ADR-7 prep и будущих module PRs.
-- [knowledge/research/agent-ui-research-radar-v0-2-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/agent-ui-research-radar-v0-2-2026-05.md): Agent UI radar for First-Agent v0.2 — Hermes Agent UI implementations, Pi surfaces/packages, OpenClaw gateway/UI forks, and human-agent UI research; backlog input for future UI/control-plane ADR prep.
-- [knowledge/research/latent-verifier-evolve-research-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/latent-verifier-evolve-research-2026-05.md): [goal: Form a list of research artifacts that strengthen First-Agent and identify source ideas worth carrying forward.] Corrective research-briefing note on Latent Space Survey, CUA Verifiers, Squeeze Evolve, and CUAVerifierBench vs ADR-1..6 — §0 Decision Briefing with 6 recommendations: acceptance rubric fixtures, per-session tool registry, trace/eval schema, latent-space watch-list, gated dynamic routing, CUAVerifierBench as schema reference.
-- [knowledge/research/efficient-llm-agent-harness-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/efficient-llm-agent-harness-2026-05.md): [goal: Подготовить решения для ADR-7 inner-loop / tool-contract — эффективный First-Agent v0.1 harness без расширения v0.1 scope, с явным cross-reference на ADR-1..6 и primary-source-cited evidence base.] Single source-of-truth research-briefing note for ADR-7 prep объединяющая две ранние редакции (upstream PR #37 + PR #38, обе close-without-merge); §0 Decision Briefing с девятью recommendations (R-1..R-9, 8 TAKE + 1 DEFER, 0 surviving UNCERTAIN-ASK), §10 ADR-7 contract sketch (ToolSpec / ToolResult / Trace + R-8 static-layered-prompt invariant + R-7 subtraction-first acceptance-block).
+- `[DESIGN]` [knowledge/research/chunker-design.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/chunker-design.md): Chunker design — universal-ctags vs tree-sitter vs per-language regex; recommendation for ADR-5.
+- `[DESIGN]` [knowledge/research/how-to-build-an-agent-ampcode-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/how-to-build-an-agent-ampcode-2026-04.md): Разбор статьи Thorsten Ball / Amp «How to Build an Agent» — inner-loop, tool registry, 3 базовых tool'а (read_file / list_files / edit_file); mapping на ADR-1/ADR-2 и UC1.
+- `[DESIGN]` [knowledge/research/sliders-structured-reasoning-2026-04.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/sliders-structured-reasoning-2026-04.md): Разбор препринта SLIDERS (Stanford OV AL, arXiv:2604.22294) — aggregation-bottleneck, contextualized chunking, schema induction, relevance gate, primary-key reconciliation, SQL-QA; mapping на ADR-3 / ADR-4 / ADR-5 и UC2 / UC3.
+- `[DESIGN]` [knowledge/research/ara-protocol-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/ara-protocol-cross-reference-2026-05.md): Cross-reference review Ara protocol (arXiv:2604.24658v2, Orchestra Research) против ADR-1..6 + HANDOFF.md — mapping four layers / Live Research Manager / Compiler / Seal на текущие artefact'ы FA, риски наивного заимствования, 10 пронумерованных рекомендаций (R-1..R-10) и 11 открытых вопросов под решение лида.
+- `[DESIGN]` [knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/semi-autonomous-agents-cross-reference-2026-05.md): Критический разбор трёх источников по semi-autonomous LLM-агентам (deep-research-report, semi-autonomous-llm-agents research, репо `nextlevelbuilder/goclaw`) против ADR-1..6 — accept/defer/reject фильтрация; основа для ADR-2 §Amendment 2026-05-01 (MCP forward-compat) и ADR-1 §Amendment 2026-05-01 (UC5 deferred); input для будущего ADR-7 inner-loop (ACI principle, hooks primitive).
+- `[RADAR]` [knowledge/research/cutting-edge-agent-research-radar-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/cutting-edge-agent-research-radar-2026-05.md): Радар cutting-edge исследований для First-Agent v0.1/v0.2 — MCP/tool registry, ACI, hooks, memory, eval traces, sandbox/audit и multi-agent coordination; backlog input для ADR-7 prep и будущих module PRs.
+- `[RADAR]` [knowledge/research/agent-ui-research-radar-v0-2-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/agent-ui-research-radar-v0-2-2026-05.md): Agent UI radar for First-Agent v0.2 — Hermes Agent UI implementations, Pi surfaces/packages, OpenClaw gateway/UI forks, and human-agent UI research; backlog input for future UI/control-plane ADR prep.
+- `[BRIEFING]` [knowledge/research/latent-verifier-evolve-research-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/latent-verifier-evolve-research-2026-05.md): [goal: Form a list of research artifacts that strengthen First-Agent and identify source ideas worth carrying forward.] Corrective research-briefing note on Latent Space Survey, CUA Verifiers, Squeeze Evolve, and CUAVerifierBench vs ADR-1..6 — §0 Decision Briefing with 6 recommendations: acceptance rubric fixtures, per-session tool registry, trace/eval schema, latent-space watch-list, gated dynamic routing, CUAVerifierBench as schema reference.
+- `[CONTRACT]` `[BRIEFING]` [knowledge/research/efficient-llm-agent-harness-2026-05.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/research/efficient-llm-agent-harness-2026-05.md): [goal: Подготовить решения для ADR-7 inner-loop / tool-contract — эффективный First-Agent v0.1 harness без расширения v0.1 scope, с явным cross-reference на ADR-1..6 и primary-source-cited evidence base.] Single source-of-truth research-briefing note for ADR-7 prep объединяющая две ранние редакции (upstream PR #37 + PR #38, обе close-without-merge); §0 Decision Briefing с девятью recommendations (R-1..R-9, 8 TAKE + 1 DEFER, 0 surviving UNCERTAIN-ASK), §10 ADR-7 contract sketch (ToolSpec / ToolResult / Trace + R-8 static-layered-prompt invariant + R-7 subtraction-first acceptance-block).
