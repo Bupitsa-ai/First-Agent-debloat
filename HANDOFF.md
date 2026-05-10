@@ -37,17 +37,26 @@ manually beyond this point.
 
 ## Current state (as of 2026-05-07)
 
-- **Stage:** Phase S scaffolding complete; design layer
-  consolidating before first feature-module PR (Phase M).
-  Minimal `src/fa` package exists only as a CLI smoke
-  entrypoint. No feature module is implemented yet.
-- **Working repo:** primary work happens in fork
+- **Project stage:** **Stage 1** of the three-stage evolution
+  (documentation + agent development через Devin). See
+  [`knowledge/project-overview.md` §1.3](./knowledge/project-overview.md#13-three-stage-project-evolution)
+  for the full ladder (Stage 2 — first-agent 0.1 локально + iteration
+  через Devin; Stage 3 — first-agent self-improves, Devin as external
+  advisor).
+- **Inner-stage milestone:** Phase S scaffolding complete; design
+  layer consolidating before first feature-module PR (Phase M).
+  `src/fa/chunker/` exists per ADR-5 scaffolding, not yet end-to-end
+  tested. No other feature module is implemented.
+- **Working repos:** canonical
+  [`GITcrassuskey-shop/First-Agent`](https://github.com/GITcrassuskey-shop/First-Agent);
+  forks
   [`GrasshopperBoy/First-Agent-fork`](https://github.com/GrasshopperBoy/First-Agent-fork)
-  (Devin-app installation lives there). Cross-fork PRs to upstream
-  `GITcrassuskey-shop/First-Agent` are opened by the project lead
-  via `Contribute → Open pull request` on the fork page when each
-  fork PR is ready to land. Both repos' `main` are kept in sync
-  by the lead.
+  and
+  [`Bupitsa-ai/First-Agent-debloat`](https://github.com/Bupitsa-ai/First-Agent-debloat)
+  are parallel work-trees — different agents (Devin sessions) run in
+  different forks. PRs land upstream via cross-fork PR
+  (`Contribute → Open pull request` on a fork page); the lead keeps
+  `main` in sync across all three.
 - **Architecture decisions (accepted, on `main` of both fork and upstream):**
   - [ADR-1](./knowledge/adr/ADR-1-v01-use-case-scope.md) — UC1
     (coding + PR write) and UC3 (local-docs-to-wiki) in;

@@ -6,10 +6,15 @@ Instructions for AI agents (Devin and similar) working in this repo.
 
 **First-Agent** — research-backed implementation-first LLM agent project,
 aimed at becoming the most token/tool-call efficient open-source
-coding-agent harness under UC1+UC3 single-user scope. Stage:
-`research → start of module creation`. No code in `src/` yet.
+coding-agent harness under UC1+UC3 single-user scope. **Currently in
+Stage 1** (documentation + agent development через Devin); three-stage
+project evolution is defined in
+[`knowledge/project-overview.md` §1.3](./knowledge/project-overview.md#13-three-stage-project-evolution).
+Inner-stage milestone: Phase S scaffolding complete; design layer
+consolidating before first feature-module PR (Phase M);
+`src/fa/chunker/` exists, not yet end-to-end tested.
 Goal-formulation in 4 pillars + minimalism-first principle:
-[`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md).
+[`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars).
 README intro: [`README.md`](./README.md).
 
 ## Repository Structure
