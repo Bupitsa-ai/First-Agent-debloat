@@ -93,7 +93,7 @@ skill-write-based modification → re-benchmark → leaderboard.
 ## 1.2. Enforceable principle — minimalism-first
 
 > **Принцип, не goal.** Каждый предлагаемый новый компонент harness
-> (тулзов, prompt-уровня, retrieval-стадия) должен пройти 3-вопросный
+> (тулзов, prompt-уровня, retrieval-стадия) должен пройти 4-вопросный
 > тест перед добавлением:
 >
 > 1. Какая research-evidence (peer-reviewed paper, primary-source
@@ -104,9 +104,17 @@ skill-write-based modification → re-benchmark → leaderboard.
 > 3. Если компонент не добавить — какой конкретный capability мы
 >    теряем, и можно ли заменить его существующим тулом или
 >    config-настройкой?
+> 4. Можно ли реализовать этот шаг детерминированной Python-функцией
+>    **без LLM-вызова**? Если LLM-вызов не нужен для качества
+>    результата (например, шаг — это парсинг, форматирование, агрегация,
+>    fan-out по списку, lookup в файле), функция — правильный
+>    дефолт; LLM-вызов оправдан только когда требуется суждение,
+>    которое нельзя выразить детерминированно.
 >
-> Если ответ на (1) — «нет evidence» или (2) — «удалили без потерь»,
-> или (3) — «можно заменить» — компонент **rejected** в v0.1.
+> Если ответ на (1) — «нет evidence», или (2) — «удалили без потерь»,
+> или (3) — «можно заменить», или (4) — «функция справится» — компонент
+> **rejected** в текущей форме (LLM-step) в v0.1; для (4) допустимо
+> вернуться с design'ом, где этот шаг — код, а не вызов модели.
 >
 > После UC5 landing — re-check: новый компонент должен снизить хотя
 > бы один KPI Pillar 3 на reproducible benchmark; иначе rejected.
@@ -176,9 +184,9 @@ Baseline-run сам — UC5 deliverable, см. ADR-1 §Amendment 2026-05-06.
 
 ### Acceptance gate per minimalism-first
 
-Каждый PR, добавляющий новый harness-компонент, проходит 3-вопросный
+Каждый PR, добавляющий новый harness-компонент, проходит 4-вопросный
 test из §1.2 (pre-UC5) или KPI-delta-test (post-UC5). Test reference
-ожидается в PR description как explicit answers на 3 вопроса
+ожидается в PR description как explicit answers на 4 вопроса
 (per AGENTS.md PR Checklist rule #10).
 
 ## 4. Scope
