@@ -133,7 +133,7 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
 10. **Harness-component PRs cite minimalism-first evidence.** PRs
     that introduce or amend a harness component (tool, prompt-layer,
     retrieval-stage, executor, sandbox-rule) MUST include in the
-    description **explicit answers** to the 3-question minimalism-first
+    description **explicit answers** to the 4-question minimalism-first
     test from
     [`knowledge/project-overview.md` §1.2](./knowledge/project-overview.md#12-enforceable-principle--minimalism-first):
 
@@ -145,9 +145,19 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
     3. Concrete capability lost if the component is omitted, and
        whether it can be replaced by an existing tool or config
        setting.
+    4. **Could this step be a deterministic Python function instead
+       of an LLM call?** If the step is parsing, formatting,
+       aggregation, fan-out over a list, file lookup, or any other
+       operation that does not require model judgement, a function
+       is the correct default; an LLM call is justified only when
+       the step needs reasoning that cannot be expressed
+       deterministically. Subtraction question per user idea 4 +
+       ADR-7 prep input — the inner-loop is the natural seat of
+       step-as-function vs step-as-LLM-call decisions; the rule
+       captures the discipline now so ADR-7 inherits it.
 
     After UC5 landing, KPI-delta on a reproducible benchmark replaces
-    the 3-question test for harness components measurably evaluated.
+    the 4-question test for harness components measurably evaluated.
     Documentation-only or non-harness PRs (research notes, README
     updates, lint fixes) are exempted. This rule applies to **new**
     PRs from the merge of this PR forward; older PRs are not
