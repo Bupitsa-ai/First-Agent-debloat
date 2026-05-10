@@ -10,9 +10,14 @@ chain_of_custody: >
   утверждения со ссылкой на критиков или литературу — верифицировать
   через parent-заметку llm-wiki-critique.md (§Sources).
 claims_requiring_verification: []
+superseded_by: "knowledge/research/llm-wiki-critique.md"
 ---
 
 # Research — LLM Wiki критика: применимость к First-Agent
+
+> **Status:** superseded by [`research/llm-wiki-critique.md`](./llm-wiki-critique.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Provenance-frontmatter schema (T1) is in [`knowledge/README.md`](../README.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the active critique note or the README schema instead.
 
 > **Статус:** research note, 2026-04-24.
 > **Parent:** [`llm-wiki-critique.md`](./llm-wiki-critique.md) — TL;DR,

@@ -1,5 +1,9 @@
 # Devin — компактный справочник
 
+> **Status:** superseded by [`docs/README.md`](./README.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface — it describes Devin-specific features (Knowledge notes, Skills, Playbooks, MCP marketplace) that the OSS-agent flow (DeepSeek 4 / Kimi 2.6) cannot exercise. Will be restored as a per-host gated entry once `llms.txt` learns to gate by agent host. Original content preserved below for human reading and Devin sessions; **do not load top-to-bottom** \u2014 the OSS routing surface excludes Devin features by design.
+
 Одна страница вместо россыпи. Всё, что нужно знать, чтобы эффективно работать с
 Devin в этом репозитории: что он умеет, когда его имеет смысл звать, какие
 механизмы памяти у него есть, как расширить ему руки через MCP.

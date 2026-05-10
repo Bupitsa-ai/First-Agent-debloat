@@ -1,5 +1,9 @@
 # Research — Agent Patterns from 5 YouTube Videos
 
+> **Status:** superseded by [`research/efficient-llm-agent-harness-2026-05.md`](./efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Vocabulary and concept map predate ADR-1..ADR-6; live ADR-7 (inner-loop / tool-contract) input is now the harness research note. Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the superseder instead.
+
 > **Status:** draft research note, 2026-04-23. Synthesizes transcripts of five
 > YouTube videos into a concept map + ranking + concrete recommendations for
 > First-Agent.

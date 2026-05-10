@@ -17,33 +17,104 @@ README intro: [`README.md`](./README.md).
 - [`README.md`](./README.md) — project overview.
 - [`AGENTS.md`](./AGENTS.md) — this file.
 - [`docs/`](./docs/README.md) — wiki (architecture, workflow,
-  prompting, devin-reference, glossary, agent creation tutorial).
+  prompting, glossary). `devin-reference.md` and `agent-creation-github.md`
+  are archived (in-place, 2026-05-08) — excluded from `knowledge/llms.txt`
+  routing surface.
 - [`knowledge/`](./knowledge/README.md) — durable memory (project-overview, ADR, prompts, research).
 
 ## Pre-flight checklist
 
 Run BEFORE making any edits, opening a branch, or writing analysis on
-non-trivial tasks. Output is cheap; skipping is the failure mode.
+non-trivial tasks. Five steps. Output is cheap; skipping is the failure
+mode.
+
+Steps 1–3 are literal shell commands; Steps 4–5 are declarations posted
+in your analysis (not silently). Pattern-match the templates exactly —
+weaker OSS LLMs (DeepSeek 4 / Kimi 2.6) drift when they paraphrase.
+
+**Step 1 — Recency surface.** Run:
 
 ```bash
-# 1. Recency surface. For any new 2026-MM-DD research note in the
-#    output, skim its §0 Decision Briefing.
 git log -n 5 --since="7 days" --oneline -- knowledge/ docs/ AGENTS.md
+```
 
-# 2. Term expansion. Run once per project-specific noun in the prompt
-#    (axis, lens, pillar, harness, UC*, ...). Fall back to
-#    project-overview.md §1.1-§1.2 if the glossary row is missing.
+Expect ≤5 commit lines. For any commit touching a 2026-MM-DD research
+note in `knowledge/research/`, open the note and skim only its §0
+Decision Briefing. Rationale: supersessions and ADR amendments land on
+`main` between sessions and silently invalidate older notes; this command
+surfaces them in one read.
+
+**Step 2 — Term expansion.** For every project-specific noun in the
+prompt (axis, lens, pillar, harness, hook, ACI, UC1..UC5, NLAH, MCP,
+subtraction-first, minimalism-first, R-S-M, …), run:
+
+```bash
 grep -i "^| \*\*<term>\*\*" docs/glossary.md
+```
 
-# 3. Symmetric reading. Before citing a research note as evidence,
-#    read every other note that mentions the same key term.
+Expect exactly one matching row. If the row is missing, fall back to
+[`knowledge/project-overview.md` §1.1–§1.2](./knowledge/project-overview.md);
+add the term to the glossary in the same PR if it is in active use.
+Rationale: weaker LLMs guess at jargon and produce confidently-wrong
+analysis; the glossary is the single source of truth.
+
+**Step 3 — Symmetric reading.** Before citing a research note as
+evidence, run:
+
+```bash
 grep -ril "<key-term>" knowledge/research/
 ```
 
-Then state in your analysis (not silently): (a) inferred `goal_lens`,
-(b) project-axes advanced (A noise / B context / C goal_lens),
-(c) subtraction evaluated — *would removing this artefact / rule /
-field instead achieve the same goal?* If not, why not.
+Expect 1..N file paths. Open every file in the output, not just the
+first; cite from the most recent (`compiled:` date in frontmatter)
+unless explicitly superseded. Rationale: the corpus is small enough
+that reading every match is cheaper than missing one — and the OSS
+agents' tendency to cite the first hit produces stale conclusions.
+
+**Step 4 — Subtraction-check.** Before adding any artefact (file,
+section, rule, frontmatter field, dependency), answer the three
+questions verbatim in your analysis:
+
+```text
+- Removing what makes this redundant? <name an existing artefact
+  that already covers ≥80% of this scope, or "none">
+- What capability is lost if this artefact is omitted? <one
+  sentence; concrete, not "reduced clarity">
+- Open-source agent-stack precedent for not having it? <one URL
+  or repo path; or "none found in 5-min search">
+```
+
+If the third answer is "none found", default to NOT adding. Rationale:
+[`knowledge/project-overview.md` §1.2](./knowledge/project-overview.md#12-enforceable-principle--minimalism-first)
+makes minimalism-first enforceable; the three questions force the proof
+on adding rather than on removing. EXEMPT for documentation-only PRs
+that introduce no new artefact (translations, typo fixes, link
+updates) — restate the exemption explicitly in Step 5.
+
+**Step 5 — Goal-lens declaration.** State in your analysis (not
+silently), every session:
+
+```text
+- goal_lens: <one-sentence research goal; pick from
+  knowledge/prompts/research-briefing.md Stage 1 (a)/(b)/(c)/(d)
+  or write free-text>
+- project-axes advanced: <pick ≥1 of A noise-reduction |
+  B context-finding | C goal_lens-advancement>
+- subtraction evaluated: <YES — answers in Step 4 | EXEMPT
+  (documentation-only PR with no new artefact) — restate why>
+- session-type: <new-feature | bug-fix | refactor | doc-edit |
+  glossary-edit | dep-bump | research-briefing | other-explain>
+```
+
+Four named slots. Pattern-match the template exactly; do not omit
+slots, do not paraphrase keys. Rationale: the four slots compel
+explicit routing decisions before code lands; without them, mid-tier
+LLMs default to "add" and the project drifts away from the four-pillar
+goal in [`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars).
+`goal_lens` is universal across sessions, not just research-briefing
+ones; the elicitation in
+[`knowledge/prompts/research-briefing.md`](./knowledge/prompts/research-briefing.md)
+Stage 1 satisfies this step automatically.
 
 ## Working in This Repo
 
@@ -162,6 +233,42 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
     updates, lint fixes) are exempted. This rule applies to **new**
     PRs from the merge of this PR forward; older PRs are not
     retro-fitted.
+11. **Context budget for any single LLM call is ≤ 100 k tokens in
+    ≥ 90 % of cases.** When designing or amending a harness component
+    that issues an LLM call (prompt-layer, retrieval-stage, role
+    invocation, sub-agent), the request shape MUST keep input context
+    under ~100 k tokens for at least 9 out of 10 invocations in the
+    component's expected workload. Justification: First-Agent's
+    Pillar-1 target is the **lower-tier OSS LLM** (Planner / Coder /
+    Eval tiers per [ADR-2](./knowledge/adr/ADR-2-llm-tiering.md)),
+    whose effective context window degrades sharply past ~100 k input
+    tokens — accuracy drops, latency jumps, cost grows super-linearly.
+    Elite-tier Debug (Claude) is exempt, but routine calls do not run
+    on Debug.
+    **What «context» counts.** System prompt + role prompt + injected
+    tool definitions + retrieved chunks + scrollback / conversation
+    history + any in-line memory the harness paste in.
+    **What this rule forces at design time.** If a component's natural
+    shape pushes a single call past ~100 k for a non-edge-case
+    workload, the design MUST adopt **at least one** mitigation
+    before merge:
+    a. **Sub-agent split** — delegate the big-context work to a
+       sub-agent so the parent context stays bounded (Phase-M
+       runner; rationale tracked in `BACKLOG.md` until ADR-7 lands).
+    b. **Lazy-load** — load skills / tool-specs / repo chunks on
+       demand instead of injecting upfront (dispatcher pattern;
+       tracked in `BACKLOG.md` until ADR-7 + ADR-8 land).
+    c. **Step-as-function** — replace the LLM call with a
+       deterministic Python function where the step does not need an
+       LLM (see rule #10 question 4).
+    d. **Explicit elite-tier escalation** — route the call to elite
+       tier *with* a written justification in the PR description
+       (treat «route to elite» as a last resort, not a default).
+    The PR description for such a component MUST state which
+    mitigation it adopts and cite expected p90 input-token shape.
+    Documentation-only PRs and non-harness PRs are exempt. Forward-
+    only from the merge of this rule; older harness PRs not
+    retro-fitted.
 
 ## PR Description Style
 
@@ -252,7 +359,7 @@ Route questions to the right folder. Do not load everything into context.
 |---|---|---|
 | Architecture, patterns | [`docs/architecture.md`](./docs/architecture.md) | ADR |
 | Decisions and rationale | [`knowledge/adr/`](./knowledge/adr/) | — |
-| Workflow, Devin usage | `docs/workflow.md`, `docs/devin-reference.md` | — |
+| Workflow | [`docs/workflow.md`](./docs/workflow.md) | — |
 | Research findings | [`knowledge/research/`](./knowledge/research/) | Primary sources from `source:` frontmatter |
 | Specific number / date / quote | **Primary source** (URL / code / gist), not a summary note | — |
 | Terms | [`docs/glossary.md`](./docs/glossary.md) | — |

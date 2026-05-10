@@ -85,9 +85,14 @@ claims_requiring_verification:
     утверждать заранее."
   - "Все архитектурные рекомендации §10 — input для будущих ADR,
     не сами ADR. Решения принимает пользователь."
+superseded_by: "knowledge/research/efficient-llm-agent-harness-2026-05.md"
 ---
 
 # Cross-reference review — ampcode + SLIDERS vs ADR-1..5
+
+> **Status:** superseded by [`research/efficient-llm-agent-harness-2026-05.md`](./efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08).
+>
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Recommendations were absorbed into ADR-2 amendments (2026-04-29 `tool_protocol`, 2026-05-01 MCP shape) and the active inner-loop research note §10. Cheat-sheet rows in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR amendments or the active harness note instead.
 
 > **Статус:** research note, 2026-04-29.
 > **Что внутри:** систематический проход по двум недавно вмердженым

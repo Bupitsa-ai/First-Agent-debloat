@@ -39,7 +39,11 @@ to completion before the next blocking point.
 
 1. Goal-lens elicitation (blocking).
    Before reading any source, post a single chat message asking the
-   user to pick a goal. Default options:
+   user to pick a goal. This stage also satisfies
+   [AGENTS.md §Pre-flight Step 5 — Goal-lens declaration](../../AGENTS.md#pre-flight-checklist):
+   `goal_lens` is universal across sessions, but research-briefing
+   sessions make the elicitation explicit instead of inferring it.
+   Default options:
    - (a) Reduce session-start context noise for future agents
    - (b) Find one immediate-improvement implementable in next PR
    - (c) Gap analysis vs accepted ADR-1..N
