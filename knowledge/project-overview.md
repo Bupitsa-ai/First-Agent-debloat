@@ -134,6 +134,92 @@ References supporting principle: см.
 §3.5 + §0 R-7 (Anthropic «code execution with MCP» subtraction
 principle, Tsinghua module-ablation `arXiv:2603.25723`).
 
+## 1.3. Three-stage project evolution
+
+> **Status:** added 2026-05-10 как явная фиксация лестницы развития
+> проекта. Заменяет неявную модель «v0.1 → v0.2 → v0.3», которая
+> описывала только code-side прогресс. Эта секция описывает
+> **agent-side** прогресс: кто на каждом этапе пишет код / документацию
+> и кто их читает. Phase S / Phase M / v0.1 / v0.2 milestones из
+> ADR-1..6 продолжают применяться **внутри** Stage 1.
+
+Проект двигается через три этапа, различающиеся тем, **какой агент
+выполняет основную работу** и **в каком режиме** Devin участвует.
+
+### Stage 1 — Documentation + agent development через Devin (текущий)
+
+Devin.ai — основной builder agent. Devin читает external research
+(papers, repos, posts, benchmarks), пишет ADR-ы, research notes,
+specs и код под `src/fa/`. GitHub-репозиторий — workspace и
+long-term memory; всё, что Devin производит, фиксируется как
+filesystem-canonical Markdown + Python.
+
+**Где мы сейчас:** Phase S scaffolding complete; design layer
+consolidating before first feature-module PR (Phase M). Chunker
+(`src/fa/chunker/`) реализован, не оттестирован end-to-end. ADR-1..6
+accepted; ADR-7 (inner-loop) — следующий design-PR.
+
+**Конец Stage 1:** работающий первый release **First-Agent 0.1**,
+ready для локального запуска под UC1 (coding+PR) + UC3 (docs-to-wiki).
+
+### Stage 2 — First-Agent 0.1 локально + iteration через Devin
+
+First-Agent 0.1 запускается на single workstation владельца проекта;
+прогоны под UC1 / UC3 / UC5 baseline.
+
+Devin продолжает быть основным builder'ом, но теперь работает в
+тандеме с реальным первым агентом: пишет новую документацию по
+результатам прогонов first-agent'а, оптимизирует harness, готовит
+v0.2 ADR-ы.
+
+**Конец Stage 2:** First-Agent самодостаточен достаточно, чтобы
+читать репо без Devin'овской помощи (включая HANDOFF.md, llms.txt,
+ADR-DIGEST, exploration_log.md) и предлагать собственные ADR-ы.
+
+### Stage 3 — First-Agent self-improves; Devin — внешний советник
+
+First-Agent работает самостоятельно: читает собственный репо как
+long-term memory, предлагает improvements в Knowledge layer
+(ADR-amendments, новые research notes), реализует изменения в
+Implementation layer (`src/fa/`, тесты, CI).
+
+Devin отдельно запускается **по обращению владельца** для исследований,
+которые first-agent сам не может закрыть (новые external papers,
+upstream-research, cross-stack benchmarks). Devin превращается из
+основного builder'а в **внешнего авторитетного советника**.
+
+### Связи слоёв и агентов
+
+```mermaid
+flowchart LR
+    EXT["External research<br/>papers, repos, posts, benchmarks"]
+    DEVIN["Devin.ai<br/>current builder agent"]
+    REPO["GitHub repo<br/>workspace + long-term memory"]
+    KNOW["Knowledge layer<br/>research notes, ADRs, specs"]
+    CODE["Implementation layer<br/>src/fa, tests, CI"]
+    FA["First-Agent<br/>future self-reader / self-improver"]
+
+    EXT -->|summarized and cross-referenced by| DEVIN
+    DEVIN -->|writes docs, ADRs, specs, code| REPO
+
+    REPO --> KNOW
+    REPO --> CODE
+
+    KNOW -->|decisions constrain implementation| CODE
+    CODE -->|test results and feedback| KNOW
+
+    KNOW -. later read by .-> FA
+    CODE -. later modified by .-> FA
+    FA -. proposes improvements .-> KNOW
+    FA -. implements changes .-> CODE
+```
+
+Сплошные стрелки — потоки активные в Stage 1; пунктирные — потоки,
+которые включаются в Stage 2 (read by FA) и Stage 3 (proposes /
+implements). Все стрелки сходятся через REPO — это инвариант:
+любая coordination между Devin и FA проходит через filesystem-canonical
+артефакты, а не через прямой message-passing.
+
 ## 2. Users
 
 - **v0.1 user:** a single power-user (project owner) running FA on a

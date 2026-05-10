@@ -8,12 +8,19 @@
 >
 > This file is an index for LLM agents that want to ingest the
 > project documentation in one fetch. Paths below are GitHub raw URLs against
-> the `main` branch of `GITcrassuskey-shop/First-Agent` (upstream).
-> Primary working repo is the fork
-> `GrasshopperBoy/First-Agent-fork`; both repos' `main` are kept
-> in sync by the lead via cross-fork PRs. If a URL below 404s
-> mid-cycle, replace `GITcrassuskey-shop/First-Agent` with
-> `GrasshopperBoy/First-Agent-fork` and retry.
+> the `main` branch of the **canonical repo**
+> `GITcrassuskey-shop/First-Agent`. Forks
+> `GrasshopperBoy/First-Agent-fork` and
+> `Bupitsa-ai/First-Agent-debloat` are parallel work-trees — different
+> agents run in different forks; cross-fork PRs land back upstream
+> via the lead. Any of these is a valid working repo from an agent's
+> perspective; `main` is kept in sync across all of them. If a URL
+> below 404s mid-cycle, replace the canonical owner/repo segment with
+> one of the fork pairs and retry.
+>
+> **Project stage.** Currently in **Stage 1** (documentation + agent
+> development через Devin) of the three-stage evolution defined in
+> [`knowledge/project-overview.md` §1.3](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md).
 
 > **Tiered layout.** §MUST READ FIRST is the smallest path that
 > bootstraps a session (six files, in order). §TASK ROUTING points
