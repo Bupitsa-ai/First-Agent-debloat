@@ -223,6 +223,42 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
     updates, lint fixes) are exempted. This rule applies to **new**
     PRs from the merge of this PR forward; older PRs are not
     retro-fitted.
+11. **Context budget for any single LLM call is ≤ 100 k tokens in
+    ≥ 90 % of cases.** When designing or amending a harness component
+    that issues an LLM call (prompt-layer, retrieval-stage, role
+    invocation, sub-agent), the request shape MUST keep input context
+    under ~100 k tokens for at least 9 out of 10 invocations in the
+    component's expected workload. Justification: First-Agent's
+    Pillar-1 target is the **lower-tier OSS LLM** (Planner / Coder /
+    Eval tiers per [ADR-2](./knowledge/adr/ADR-2-llm-tiering.md)),
+    whose effective context window degrades sharply past ~100 k input
+    tokens — accuracy drops, latency jumps, cost grows super-linearly.
+    Elite-tier Debug (Claude) is exempt, but routine calls do not run
+    on Debug.
+    **What «context» counts.** System prompt + role prompt + injected
+    tool definitions + retrieved chunks + scrollback / conversation
+    history + any in-line memory the harness paste in.
+    **What this rule forces at design time.** If a component's natural
+    shape pushes a single call past ~100 k for a non-edge-case
+    workload, the design MUST adopt **at least one** mitigation
+    before merge:
+    a. **Sub-agent split** — delegate the big-context work to a
+       sub-agent so the parent context stays bounded (Phase-M
+       runner; rationale tracked in `BACKLOG.md` until ADR-7 lands).
+    b. **Lazy-load** — load skills / tool-specs / repo chunks on
+       demand instead of injecting upfront (dispatcher pattern;
+       tracked in `BACKLOG.md` until ADR-7 + ADR-8 land).
+    c. **Step-as-function** — replace the LLM call with a
+       deterministic Python function where the step does not need an
+       LLM (see rule #10 question 4).
+    d. **Explicit elite-tier escalation** — route the call to elite
+       tier *with* a written justification in the PR description
+       (treat «route to elite» as a last resort, not a default).
+    The PR description for such a component MUST state which
+    mitigation it adopts and cite expected p90 input-token shape.
+    Documentation-only PRs and non-harness PRs are exempt. Forward-
+    only from the merge of this rule; older harness PRs not
+    retro-fitted.
 
 ## PR Description Style
 
