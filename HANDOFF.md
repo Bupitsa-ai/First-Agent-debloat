@@ -98,7 +98,7 @@ manually beyond this point.
     (input to ADR-5).
 - **Research notes (no ADR yet; inputs for v0.1+ implementation,
   v0.2 roadmap, ADR-7 prep).** One-liner each; full descriptions
-  live in `knowledge/llms.txt §BY-DEMAND-INDEX` (open the file for
+  live in `knowledge/llms.txt §BY-DEMAND INDEX` (open the file for
   the per-row tag and goal-lens prefix). The one note that already
   ships a contract is called out at the end.
   - 2026-04-29 —
