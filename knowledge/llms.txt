@@ -76,7 +76,7 @@ Each row is tagged with one of:
 ### Docs (`docs/`)
 
 - `[INDEX]` [docs/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/README.md): Wiki index.
-- `[WIKI]` [docs/architecture.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/architecture.md): Three-layer agent architecture (Interface / Cognitive / Execution).
+- `[WIKI]` [docs/architecture.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/architecture.md): Three-layer agent architecture (Instruction / Execution / Integration).
 - `[WIKI]` [docs/workflow.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/workflow.md): R-S-M lifecycle, Devin session conventions, and parallel-agent fork coordination.
 - `[WIKI]` [docs/prompting.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/prompting.md): T1-T5 prompt templates and anti-patterns.
 - `[WIKI]` [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md): Project glossary.
