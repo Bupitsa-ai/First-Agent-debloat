@@ -153,7 +153,7 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    - Deep-dive research: **<2000 lines**.
    - Readability > size
 4. **`compiled:` date ≥ all dates cited in text.** No temporal impossibilities.
-5. **Supersession, not overwrite.** Mark old file `> **Status:** superseded by <link>`. Keep for audit.
+5. **Supersession, not overwrite.** Mark old file `> **Status:** superseded by <link>`. Keep for audit. Full archival checklist (which files to update in the same PR) lives in [`knowledge/MAINTENANCE.md`](./knowledge/MAINTENANCE.md).
 6. **PR description lists changed/new files as clickable blob-URLs**
    (`https://github.com/<owner>/<repo>/blob/<branch>/<path>`), at
    least for non-trivial files. Plain bullet text is insufficient —
