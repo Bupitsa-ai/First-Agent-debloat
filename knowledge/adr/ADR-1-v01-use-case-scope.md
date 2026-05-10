@@ -199,7 +199,7 @@ capability как один из supported config-modification channels (5c).
 - `eval/` directory is a **new top-level repo directory** (sibling
   to `src/`, `docs/`, `knowledge/`) created in the UC5 implementation
   PR (v0.2). Forward-references here are intentional.
-- `exploration_tree.yaml` получает узел `Q-1.amend-2026-05-06`.
+- `exploration_log.md` получает блок-амендмент `Q-1 amendment 2026-05-06`.
 
 ## Consequences
 

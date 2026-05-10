@@ -109,22 +109,23 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    start. The agent also posts §0 verbatim in chat after handover.
    This rule applies to **new** notes with `compiled: ≥ 2026-05-04`;
    older notes are exempted and not retro-fitted.
-9. **New ADR PRs add at least one node to the exploration DAG and
-   a DIGEST.md row.** Any PR that introduces or amends an accepted
-   ADR MUST also add at least one node to
-   [`knowledge/trace/exploration_tree.yaml`](./knowledge/trace/exploration_tree.yaml).
-   The shape: one `question` node per new ADR, one `decision` child
-   for the chosen option (with `chosen: true`), and one `dead_end`
-   child per rejected option carrying `reason:` (why rejected at
-   decision time) + `lesson:` (what new evidence would re-open the
-   branch). Amendments append a follow-up `decision` or `pivot` node
-   referencing the original question via `also_depends_on:`. Schema
-   reference: [`knowledge/README.md` §`trace/`](./knowledge/README.md#trace--exploration-dag).
-   Rationale: the DAG is the cheap-read overlay agents use to
+9. **New ADR PRs append to the exploration log and update a
+   DIGEST.md row.** Any PR that introduces or amends an accepted
+   ADR MUST append a block (or amendment block) to
+   [`knowledge/trace/exploration_log.md`](./knowledge/trace/exploration_log.md):
+   the question, the chosen option (`Chosen:`), each rejected
+   option with `Reason:` (why rejected at decision time) +
+   `Lesson:` (what new evidence would re-open the branch), and
+   `Coupling:` cross-question coupling when applicable. Schema
+   reference: [`knowledge/README.md` §`trace/`](./knowledge/README.md#trace--exploration-log).
+   Rationale: the log is the cheap-read overlay agents use to
    understand *why* alternatives were rejected without re-reading
    every ADR end-to-end (origin: research note
    [`ara-protocol-cross-reference-2026-05.md`](./knowledge/research/ara-protocol-cross-reference-2026-05.md)
-   §9 R-1). **In the same PR**, also update
+   §9 R-1). Log converted from YAML DAG to telegraphic markdown
+   2026-05-10 per Tsinghua NLAH finding (code → NL migration:
+   +16.8 pp accuracy, 9× faster, 97% fewer LLM calls on
+   `arXiv:2603.25723`). **In the same PR**, also update
    [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) — add a
    one-paragraph row for a new ADR or extend the **Amendments**
    bullet of the matching ADR's row. DIGEST.md is the agent-reading

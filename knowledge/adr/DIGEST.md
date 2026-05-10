@@ -124,5 +124,5 @@ config; path-level guard is loud, fast, stoppable; symmetric to
 ## See also
 
 - [`README.md`](./README.md) — ADR process and ordered index.
-- [`../trace/exploration_tree.yaml`](../trace/exploration_tree.yaml) — alternatives that were rejected at decision time + lessons (per ADR).
+- [`../trace/exploration_log.md`](../trace/exploration_log.md) — alternatives that were rejected at decision time + lessons (per ADR).
 - [`../project-overview.md` §1.1](../project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars) — four-pillar project goal that all ADR decisions advance.
