@@ -19,6 +19,13 @@ changes the project state, update **both**.
 
 ## 60-second bootstrap
 
+> The five steps below are the portable mirror of
+> [`knowledge/llms.txt`](./knowledge/llms.txt) §MUST READ FIRST,
+> which is the canonical routing surface for LLM agents. If the
+> two disagree, llms.txt is canonical. This file restates the
+> sequence so an agent that lands on `HANDOFF.md` first (e.g. via
+> plain `git clone`, no Devin MCP) still has a one-fetch bootstrap.
+
 1. Read [`AGENTS.md`](./AGENTS.md) — repo conventions, PR
    checklist, query routing.
 2. Read [`knowledge/llms.txt`](./knowledge/llms.txt) — one-fetch

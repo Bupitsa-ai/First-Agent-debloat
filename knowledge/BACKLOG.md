@@ -99,6 +99,61 @@
   RESOLVER.md. Open question for ADR-8: do I-1 and I-3 ship as
   one component or two?
 
+## I-4 — Pre-flight EXEMPT clause needs explicit scope criteria
+
+- **Status:** deferred from Stage 1 (proposed 2026-05-10
+  critical-re-pass of `repo-audit-2026-05-10.md`).
+- **Idea:** [AGENTS.md §Pre-flight Step 4](../AGENTS.md#pre-flight-checklist)
+  EXEMPT clause covers «documentation-only PRs that introduce no
+  new artefact (translations, typo fixes, link updates)» — but
+  boundary cases are ambiguous (new section under existing
+  artefact? renaming a frontmatter field? bumping a date?). A
+  mid-tier Stage-2 LLM would apply EXEMPT inconsistently and
+  either over-claim (skipping subtraction proof on real additions)
+  or under-claim (writing 3-question proof for a typo fix).
+- **Blocked-on:** Stage 1 is Devin-driven; Devin decides EXEMPT
+  per PR with full diff context. The ambiguity becomes a runtime
+  LLM problem only when a non-Devin agent opens PRs.
+- **Unblock-trigger:** First Stage-2 session opens a PR
+  autonomously and needs to apply EXEMPT.
+- **First concrete step once unblocked:** Enumerate EXEMPT
+  criteria as a closed list — e.g. «(a) link-target update only;
+  (b) typo / formatting only; (c) date / version bump only;
+  (d) translation, no semantic change; (e) new section under
+  existing artefact = NOT EXEMPT». Add a `docs/glossary.md` row
+  for «EXEMPT (documentation-only PR)».
+- **Why this is LOW ROI for Stage 1.** Devin reads full PR diff
+  before deciding; mid-tier LLMs do not. Per
+  `repo-audit-2026-05-10-revised.md` §3.6 — process-coordination
+  concern, not runtime LLM performance.
+
+## I-5 — RESOLVER.md T2-T5 rows lack standalone template files
+
+- **Status:** deferred from Stage 1 (proposed 2026-05-10
+  critical-re-pass of `repo-audit-2026-05-10.md`).
+- **Idea:** [`knowledge/prompts/RESOLVER.md`](./prompts/RESOLVER.md)
+  intent table routes T2-T5 (planner, coder, debug, eval) to
+  template files that do not exist yet — the body is inlined in
+  [`docs/prompting.md`](../docs/prompting.md) as fallback. A
+  non-Devin agent following the intent table verbatim hits
+  «no file yet» for T2-T5 and may misroute or hallucinate the
+  missing template.
+- **Blocked-on:** First non-Devin session attempts a planner /
+  coder / debug / eval task from a template path.
+- **Unblock-trigger:** Either (a) extract T2-T5 templates to
+  standalone files (`knowledge/prompts/planner-fa.md`,
+  `coder-fa.md`, `debug-fa.md`, `eval-fa.md`), or (b) update
+  RESOLVER.md to cite `docs/prompting.md` anchors directly.
+- **First concrete step once unblocked:** Decide between (a)
+  and (b). Option (a) parallels the existing
+  [`prompts/architect-fa.md`](./prompts/architect-fa.md) /
+  [`architect-fa-compact.md`](./prompts/architect-fa-compact.md)
+  split, but multiplies file count by 4. Option (b) is lower-
+  touch (anchor-only change in RESOLVER.md).
+- **Why this is LOW ROI for Stage 1.** Devin picks the template
+  manually at session start with full context. Per
+  `repo-audit-2026-05-10-revised.md` §3.22.
+
 ## See also
 
 - [`knowledge/MAINTENANCE.md`](./MAINTENANCE.md) — recurring

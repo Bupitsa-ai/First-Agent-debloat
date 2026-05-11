@@ -47,7 +47,7 @@
 - **Rationale:** UC5 expanded to benchmark suite + trace
   consumption + config-level iteration interface + leaderboard;
   base for Pillar 3 KPI verification per
-  [`project-overview.md` §1.1](../project-overview.md#11-goal--four-pillars).
+  [`project-overview.md` §1.1](../project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars).
 - **Source:** [ADR-1 §Amendment 2026-05-06](../adr/ADR-1-v01-use-case-scope.md#amendment-2026-05-06--uc5-expanded-to-eval-driven-harness-iteration).
 
 ## Q-2 — How are agent roles routed across LLM tiers? (2026-04-27)
