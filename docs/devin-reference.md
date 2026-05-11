@@ -16,7 +16,7 @@ git show cf7db4d:docs/devin-reference.md
 ## Where the current canonical content lives
 
 - Active superseder: [`docs/README.md`](./README.md) — read this instead of the pre-trim body.
-- Original `source:`, `chain_of_custody:`, `claims_requiring_verification:`, and `related:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
+- This file did not carry YAML frontmatter in its pre-trim version; see `git show cf7db4d:<path>` for the original content.
 - Inbound cross-references from older PR descriptions, ADRs, and supersession chains continue to resolve at this path — that is why the file is kept as a stub.
 
 ## Routing

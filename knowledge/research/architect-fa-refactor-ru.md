@@ -58,7 +58,7 @@ git show cf7db4d:knowledge/research/architect-fa-refactor-ru.md
 ## Where the current canonical content lives
 
 - Active superseder: [`knowledge/prompts/architect-fa-compact.md`](../prompts/architect-fa-compact.md) — read this instead of the pre-trim body.
-- Original `source:`, `chain_of_custody:`, `claims_requiring_verification:`, and `related:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
+- Original `source:`, `chain_of_custody:`, and `claims_requiring_verification:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
 - Inbound cross-references from older PR descriptions, ADRs, and supersession chains continue to resolve at this path — that is why the file is kept as a stub.
 
 ## Routing
