@@ -3,8 +3,10 @@
 Durable project knowledge for First-Agent. Everything here is:
 
 1. **Committed** to the repo so it is versioned and reviewable.
-2. **Cross-referenced** from Devin Knowledge notes where useful (see
-   [`docs/devin-reference.md`](../docs/devin-reference.md#1-knowledge-notes--long-term-memory)).
+2. **Cross-referenced** from Devin Knowledge notes where useful.
+   (`docs/devin-reference.md` was archived 2026-05-08 — see header banner
+   for the rationale; restored as a per-host gated entry once `llms.txt`
+   learns to gate by agent host.)
 
 ## Layout
 
@@ -24,8 +26,8 @@ knowledge/
 │   └── research-briefing.md  # goal-driven cross-reference workflow
 ├── research/                 # research notes
 │   └── _template.md          # skeleton (frontmatter v1+v2 + §0 Decision Briefing)
-└── trace/                    # branching exploration DAG (machine-traversable
-    └── exploration_tree.yaml # overlay of which alternatives were rejected & why)
+└── trace/                    # exploration log — alternatives rejected at
+    └── exploration_log.md    # decision time + lesson for re-opening branches
 ```
 
 ## Conventions
@@ -159,39 +161,40 @@ without retro-tagging later. v0.1 inbox-watcher is not yet
 implemented; this is documented here so that whoever ships it
 adds the frontmatter pass-through from day one.
 
-### `trace/` — exploration DAG
+### `trace/` — exploration log
 
-[`trace/exploration_tree.yaml`](./trace/exploration_tree.yaml) is a
-machine-traversable overlay of the project's accepted ADRs. One
-`question` node per ADR carries the alternatives that were considered;
-the chosen alternative becomes a `decision` (`chosen: true`), and each
-rejected alternative becomes a `dead_end` with `reason:` (why rejected
-at decision time) and `lesson:` (what new evidence would make the
-branch attractive again). This lets a future session read why
-`Variant B/C` were rejected for v0.1 without re-reading every ADR
-end-to-end. Origin and rationale: research note
+[`trace/exploration_log.md`](./trace/exploration_log.md) is a
+telegraphic markdown overlay of the project's accepted ADRs. One
+`## Q-N` block per ADR carries the alternatives considered: the
+chosen option (`Chosen:`) and each rejected option with `Reason:`
+(why rejected at decision time) + `Lesson:` (what new evidence would
+make the branch attractive again). Cross-question coupling is noted
+under `Coupling:`. This lets a future session read why Variant B / C
+were rejected for v0.1 without re-reading every ADR end-to-end.
+Origin: research note
 [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md)
 §9 R-1 (ARA `/trace/` Exploration Graph applied to FA's ADR set).
+Format converted from YAML DAG to telegraphic markdown 2026-05-10
+per Tsinghua NLAH finding (code → NL migration: +16.8 pp accuracy,
+9× faster, 97% fewer LLM calls on `arXiv:2603.25723`).
 
-Schema (a node is a YAML mapping in the top-level list, optionally
-nested under `alternatives:`):
+Block shape (one per accepted ADR; amendments append a sub-section
+referencing the parent `Q-N` via `Coupling:`):
 
-| Field | Type | Notes |
-|---|---|---|
-| `id` | string | Stable: `Q-N` for questions, `Q-N.A` / `Q-N.B` … for alternatives, `Q-N.amend-YYYY-MM-DD` for follow-ups. |
-| `type` | enum | `question` \| `decision` \| `dead_end` \| `pivot` \| `experiment`. |
-| `text` | string | One-line description; full rationale lives in `evidence`. |
-| `date` | ISO date | `YYYY-MM-DD`. When the node was settled. |
-| `closed_by` | string | On `question` — ADR-N or note path that closes it. |
-| `evidence` | path | Repo-relative path to the primary artefact. |
-| `chosen` | bool | `true` on the `decision` child that was accepted. |
-| `reason` | string | On `dead_end` — why rejected at decision time. |
-| `lesson` | string | On `dead_end` — what new evidence would re-open the branch. |
-| `alternatives` | list | Nested children — encodes parent → child edges. |
-| `also_depends_on` | list[string] | Other node IDs — convergence / cross-question coupling. |
+```text
+## Q-N — <one-line question> (YYYY-MM-DD)
 
-ADR text is the source of truth for any specific decision; this DAG
-is a pointer overlay. New ADR PRs MUST add at least one node here —
+- **Closed by:** [ADR-N](../adr/ADR-N-<slug>.md)
+- **Coupling:** Q-M chosen option   ← omit if no coupling
+- **Chosen:** <one-line statement of the accepted option>
+- **Rejected:**
+  - **<option name>.** Reason: <why rejected at decision time>.
+    Lesson: <what new evidence would re-open the branch>.
+  - **<option name>.** Reason: ... Lesson: ...
+```
+
+ADR text is the source of truth for any specific decision; this log
+is a pointer overlay. New ADR PRs MUST append a block here —
 see [`AGENTS.md` PR Checklist rule #9](../AGENTS.md#pr-checklist).
 
 ## What goes where
@@ -201,7 +204,7 @@ see [`AGENTS.md` PR Checklist rule #9](../AGENTS.md#pr-checklist).
 | A decision we made (and why) | `knowledge/adr/` |
 | Background research / literature summary | `knowledge/research/` |
 | A reusable prompt | `knowledge/prompts/` |
-| Branching exploration trail (which alternatives were rejected & why) | `knowledge/trace/exploration_tree.yaml` |
+| Exploration trail (which alternatives were rejected & why) | `knowledge/trace/exploration_log.md` |
 | Project-wide context (mission, scope, users) | `knowledge/project-overview.md` |
 | How-to / guide / reference | `docs/` (not here) |
 

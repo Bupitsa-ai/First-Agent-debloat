@@ -93,7 +93,7 @@ skill-write-based modification → re-benchmark → leaderboard.
 ## 1.2. Enforceable principle — minimalism-first
 
 > **Принцип, не goal.** Каждый предлагаемый новый компонент harness
-> (тулзов, prompt-уровня, retrieval-стадия) должен пройти 3-вопросный
+> (тулзов, prompt-уровня, retrieval-стадия) должен пройти 4-вопросный
 > тест перед добавлением:
 >
 > 1. Какая research-evidence (peer-reviewed paper, primary-source
@@ -104,9 +104,17 @@ skill-write-based modification → re-benchmark → leaderboard.
 > 3. Если компонент не добавить — какой конкретный capability мы
 >    теряем, и можно ли заменить его существующим тулом или
 >    config-настройкой?
+> 4. Можно ли реализовать этот шаг детерминированной Python-функцией
+>    **без LLM-вызова**? Если LLM-вызов не нужен для качества
+>    результата (например, шаг — это парсинг, форматирование, агрегация,
+>    fan-out по списку, lookup в файле), функция — правильный
+>    дефолт; LLM-вызов оправдан только когда требуется суждение,
+>    которое нельзя выразить детерминированно.
 >
-> Если ответ на (1) — «нет evidence» или (2) — «удалили без потерь»,
-> или (3) — «можно заменить» — компонент **rejected** в v0.1.
+> Если ответ на (1) — «нет evidence», или (2) — «удалили без потерь»,
+> или (3) — «можно заменить», или (4) — «функция справится» — компонент
+> **rejected** в текущей форме (LLM-step) в v0.1; для (4) допустимо
+> вернуться с design'ом, где этот шаг — код, а не вызов модели.
 >
 > После UC5 landing — re-check: новый компонент должен снизить хотя
 > бы один KPI Pillar 3 на reproducible benchmark; иначе rejected.
@@ -125,6 +133,92 @@ References supporting principle: см.
 [`research/efficient-llm-agent-harness-deep-dive-2026-05.md`](./research/efficient-llm-agent-harness-deep-dive-2026-05.md)
 §3.5 + §0 R-7 (Anthropic «code execution with MCP» subtraction
 principle, Tsinghua module-ablation `arXiv:2603.25723`).
+
+## 1.3. Three-stage project evolution
+
+> **Status:** added 2026-05-10 как явная фиксация лестницы развития
+> проекта. Заменяет неявную модель «v0.1 → v0.2 → v0.3», которая
+> описывала только code-side прогресс. Эта секция описывает
+> **agent-side** прогресс: кто на каждом этапе пишет код / документацию
+> и кто их читает. Phase S / Phase M / v0.1 / v0.2 milestones из
+> ADR-1..6 продолжают применяться **внутри** Stage 1.
+
+Проект двигается через три этапа, различающиеся тем, **какой агент
+выполняет основную работу** и **в каком режиме** Devin участвует.
+
+### Stage 1 — Documentation + agent development через Devin (текущий)
+
+Devin.ai — основной builder agent. Devin читает external research
+(papers, repos, posts, benchmarks), пишет ADR-ы, research notes,
+specs и код под `src/fa/`. GitHub-репозиторий — workspace и
+long-term memory; всё, что Devin производит, фиксируется как
+filesystem-canonical Markdown + Python.
+
+**Где мы сейчас:** Phase S scaffolding complete; design layer
+consolidating before first feature-module PR (Phase M). Chunker
+(`src/fa/chunker/`) реализован, не оттестирован end-to-end. ADR-1..6
+accepted; ADR-7 (inner-loop) — следующий design-PR.
+
+**Конец Stage 1:** работающий первый release **First-Agent 0.1**,
+ready для локального запуска под UC1 (coding+PR) + UC3 (docs-to-wiki).
+
+### Stage 2 — First-Agent 0.1 локально + iteration через Devin
+
+First-Agent 0.1 запускается на single workstation владельца проекта;
+прогоны под UC1 / UC3 / UC5 baseline.
+
+Devin продолжает быть основным builder'ом, но теперь работает в
+тандеме с реальным первым агентом: пишет новую документацию по
+результатам прогонов first-agent'а, оптимизирует harness, готовит
+v0.2 ADR-ы.
+
+**Конец Stage 2:** First-Agent самодостаточен достаточно, чтобы
+читать репо без Devin'овской помощи (включая HANDOFF.md, llms.txt,
+ADR-DIGEST, exploration_log.md) и предлагать собственные ADR-ы.
+
+### Stage 3 — First-Agent self-improves; Devin — внешний советник
+
+First-Agent работает самостоятельно: читает собственный репо как
+long-term memory, предлагает improvements в Knowledge layer
+(ADR-amendments, новые research notes), реализует изменения в
+Implementation layer (`src/fa/`, тесты, CI).
+
+Devin отдельно запускается **по обращению владельца** для исследований,
+которые first-agent сам не может закрыть (новые external papers,
+upstream-research, cross-stack benchmarks). Devin превращается из
+основного builder'а в **внешнего авторитетного советника**.
+
+### Связи слоёв и агентов
+
+```mermaid
+flowchart LR
+    EXT["External research<br/>papers, repos, posts, benchmarks"]
+    DEVIN["Devin.ai<br/>current builder agent"]
+    REPO["GitHub repo<br/>workspace + long-term memory"]
+    KNOW["Knowledge layer<br/>research notes, ADRs, specs"]
+    CODE["Implementation layer<br/>src/fa, tests, CI"]
+    FA["First-Agent<br/>future self-reader / self-improver"]
+
+    EXT -->|summarized and cross-referenced by| DEVIN
+    DEVIN -->|writes docs, ADRs, specs, code| REPO
+
+    REPO --> KNOW
+    REPO --> CODE
+
+    KNOW -->|decisions constrain implementation| CODE
+    CODE -->|test results and feedback| KNOW
+
+    KNOW -. later read by .-> FA
+    CODE -. later modified by .-> FA
+    FA -. proposes improvements .-> KNOW
+    FA -. implements changes .-> CODE
+```
+
+Сплошные стрелки — потоки активные в Stage 1; пунктирные — потоки,
+которые включаются в Stage 2 (read by FA) и Stage 3 (proposes /
+implements). Все стрелки сходятся через REPO — это инвариант:
+любая coordination между Devin и FA проходит через filesystem-canonical
+артефакты, а не через прямой message-passing.
 
 ## 2. Users
 
@@ -176,9 +270,9 @@ Baseline-run сам — UC5 deliverable, см. ADR-1 §Amendment 2026-05-06.
 
 ### Acceptance gate per minimalism-first
 
-Каждый PR, добавляющий новый harness-компонент, проходит 3-вопросный
+Каждый PR, добавляющий новый harness-компонент, проходит 4-вопросный
 test из §1.2 (pre-UC5) или KPI-delta-test (post-UC5). Test reference
-ожидается в PR description как explicit answers на 3 вопроса
+ожидается в PR description как explicit answers на 4 вопроса
 (per AGENTS.md PR Checklist rule #10).
 
 ## 4. Scope
