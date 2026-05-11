@@ -123,10 +123,15 @@ Stage 1 satisfies this step automatically.
 
 ## Working in This Repo
 
-- **Session bootstrap.** At the start of any new agent session, fetch
-  [`knowledge/llms.txt`](./knowledge/llms.txt) first. It is the
-  project map for LLM agents. files are reachable from there in
-  one hop. Do not crawl the repo before reading this file.
+- **Session bootstrap.** Read [`HANDOFF.md`](./HANDOFF.md) §60-second
+  bootstrap first — it is a quick-start sequence for agents that
+  land on this repo without Devin MCP context. (This file is the
+  rule book it references at step 1; `knowledge/llms.txt` is the
+  canonical routing surface it references at step 2 — if HANDOFF
+  and llms.txt disagree, llms.txt wins.) `HANDOFF.md` mirrors the
+  Devin Knowledge note «First-Agent — current state pointer»;
+  both are kept identical. Do not crawl the repo before completing
+  the bootstrap.
 - All documentation is Markdown. ATX headings (`#`, `##`), short lines ~150 chars.
 - Fenced code blocks
   - ALWAYS open with a language tag:
@@ -206,7 +211,14 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    one-paragraph row for a new ADR or extend the **Amendments**
    bullet of the matching ADR's row. DIGEST.md is the agent-reading
    cheat-sheet (one paragraph per ADR ≈ 80 lines for all six);
-   stale rows defeat the purpose.
+   stale rows defeat the purpose. **In the same PR**, also cross-
+   check [`HANDOFF.md`](./HANDOFF.md) §Current state ADR list — it
+   is the human-readable mirror of the ADR slate (per `HANDOFF.md`
+   §Why this file exists) and drifts silently if not enforced.
+   If the PR adds an ADR, append a bullet under §Current state
+   *Architecture decisions*; if it amends one, extend the existing
+   bullet with an *Amendment YYYY-MM-DD* clause. Same drift risk
+   that motivates the DIGEST rule above applies here.
 10. **Harness-component PRs cite minimalism-first evidence.** PRs
     that introduce or amend a harness component (tool, prompt-layer,
     retrieval-stage, executor, sandbox-rule) MUST include in the
