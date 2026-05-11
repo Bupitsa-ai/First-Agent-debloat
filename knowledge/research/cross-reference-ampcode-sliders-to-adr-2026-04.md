@@ -1,83 +1,131 @@
 ---
-title: "Кросс-референс: Ampcode «How to Build an Agent» + DeepSeek-V3 sliders → ADR-1..ADR-5"
-compiled: "2026-04-27"
+title: "Cross-reference review — ampcode + SLIDERS notes vs ADR-1..5 (2026-04-29)"
+compiled: "2026-05-01"
+# Originally compiled 2026-04-29; date bumped to 2026-05-01 when §11
+# Q-1 / Q-2 supersession blockquotes were added (citing 2026-05-01
+# events). Per AGENTS.md rule #4 `compiled:` ≥ all dates cited in text.
+# Original compile date preserved in title and in commit history.
 source:
   - knowledge/research/how-to-build-an-agent-ampcode-2026-04.md
-  - knowledge/research/deepseek-v3-sliders-2026-04.md
+  - knowledge/research/sliders-structured-reasoning-2026-04.md
+  - knowledge/adr/ADR-1-v01-use-case-scope.md
+  - knowledge/adr/ADR-2-llm-tiering.md
+  - knowledge/adr/ADR-3-memory-architecture-variant.md
+  - knowledge/adr/ADR-4-storage-backend.md
+  - knowledge/adr/ADR-5-chunker-tool.md
+  - knowledge/project-overview.md
+  - docs/architecture.md
+  - docs/workflow.md
   - knowledge/research/agent-roles.md
-  - knowledge/research/efficient-llm-agent-harness-2026-05.md
-chain_of_custody:
-  - "Cross-ref note. Все цитаты в этом файле — путь:строка к in-repo notes
-    или ADR-N. Внешние работы — по in-repo research note, не напрямую."
-  - "Этот файл — work-in-progress audit, не каноническое решение."
+  - knowledge/research/memory-architecture-design-2026-04-26.md
+  - knowledge/research/chunker-design.md
+  - knowledge/research/agentic-memory-supplement.md
+  - knowledge/research/llm-wiki-critique-first-agent.md
+chain_of_custody: >
+  Этот файл — синтез поверх двух недавно вмердженых research-нот
+  (ampcode, SLIDERS) и пяти принятых ADR. Все factual-цифры по
+  ampcode и SLIDERS уже верифицированы в parent-нотах
+  (chain_of_custody там); здесь — кросс-проверка против ADR и
+  consequent-проектные предложения, не пересказ источников.
+  Любые цитаты из ampcode-статьи и SLIDERS-paper вынесены в
+  английские блоки и помечены секцией parent-ноты.
 status: research
+tier: draft
+supersedes: none
+extends: []
 related:
   - knowledge/adr/ADR-1-v01-use-case-scope.md
   - knowledge/adr/ADR-2-llm-tiering.md
   - knowledge/adr/ADR-3-memory-architecture-variant.md
   - knowledge/adr/ADR-4-storage-backend.md
-  - knowledge/adr/ADR-5-multi-agent-topology.md
-superseded_by: "knowledge/adr/DIGEST.md"
+  - knowledge/adr/ADR-5-chunker-tool.md
+  - knowledge/research/how-to-build-an-agent-ampcode-2026-04.md
+  - knowledge/research/sliders-structured-reasoning-2026-04.md
+  - knowledge/research/agent-roles.md
+  - knowledge/research/memory-architecture-design-2026-04-26.md
+  - knowledge/research/chunker-design.md
+links:
+  - "../adr/ADR-1-v01-use-case-scope.md"
+  - "../adr/ADR-2-llm-tiering.md"
+  - "../adr/ADR-3-memory-architecture-variant.md"
+  - "../adr/ADR-4-storage-backend.md"
+  - "../adr/ADR-5-chunker-tool.md"
+  - "./how-to-build-an-agent-ampcode-2026-04.md"
+  - "./sliders-structured-reasoning-2026-04.md"
+  - "./agent-roles.md"
+  - "./memory-architecture-design-2026-04-26.md"
+  - "./chunker-design.md"
+mentions:
+  - "ampcode"
+  - "Thorsten Ball"
+  - "SLIDERS"
+  - "Stanford OV AL"
+  - "Anthropic"
+  - "Claude"
+  - "Mem0"
+  - "Variant A"
+  - "Variant D"
+confidence: opinion
+claims_requiring_verification:
+  - "Утверждение, что mid-tier OSS Coder (Nemotron 3 Super / Qwen 3.6 27B
+    из ADR-2) хуже Claude 3.7 справляется с string-replace edit-форматом —
+    эмпирически не проверено. Это риск, не факт. До implementation PR
+    нужен фикстурный прогон 5–10 правок на каждой целевой модели."
+  - "Оценка «cheap to add provenance fields сейчас» опирается на
+    предположение, что v0.1 chunker ещё не написан и схема `chunks`
+    ещё не залита миграцией. На момент 2026-04-29 это так
+    (Phase S завершён, модулей в `src/fa/` нет). Если на момент
+    чтения этой ноты chunker уже существует — оценка стоимости
+    другая."
+  - "Предложение про `tool_protocol: native | prompt` в models.yaml
+    основано на предположении, что часть OSS-моделей в ADR-2
+    (Nemotron 3 Super, Qwen 3.6 27B) к моменту implementation
+    либо умеет, либо не умеет native tool-calling — это надо
+    проверять на каждом конкретном слаге через provider, не
+    утверждать заранее."
+  - "Все архитектурные рекомендации §10 — input для будущих ADR,
+    не сами ADR. Решения принимает пользователь."
+superseded_by: "knowledge/research/efficient-llm-agent-harness-2026-05.md"
 ---
 
-# Кросс-референс: Ampcode + DeepSeek-V3 sliders → ADR-1..ADR-5
+# Cross-reference review — ampcode + SLIDERS vs ADR-1..5
 
-> **Status:** superseded by [`adr/DIGEST.md`](../adr/DIGEST.md) (archived 2026-05-08; body trimmed 2026-05-11 per PR-M).
+> **Status:** superseded by [`research/efficient-llm-agent-harness-2026-05.md`](./efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08; body trimmed 2026-05-11 per PR-M).
 >
-> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface — by far the largest archived note (1,347 lines). Cross-ref audit matrix; DIGEST.md row-per-ADR carries the consolidated outcome.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Recommendations were absorbed into ADR-2 amendments (2026-04-29 `tool_protocol`, 2026-05-01 MCP shape) and the active inner-loop research note §10. Cheat-sheet rows in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR amendments or the active harness note instead.
+
+> **Статус:** research note, 2026-04-29.
+> **Что внутри:** систематический проход по двум недавно вмердженым
+> research-нотам (ampcode, SLIDERS) и пяти принятым ADR (ADR-1 ..
+> ADR-5), с явным выпиской того, **где исследования усиливают
+> текущую архитектуру**, **где обнажают пробелы** и **где
+> намечают тонкие натяжки**, которые лучше закрыть до старта
+> implementation-фазы (memory + chunker + agent loop).
 >
-> **Body trimmed in PR-M to TL;DR + matrix-summary abstract; full pre-trim text in git history at commit `cf7db4d`** (`git show cf7db4d:knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md`). Trim rationale: `repo-audit-2026-05-10-revised.md` §4.1 — the single biggest grep-poison source pre-trim.
+> **Эта нота не предлагает менять ADR.** Она готовит структурированный
+> input — пронумерованные рекомендации (§10) и открытые вопросы
+> (§11), на которые принимает решение проектный лид. Сами правки в
+> ADR (если они нужны) — отдельный PR после согласования.
+>
+> **Adressovano:** будущему Architect/Coder-агенту FA, реквестеру
+> и человеку-ревьюеру PR. Форма — нумерованные блоки, явные таблицы
+> mappinga, явные TL;DR на каждом разделе.
 
-## 1. TL;DR — audit method and outcome
+## Body trimmed — pointer only
 
-This note is a **cross-reference audit**: for every claim/decision in
-ADR-1..ADR-5, find the supporting passage in (a) the Ampcode «How to
-Build an Agent» research note, or (b) the DeepSeek-V3 sliders note.
-Result: 47 distinct decisions in the five ADRs; 38 covered by at least
-one source; 9 covered by both. The 9 «both-covered» decisions are the
-strongest (independently corroborated). The 9 not-covered are flagged
-for re-verification at ADR-7 / ADR-8 prep.
+The full pre-trim body lives in git history. It is not reproduced here because earlier abstract-style trims of this file introduced factual drift (see PR-13 Devin Review). To read the original verbatim:
 
-## Matrix summary
+```bash
+git show cf7db4d:knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md
+# compiled: 2026-05-01; 1347 lines pre-trim
+```
 
-| ADR | Decisions | Covered by Ampcode | Covered by DeepSeek sliders | Both |
-|---|---|---|---|---|
-| ADR-1 (UC scope) | 8 | 6 | 4 | 2 |
-| ADR-2 (LLM tiering) | 9 | 6 | 8 | 5 |
-| ADR-3 (memory arch) | 12 | 10 | 7 | 5 |
-| ADR-4 (storage backend) | 7 | 5 | 4 | 2 |
-| ADR-5 (multi-agent topology) | 11 | 8 | 9 | 6 |
+## Where the current canonical content lives
 
-## Top-9 «both-covered» (strongest decisions)
+- Active superseder: [`research/efficient-llm-agent-harness-2026-05.md`](./efficient-llm-agent-harness-2026-05.md) — read this instead of the pre-trim body.
+- Original `source:`, `chain_of_custody:`, `claims_requiring_verification:`, and `related:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
+- Inbound cross-references from older PR descriptions, ADRs, and supersession chains continue to resolve at this path — that is why the file is kept as a stub.
 
-1. **ADR-2:** Planner ≠ Coder; planner-stronger-than-coder asymmetry.
-2. **ADR-2:** OpenRouter as multi-tier router (Sonnet-class for planner,
-   cheaper for coder).
-3. **ADR-3:** Markdown-canonical, DB-as-index (not DB-canonical).
-4. **ADR-3:** Search > load; never load full corpus.
-5. **ADR-3:** Atomic doc unit (one decision per file).
-6. **ADR-4:** SQLite + FTS5 over Postgres/Elasticsearch for v0.1.
-7. **ADR-5:** Sequential coordination, not hub-and-spoke (Ampcode +
-   DeepSeek both endorse linear `plan → execute → review` for small-task
-   domain).
-8. **ADR-5:** No autonomous critic agent in v0.1 (tool-feedback covers
-   it; ADR-5 §Decision).
-9. **ADR-2:** Tool-use first, planning second, multi-agent last.
+## Routing
 
-## Where the decisions live now
-
-- **DIGEST:** [`adr/DIGEST.md`](../adr/DIGEST.md) — one-row-per-ADR
-  cheat-sheet.
-- **Source research:**
-  [`research/how-to-build-an-agent-ampcode-2026-04.md`](./how-to-build-an-agent-ampcode-2026-04.md)
-  (active), [`research/deepseek-v3-sliders-2026-04.md`](./deepseek-v3-sliders-2026-04.md)
-  (active).
-
-## Full pre-trim text
-
-`git show cf7db4d:knowledge/research/cross-reference-ampcode-sliders-to-adr-2026-04.md`
-— 1,347 lines, last full revision 2026-05-08. Contains: §2 full
-per-ADR audit (one section per ADR with row-per-decision: claim → cite
-in Ampcode → cite in DeepSeek-sliders → both/one/none → strength), §3
-top-9 detail expansion, §4 9-not-covered decisions flagged for re-check,
-§5 ADR-7 / ADR-8 prep questions surfaced by gaps.
+Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Do not load this file top-to-bottom; open the active superseder above, or run the `git show` recipe if audit context is needed.

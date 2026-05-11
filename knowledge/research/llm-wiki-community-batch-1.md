@@ -8,6 +8,10 @@ source:
   - https://github.com/cablate/llm-atomic-wiki
   - https://github.com/alexdcd/AI-Context-OS
   - https://github.com/agent-creativity/agentic-local-brain
+  - "user-dossier: 0.+A+workflow+for+github+repo+analysisprompt.md"
+  - "user-dossier: 1.+agentic-patterns-dossier+...+agentic-local-brain.md"
+  - "user-dossier: 2.+cavemem_dossier.md"
+  - "user-dossier: 3.+codedna_dossier.md"
 chain_of_custody:
   - "Досье 1–3 написаны пользователем (MondayInRussian) по его собственному
     workflow-промпту (досье 0). Я их прочёл целиком и сверил с самими
@@ -16,11 +20,25 @@ chain_of_custody:
   - "Спорные числа (см. §6) проверял отдельно: README-первоисточник."
 status: research
 claims_requiring_verification:
-  - "cavemem ~75% token reduction — claim автора, не измеренный бенчмарк."
-  - "CodeDNA +17pp F1 SWE-bench — n=10 patches, signal, не proof."
-  - "Звёзды/контрибьюторы всех шести репо — на дату фетча 2026-04-23/24."
+  - "cavemem ~75% token reduction — claim автора, не измеренный бенчмарк;
+     коэффициент зависит от домена входов."
+  - "CodeDNA +17pp F1 SWE-bench — n=10 patches, DeepSeek 10/0/0;
+     signal, не proof."
+  - "CodeDNA p=0.040 на n=5 — статистически слабый, рядом с шумом."
+  - "obsidian-llm-wiki '79K-line cli.py' в досье 1 — вероятно
+     ~7.9K строк или 79KB; фактический размер не проверял."
+  - "agentic-local-brain '98.2% protocol adoption' — это метрика
+     CodeDNA, в досье склеилась с другим проектом."
+  - "Звёзды/контрибьюторы всех шести репо — на дату фетча
+     2026-04-23/24; дрифтят во времени."
 scope: |
-  Часть 2A исследования сообщества вокруг LLM Wiki-паттерна. Шесть проектов.
+  Часть 2A исследования сообщества вокруг LLM Wiki-паттерна. Шесть проектов:
+  cavemem, codedna, obsidian-llm-wiki-local, llm-atomic-wiki, AI-Context-OS,
+  agentic-local-brain. Цель — отделить «то, что работает на проде» от
+  «модно, но недоказано» в применении к нашему агенту (First-Agent).
+  Часть 2B (gbrain, llm-wiki-kit, obsidian-wiki, sparks, mnemovault
+  + safishamsi/graphify + сравнение с GraphRAG) — отдельным PR после
+  одобрения этого.
 related:
   - knowledge/research/llm-wiki-critique.md
   - knowledge/research/llm-wiki-critique-first-agent.md
@@ -32,52 +50,29 @@ superseded_by: "knowledge/adr/ADR-3-memory-architecture-variant.md"
 
 > **Status:** superseded by [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) (archived 2026-05-08; body trimmed 2026-05-11 per PR-M).
 >
-> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey input to ADR-3 (memory architecture variant); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md).
->
-> **Body trimmed in PR-M to TL;DR + project-list abstract; full pre-trim text in git history at commit `cf7db4d`** (`git show cf7db4d:knowledge/research/llm-wiki-community-batch-1.md`).
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Survey input to ADR-3 (memory architecture variant); cheat-sheet row in [`adr/DIGEST.md`](../adr/DIGEST.md). Original content preserved below for audit / git-history reference; **do not load top-to-bottom** — open the ADR instead.
 
-## 1. TL;DR
+> **Статус:** research note, 2026-04-26.
+> **Что внутри:** разбор шести проектов сообщества, выросших вокруг идеи
+> Карпатого о «LLM-вики». Цель — *production-ориентированный* отбор: что
+> уже есть в чужой проверенной кодовой базе и что мы можем переиспользовать
+> в First-Agent, а что — энтузиазм и YAGNI.
 
-- **Шесть проектов, два жанра.** Четыре делают *вики/память для
-  человека-пользователя* в духе Карпатого (`obsidian-llm-wiki-local`,
-  `llm-atomic-wiki`, `AI-Context-OS`, `agentic-local-brain`). Два —
-  *память для агента-кодера*, не для человека (`cavemem`, `codedna`).
-- **Что переиспользуется — это не код, а паттерны.** Все шесть — мелкие
-  репозитории (звёзды от 19 до ~290). Конкретные инженерные решения
-  внутри — повторяющиеся, проверенные, и часть из них уже подтверждена
-  в research-литературе.
-- **Кросс-валидация — главный фильтр.** Паттерны, которые независимо
-  возникли в 2+ проектах, заведомо ценнее одиночных красивых идей.
-- **Скепсис.** Цифры в README надо читать как маркетинг, не как
-  бенчмарк. Сами по себе репозитории — это *инженерные эссе*, не
-  научные статьи.
+## Body trimmed — pointer only
 
-## Six projects at a glance
+The full pre-trim body lives in git history. It is not reproduced here because earlier abstract-style trims of this file introduced factual drift (see PR-13 Devin Review). To read the original verbatim:
 
-| # | Project | Stars | Verdict | What we kept |
-|---|---|---|---|---|
-| 3.1 | [obsidian-llm-wiki-local](https://github.com/kytmanov/obsidian-llm-wiki-local) | ~290 | Production-ready for its niche | Selective recompile; rejection-as-training; two-tier LLM routing; manual-edit protection |
-| 3.2 | [llm-atomic-wiki](https://github.com/cablate/llm-atomic-wiki) | ~110 | Methodology, not runtime | Two-layer lint (programmatic → LLM); CLAUDE.md as agent constitution; parallel-compile naming lock; segment classification before extraction |
-| 3.3 | [AI-Context-OS (MEMM)](https://github.com/alexdcd/AI-Context-OS) | ~115 | Richest engineering, but overengineered | L0/L1/L2 progressive loading; intent-aware scoring weights; two-pass retrieval (seeds → PPR); conflict detection by tech-pairs. **Deep-dive in [`ai-context-os-memm-deep-dive.md`](./ai-context-os-memm-deep-dive.md).** |
-| 3.4 | [agentic-local-brain](https://github.com/agent-creativity/agentic-local-brain) | ~80 | Skill-routing patterns, no runtime | Skill index → trigger-based dispatch; agent constitution; markdown-as-code pattern |
-| 3.5 | [cavemem](https://github.com/JuliusBrussee/cavemem) | ~50 | Agent memory (not human wiki) | Token reduction via summarization; chunk grouping; recency-based eviction |
-| 3.6 | [codedna](https://github.com/Larens94/codedna) | ~40 | In-source annotation for code agents | `rules:` (architectural truth); `used_by:` (cross-ref); v0.8 `message:` (soft hypothesis channel) |
+```bash
+git show cf7db4d:knowledge/research/llm-wiki-community-batch-1.md
+# compiled: 2026-04-26; 433 lines pre-trim
+```
 
-## Where the decisions live now
+## Where the current canonical content lives
 
-- **ADR-3 memory architecture:** Variant A (Mechanical Wiki —
-  filesystem-canonical Markdown + SQLite FTS5). Patterns 3.1, 3.2, 3.6
-  cited as input.
-- **Storage backend (ADR-4):** SQLite + FTS5. Pattern 3.3 (MEMM's
-  six-signal scoring) deferred to v0.2.
-- **Skill dispatcher:** Pattern 3.4 → ADR-8 (skills system, open).
-  See [`agentic-memory-supplement.md`](./agentic-memory-supplement.md)
-  §4 for the codedna delta and gbrain/sparks patterns.
+- Active superseder: [`adr/ADR-3-memory-architecture-variant.md`](../adr/ADR-3-memory-architecture-variant.md) — read this instead of the pre-trim body.
+- Original `source:`, `chain_of_custody:`, `claims_requiring_verification:`, and `related:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
+- Inbound cross-references from older PR descriptions, ADRs, and supersession chains continue to resolve at this path — that is why the file is kept as a stub.
 
-## Full pre-trim text
+## Routing
 
-`git show cf7db4d:knowledge/research/llm-wiki-community-batch-1.md` —
-433 lines, last full revision 2026-05-08. Contains: full §2 methodology,
-§3 six per-project verdicts (with code-snippets and refs), §4 top-7
-cross-validated patterns + which we ship in v0.1, §5 deferred items,
-§6 verification table for marketing claims, §7 implications for FA.
+Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Do not load this file top-to-bottom; open the active superseder above, or run the `git show` recipe if audit context is needed.

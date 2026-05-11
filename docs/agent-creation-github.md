@@ -1,34 +1,43 @@
-# How to Create an AI Agent on GitHub — Tutorial Walkthrough
+---
+title: Создание агента — разбор build-your-own-openclaw
+source: https://github.com/czl9707/build-your-own-openclaw
+reference_impl: https://github.com/czl9707/pickle-bot
+tags:
+  - llm-agent
+  - tutorial
+  - architecture
+  - openclaw
+created: 2026-04-23
+superseded_by: "knowledge/research/efficient-llm-agent-harness-2026-05.md"
+---
 
-> **Status:** superseded by [`research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08; body trimmed 2026-05-11 per PR-M).
+# Создание агента: разбор `build-your-own-openclaw`
+
+> **Status:** superseded by [`knowledge/research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md) (archived 2026-05-08; body trimmed 2026-05-11 per PR-M).
 >
-> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface — tutorial transcript of an external single-agent repo (`czl9707/build-your-own-openclaw`); no live ADR / prompt / harness consumer.
->
-> **Body trimmed in PR-M to a one-paragraph abstract; full pre-trim text in git history at commit `cf7db4d`** (`git show cf7db4d:docs/agent-creation-github.md`). Trim rationale: `repo-audit-2026-05-10-revised.md` §4.1.
+> Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Tutorial transcript of an external repo with no live ADR / prompt / harness consumer in First-Agent. Original tutorial: <https://github.com/czl9707/build-your-own-openclaw>. Live ADR-7 (inner-loop / tool-contract) inputs are the harness note above and [`knowledge/research/how-to-build-an-agent-ampcode-2026-04.md`](../knowledge/research/how-to-build-an-agent-ampcode-2026-04.md). Original content preserved below for human reading; **do not load top-to-bottom** — open the upstream tutorial or the active harness notes instead.
 
-## Abstract
+> Статья-конспект туториала
+> [`czl9707/build-your-own-openclaw`](https://github.com/czl9707/build-your-own-openclaw)
+> — 18 шагов от простого chat loop до облегчённой версии
+> [OpenClaw](https://github.com/openclaw/openclaw). Референс-реализация —
+> [`pickle-bot`](https://github.com/czl9707/pickle-bot).
 
-18-step Russian-language walkthrough of the GitHub tutorial repository
-[czl9707/build-your-own-openclaw](https://github.com/czl9707/build-your-own-openclaw),
-which builds a minimal single-agent harness from scratch in Python.
-Covers: tool definition, LLM API setup (Anthropic / OpenAI), agent loop,
-prompt engineering, error handling, multi-step planning, persistence,
-context window management.
+## Body trimmed — pointer only
 
-Predates ADR-7 (inner-loop / tool-contract); active replacement is the
-harness research note. Useful as a teaching artefact only — no live
-component reads it; OSS-agent flow skips via `llms.txt` exclusion.
+The full pre-trim body lives in git history. It is not reproduced here because earlier abstract-style trims of this file introduced factual drift (see PR-13 Devin Review). To read the original verbatim:
 
-## Where the content lives now
+```bash
+git show cf7db4d:docs/agent-creation-github.md
+# compiled: 2026-04-23; 553 lines pre-trim
+```
 
-- **Active research:** [`research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md)
-- **Ampcode-style harness reference:** [`research/how-to-build-an-agent-ampcode-2026-04.md`](../knowledge/research/how-to-build-an-agent-ampcode-2026-04.md)
-- **ADR-2 LLM tiering:** [`adr/ADR-2-llm-tiering.md`](../knowledge/adr/ADR-2-llm-tiering.md)
-- **Upstream tutorial:** <https://github.com/czl9707/build-your-own-openclaw>
+## Where the current canonical content lives
 
-## Full pre-trim text
+- Active superseder: [`knowledge/research/efficient-llm-agent-harness-2026-05.md`](../knowledge/research/efficient-llm-agent-harness-2026-05.md) — read this instead of the pre-trim body.
+- Original `source:`, `chain_of_custody:`, `claims_requiring_verification:`, and `related:` lists are preserved in the frontmatter above (restored to their `cf7db4d` values; PR-M no longer modifies frontmatter).
+- Inbound cross-references from older PR descriptions, ADRs, and supersession chains continue to resolve at this path — that is why the file is kept as a stub.
 
-`git show cf7db4d:docs/agent-creation-github.md` — 553 lines, last full
-revision 2026-05-08. Contains: full 18-step walkthrough with code
-snippets per step, Russian commentary on each design decision, comparison
-notes with First-Agent's planned architecture.
+## Routing
+
+Excluded from `knowledge/llms.txt §BY-DEMAND-INDEX` for the OSS-agent routing surface. Do not load this file top-to-bottom; open the active superseder above, or run the `git show` recipe if audit context is needed.
