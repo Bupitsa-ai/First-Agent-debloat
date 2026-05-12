@@ -72,8 +72,9 @@ manually beyond this point.
     (semi-autonomous multi-LLM research/experiment) explicitly
     deferred. **Amendment 2026-05-06:** UC5 expanded to
     eval-driven harness iteration (5a benchmark suite, 5b trace
-    consumption, 5c modify-and-re-benchmark loop, 5d leaderboard)
-    — additive, supersedes 2026-05-01 formulation.
+    consumption, 5c iteration interface, 5d score tracking /
+    leaderboard, 5e out-of-scope exclusions) — additive,
+    supersedes 2026-05-01 formulation.
   - [ADR-2](./knowledge/adr/ADR-2-llm-tiering.md) — static role
     routing (Planner / Coder / Debug / Eval) via
     `~/.fa/models.yaml`. **Amendment 2026-04-29:**
