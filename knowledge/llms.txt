@@ -99,6 +99,7 @@ Task type → primary entrypoint, then secondary:
 - [knowledge/prompts/architect-fa.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa.md) (~500 lines): Architect / Planner system prompt (full).
 - [knowledge/prompts/architect-fa-compact.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/architect-fa-compact.md) (~210 lines): Architect / Planner system prompt (compact).
 - [knowledge/prompts/research-briefing.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/research-briefing.md) (~230 lines): Research-briefing workflow — goal-lens elicitation, deep-dive note with §0 Decision Briefing, chat handover. Use for cross-reference / paper-vs-architecture reviews.
+- [knowledge/prompts/repo-audit-playbook.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/prompts/repo-audit-playbook.md) (~970 lines): 7-phase playbook for agent-oriented repo audits — P1 inventory → P2 finding extraction → P3 routing-surface check → P4 self-review → P5 effect assessment → P6 critical re-pass (four-part filter) → P7 capture-as-workflow. Load only when the user requests a repo-audit-style refactor; do not load on every session. Future skill conversion tracked as BACKLOG I-9.
 
 ### Research (`knowledge/research/`)
 
