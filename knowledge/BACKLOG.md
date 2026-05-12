@@ -287,6 +287,59 @@
   no good substitute (Arena = different harness; manual
   cross-fork sessions = still Devin's harness underneath).
 
+## I-9 — Convert `knowledge/prompts/repo-audit-playbook.md` into a loadable SKILL
+
+- **Status:** deferred — added 2026-05-12, blocked on
+  skill-loading mechanism. Not urgent — user noted no audits in
+  the immediate pipeline; this item parks the artefact in plain
+  sight until the unblock-trigger lands.
+- **Idea:** The repo-audit workflow currently lives as a ~970-line
+  playbook at
+  [`knowledge/prompts/repo-audit-playbook.md`](./prompts/repo-audit-playbook.md)
+  (filed alongside the prompt templates for convenience). Devin
+  loads SKILL.md files automatically via the
+  `.agents/skills/<name>/SKILL.md` convention (YAML frontmatter
+  with `name:` + `description:`); OSS agents (DeepSeek 4,
+  Kimi 2.6) have no equivalent auto-load mechanism. The playbook
+  is therefore reachable today only via grep / explicit chat
+  reference, not via session bootstrap.
+- **Blocked-on:** one of —
+  - (a) `.agents/skills/` convention adopted for this repo for
+    Devin-side workflows, OR
+  - (b) `knowledge/llms.txt §BY-DEMAND-INDEX` gains a dedicated
+    «Playbooks» sub-section + AGENTS.md rule referencing it, so
+    OSS agents pick it up on-demand (single-line bootstrap entry,
+    no new directory).
+- **Unblock-trigger:** first PR that creates `.agents/skills/`
+  in this repo, OR first session where a non-Devin agent
+  successfully invokes the playbook via a §BY-DEMAND-INDEX
+  reference (whichever lands first).
+- **First concrete step once unblocked (path a):** create
+  `.agents/skills/repo-audit/SKILL.md` with YAML frontmatter
+  (`name: repo-audit`, `description: 7-phase workflow for
+  agent-oriented repo audits — see playbook for full procedure`)
+  pointing at the playbook as canonical body. Move (or symlink)
+  the playbook out of `knowledge/prompts/` once the SKILL
+  directory is the authoritative home.
+- **First concrete step once unblocked (path b):** split
+  `§BY-DEMAND-INDEX` to add `### Playbooks (knowledge/playbooks/)`
+  with one row per playbook (line-count + 1-sentence summary,
+  same shape as the existing `### Prompts` rows); add a one-line
+  rule in `AGENTS.md` Pre-flight Step 4 («if the user requests
+  a repo-audit-style refactor, load
+  `knowledge/playbooks/repo-audit.md` first»).
+- **Prior art:** this session's `workflow-repo-audit.md` artefact
+  (attached to session log 2026-05-11) is the literal source.
+  Same author, same wording — the file at
+  `knowledge/prompts/repo-audit-playbook.md` is a verbatim copy.
+- **Why this is LOW ROI until either path lands.** Without an
+  auto-load surface, every audit session re-discovers the
+  playbook via grep or user pointer; the playbook still pays off
+  because it's structured and self-contained, but the convention
+  gap means the next OSS-agent audit session pays a discovery
+  cost. Until the gap closes, the artefact lives where it can be
+  found by a `find knowledge/prompts/` grep.
+
 ## See also
 
 - [`knowledge/MAINTENANCE.md`](./MAINTENANCE.md) — recurring
