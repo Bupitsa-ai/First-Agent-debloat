@@ -1,8 +1,8 @@
 # ADR Digest — one-paragraph cheat-sheet
 
 > **Purpose.** Cheat-sheet for agents and humans who need the gist of
-> all six accepted ADRs without reading ~1,400 lines of source. One
-> paragraph per ADR + bulleted amendments. **The per-ADR file is the
+> all accepted ADRs without reading the full source set. One paragraph
+> per ADR + bulleted amendments. **The per-ADR file is the
 > authoritative source** — this digest only paraphrases.
 >
 > **Maintenance rule.** When an ADR amendment lands, update the
@@ -49,6 +49,13 @@ for v0.1.
 - **2026-05-01** — MCP forward-compat tool-shape convention: in-process
   tool dispatcher mirrors JSON-RPC `request: {name, params}` /
   `response: {result, error}`. **No `mcp` package dependency in v0.1.**
+- **2026-05-12** (clarification, ADR-7-driven) — `error.code` is
+  dual-mode `str | int`: ergonomic domain-string internally
+  (e.g. `"invalid_params"`, `"sandbox_deny"`), JSON-RPC numeric
+  on the wire. Implementations MUST map between the two at the
+  transport boundary. No shape change — relaxation of the §1
+  pseudo-schema; `name` / `params` / `result` / `error` field
+  set unchanged.
 
 **Source:** [`ADR-2`](./ADR-2-llm-tiering.md).
 
@@ -120,6 +127,45 @@ config; path-level guard is loud, fast, stoppable; symmetric to
 **Amendments.** None.
 
 **Source:** [`ADR-6`](./ADR-6-tool-sandbox-allow-list.md).
+
+## ADR-7 — Inner-loop & tool-registry contract (accepted 2026-05-12)
+
+**Decision.** Formal inner-loop boundary for v0.1 with six pinned
+surfaces: (1) MCP-shaped `ToolSpec` / `ToolResult` registry inheriting
+the ADR-2 §Amendment 2026-05-01 JSON-RPC convention; (2) five-tool
+v0.1 catalog (`fs.read_file`, `fs.list_files`, `fs.edit_file`,
+`fs.write_file`, `fs.grep`) matching ADR-6 §Tool wiring;
+(3) two edit-shapes — `edit_file` string-replace default,
+`apply_patch` unified-diff off by default (R-3 fixture pins the
+flip); (4) JSON-Schema input validation per tool; (5) three-tier
+tool disclosure (group list → one-line descriptors → schema on
+demand); (6) trace separation — `events.jsonl` raw append-only +
+`hot.md` summary (anti-summary-rot invariant). Mini hook pipeline:
+`pre_tool` × 2 (Sandbox + optional Approval) + `post_tool` × 1
+(Audit); `pre_run` / `post_run` / `on_event` deferred to v0.2.
+Static layered prompt frozen at session start (R-8 prefix-cache
+invariant). 4-question subtraction-first acceptance block at the
+inner-loop boundary. **Rationale.** Ampcode «three bare functions»
+works at one tier; FA spans four tiers + `tool_protocol` axis,
+so a formal contract is the only way the ADR-2 §Amendment 2026-05-01
+MCP-shape convention and the ADR-6 §Tool wiring sandbox stub get
+concrete carriers; single source of truth for every tool PR.
+
+**Amendments.**
+
+- 2026-05-12 — cross-reference bootstrap-cost-baseline measurement
+  evidence. Adds six inline cross-references (no shape change) to
+  [`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md):
+  §6 empirical-backing for tier-3 lazy hydration (6-file irreducible
+  core), §7 future-KPI-consumption (BACKLOG I-7), §9 empirical
+  context-budget evidence (~80–95 K Devin / 70–95 K Arena),
+  §11 R-9 motivation (agent self-report unreliable → `harness_id`),
+  §Consequences re-evaluation trigger 5 (FA's own mid-tier harness
+  ships = BACKLOG I-8), §Consequences follow-up work (BACKLOG I-1 /
+  I-2 / I-3 = AGENTS.md rule #11 mitigations a / b / c). EXEMPT
+  per AGENTS.md §Pre-flight Step 4 (documentation-only).
+
+**Source:** [`ADR-7`](./ADR-7-inner-loop-tool-registry.md).
 
 ## See also
 

@@ -4,7 +4,13 @@
 > Cursor, etc.) starting a new session on this repository.**
 >
 > **Last updated:** 2026-05-12 by Devin session
-> [`89c32745c44f47dea679af42ed2d2dd8`](https://app.devin.ai/sessions/89c32745c44f47dea679af42ed2d2dd8).
+> [`22479f39c46f4ab7941d2fd667393aad`](https://app.devin.ai/sessions/22479f39c46f4ab7941d2fd667393aad)
+> (port of upstream
+> [GrasshopperBoy/First-Agent-fork PR #22](https://github.com/GrasshopperBoy/First-Agent-fork/pull/22)
+> + ADR-7 §Amendment 2026-05-12 cross-referencing
+> [`bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md),
+> earlier landed in main by session
+> [`89c32745c44f47dea679af42ed2d2dd8`](https://app.devin.ai/sessions/89c32745c44f47dea679af42ed2d2dd8)).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -34,7 +40,7 @@ changes the project state, update **both**.
 3. Skim [`knowledge/project-overview.md`](./knowledge/project-overview.md)
    — what the project is, what v0.1 ships, what is non-goal.
 4. Read [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) —
-   one-paragraph cheat-sheet for ADR-1..6 + amendments. Open the
+   one-paragraph cheat-sheet for ADR-1..7 + amendments. Open the
    per-ADR file only when DIGEST is insufficient (exact schema,
    Consequences wording, full Amendment text).
 5. Check the **Current state** section below for what is in
@@ -82,6 +88,11 @@ manually beyond this point.
     inner-loop without Critic. **Amendment 2026-05-01:** MCP
     forward-compat tool-shape convention (JSON-RPC-shaped
     `name`/`params`/`result`/`error` for all tool dispatch).
+    **Amendment 2026-05-12** (ADR-7-driven clarification):
+    `error.code` is dual-mode `str | int` — ergonomic domain
+    string internally, JSON-RPC numeric on the wire;
+    implementations MUST map between the two at the transport
+    boundary.
   - [ADR-3](./knowledge/adr/ADR-3-memory-architecture-variant.md) —
     Variant A (mechanical wiki, no embeddings, no graph,
     no Mem0).
@@ -96,10 +107,24 @@ manually beyond this point.
     Tool sandbox + path allow-list policy (deny-by-default,
     `~/.fa/sandbox.toml`, gitignore-style globs, audit log at
     `~/.fa/state/sandbox.jsonl`, one-shot CLI bypass).
-- **ADR slot reservation.** ADR-7 is reserved for the future
-  Inner-loop ADR (cross-reference §10 R-1, not yet drafted).
-  See `cross-reference-…-2026-04.md` §11 supersession marks
-  on Q-1 / Q-2 for history.
+  - [ADR-7](./knowledge/adr/ADR-7-inner-loop-tool-registry.md) —
+    Inner-loop & tool-registry contract (MCP-shaped
+    `ToolSpec`/`ToolResult`; five-tool `fs.*` catalog; two
+    edit-shapes — `edit_file` string-replace default,
+    `apply_patch` unified-diff off by default; JSON-Schema input
+    validation; three-tier tool disclosure; trace separation
+    `events.jsonl` ≠ `hot.md`; mini hook pipeline — `pre_tool`
+    Sandbox + optional Approval, `post_tool` Audit; static
+    layered prompt frozen at session start; 4-question
+    subtraction-first acceptance block). **Amendment 2026-05-12** —
+    cross-reference [`bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md)
+    measurement evidence (6-file irreducible core, ~80–95 K
+    Devin / 70–95 K Arena context, `harness_id` motivation,
+    re-evaluation trigger 5 = BACKLOG I-8, BACKLOG I-1 / I-2 /
+    I-3 unblocked); documentation-only, no shape change.
+- **ADR slot reservation.** Closed by ADR-7 above. History on
+  the slot: `cross-reference-…-2026-04.md` §11 supersession
+  marks on Q-1 / Q-2.
 - **Scaffolding:** `pyproject.toml`, Ruff, mypy, pytest,
   pre-commit, GitHub Actions CI, `Makefile`, `markdown-it-py`,
   and system dependency documentation for `universal-ctags`
@@ -183,20 +208,16 @@ manually beyond this point.
 
 ## Next steps (intended order)
 
-1. **ADR-7 — Inner-loop + tool-registry contract** (cross-reference
-   §10 R-1, future). Should pin: tool-registry contract,
-   tool-call audit log shape, edit-format (string-replace vs
-   unified-diff), input JSON-Schema validation, **MCP-shaped
-   request/response per ADR-2 amendment 2026-05-01**, and a
-   minimal **hook pipeline** primitive (pre-tool / post-tool;
-   pre-run / post-run / on-event deferred to v0.2). Inputs:
-   - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
-     — single source-of-truth для harness research под ADR-7 prep
-     (R-1..R-9 resolved + §10 ADR-7 contract sketch).
-   - cross-reference §10 R-1 / R-3 / R-7.
-   - semi-autonomous-agents cross-reference §7.1 (R-1 input
-     summary), §7.3 (edit-format two shapes), §8.4 (large-file
-     two-stage read), §8.5 (mini-hook-system rationale).
+1. **Implementation PR — inner-loop scaffolding** (ADR-7 just
+   landed). Create `src/fa/inner_loop/` with `registry.py`
+   (`ToolSpec` dataclass + `register` / `lookup`), `loop.py`
+   (runtime loop §1 + JSON-Schema validation §5 + hook chain
+   §8), `hooks/` (`SandboxHook`, `ApprovalHook`, `AuditHook`),
+   `tools/` (one file per tool in ADR-7 §3 catalog — starting
+   with `fs.read_file` / `fs.list_files` to unblock the chunker
+   indexer end-to-end), and `trace.py` (`events.jsonl` writer +
+   `hot.md` summariser). The first tool PR consumes ADR-7
+   verbatim; subsequent PRs cite §2-§4 instead of re-deriving.
 2. **Implementation PR — chunker.** Implement `src/fa/chunker/`
    with the `Chunk` dataclass and `Chunker` Protocol from
    [ADR-5 §Decision](./knowledge/adr/ADR-5-chunker-tool.md#decision)
@@ -214,9 +235,13 @@ manually beyond this point.
    5-10 unified-diff `apply_patch` test set on each
    tool-using model from ADR-2 (Qwen 3.6, Kimi 2.6, GLM 5.1,
    Claude latest, Nemotron 3 Super). Empirically verify that
-   each model handles both edit-shapes; the result pins
-   default edit-format in ADR-7. Optional pre-ADR-7; can be
-   parallel.
+   each model handles both edit-shapes; the result may flip
+   the default in
+   [ADR-7 §4](./knowledge/adr/ADR-7-inner-loop-tool-registry.md#4-edit-shapes-string-replace-and-apply_patch)
+   via amendment (per ADR-7 §Consequences «Re-evaluation
+   triggers» — HANDOFF item 4 fixture lands). Can run in
+   parallel with item 1 (inner-loop scaffolding); not a
+   blocker for either tool PR.
 5. **Glossary** (cross-reference §10 R-8 + semi-autonomous
    note §7.8): add `MCP`, `Hook`, `ACI`,
    `Reflexion / Critic / Reflector`, `Self-evolving` terms

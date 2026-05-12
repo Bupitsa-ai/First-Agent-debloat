@@ -10,9 +10,11 @@ coding-agent harness under UC1+UC3 single-user scope. **Currently in
 Stage 1** (documentation + agent development через Devin); three-stage
 project evolution is defined in
 [`knowledge/project-overview.md` §1.3](./knowledge/project-overview.md#13-three-stage-project-evolution).
-Inner-stage milestone: Phase S scaffolding complete; design layer
-consolidating before first feature-module PR (Phase M);
-`src/fa/chunker/` exists, not yet end-to-end tested.
+Inner-stage milestone: Phase S scaffolding complete;
+[ADR-7](./knowledge/adr/ADR-7-inner-loop-tool-registry.md) closes
+the inner-loop / tool-registry contract before the first
+feature-module PR (Phase M); `src/fa/chunker/` exists, not yet
+end-to-end tested.
 Goal-formulation in 4 pillars + minimalism-first principle:
 [`knowledge/project-overview.md` §1.1](./knowledge/project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars).
 README intro: [`README.md`](./README.md).
@@ -204,7 +206,7 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) — add a
    one-paragraph row for a new ADR or extend the **Amendments**
    bullet of the matching ADR's row. DIGEST.md is the agent-reading
-   cheat-sheet (one paragraph per ADR ≈ 80 lines for all six);
+   cheat-sheet (one paragraph per ADR ≈ 80 lines for all seven);
    stale rows defeat the purpose. **In the same PR**, also cross-
    check [`HANDOFF.md`](./HANDOFF.md) §Current state ADR list — it
    is the human-readable mirror of the ADR slate (per `HANDOFF.md`

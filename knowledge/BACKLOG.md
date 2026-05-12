@@ -26,13 +26,16 @@
   specs in every call. The Planner pre-selects the relevant 3-5
   for the current task; the tool registry shape allows lazy load
   so unused specs never enter Coder context.
-- **Blocked-on:** ADR-7 (tool registry contract — currently in
-  ADR-7 prep per
-  [`research/efficient-llm-agent-harness-2026-05.md`](./research/efficient-llm-agent-harness-2026-05.md)
-  §10 ToolSpec sketch). Without a registry, there is nothing to
-  pick from.
-- **Unblock-trigger:** ADR-7 merges **and** `src/fa/tool_registry/`
-  module lands with a `ToolSpec` dataclass plus loader.
+- **Blocked-on:** Implementation half of
+  [ADR-7](./adr/ADR-7-inner-loop-tool-registry.md) — the
+  contract has landed (ADR-7 §2 ToolSpec / ToolResult), but the
+  `src/fa/inner_loop/` module that materialises it has not.
+  Without a runnable registry, there is nothing to pick from.
+- **Unblock-trigger:** ADR-7 merged ✅ (2026-05-12) **and**
+  `src/fa/inner_loop/` module lands with the
+  `src/fa/inner_loop/registry.py` `ToolSpec` dataclass plus
+  loader per ADR-7 §2 — currently the canonical path; the
+  earlier `src/fa/tool_registry/` working name is superseded.
 - **First concrete step once unblocked:** Extend
   [`knowledge/prompts/architect-fa.md`](./prompts/architect-fa.md)
   Step 2 «Bounded recon» with a tool-selection sub-step; the
