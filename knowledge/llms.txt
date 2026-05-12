@@ -56,7 +56,7 @@ Task type → primary entrypoint, then secondary:
 
 - [README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/README.md) (~170 lines): Project overview, current status, roadmap (Russian).
 - [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md) (~390 lines): Instructions for AI agents working in this repo (English).
-- [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) (~260 lines): Cross-LLM session handoff — current state, next steps, bootstrap pointer (mirrors the Devin Knowledge note).
+- [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) (~270 lines): Cross-LLM session handoff — current state, next steps, bootstrap pointer (mirrors the Devin Knowledge note).
 
 ### Docs (`docs/`)
 
