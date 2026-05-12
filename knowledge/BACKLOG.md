@@ -154,6 +154,130 @@
   manually at session start with full context. Per
   `repo-audit-2026-05-10-revised.md` §3.22.
 
+## I-6 — Pre-commit regenerator for `knowledge/llms.txt`
+
+- **Status:** deferred from Stage 1 (proposed 2026-05-12 chat,
+  post-PR #6 merge).
+- **Idea:** Python script regenerates
+  [`knowledge/llms.txt`](./llms.txt) §BY-DEMAND INDEX from the
+  current tree of `docs/` + `knowledge/` (reads each `.md`
+  frontmatter, collects path / description / line-count /
+  supersession banner). A pre-commit hook + CI workflow run
+  `python scripts/regenerate_llms_txt.py && git diff --exit-code
+  knowledge/llms.txt` so a stale `llms.txt` blocks the commit /
+  fails CI. After landing, [AGENTS.md PR Checklist rule #7](../AGENTS.md#pr-checklist)
+  and [`MAINTENANCE.md` §When adding a new file](./MAINTENANCE.md)
+  stop being a human responsibility — drift becomes technically
+  impossible.
+- **Blocked-on:** `.pre-commit-config.yaml` does not exist in the
+  repo yet (Phase S scaffolding not closed). Landing the
+  regenerator hook in isolation creates a lone infrastructure
+  file; better to land it alongside the base hooks (ruff /
+  end-of-file-fixer / markdownlint).
+- **Unblock-trigger:** `.pre-commit-config.yaml` lands in the
+  repo with base hooks; **OR** the lead decides to add the
+  regenerator as a standalone hook before the rest of the base
+  pre-commit stack.
+- **First concrete step once unblocked:** Add
+  `scripts/regenerate_llms_txt.py` (~80 lines) walking `docs/` +
+  `knowledge/`, reading frontmatter `description:` and counting
+  lines, rendering the BY-DEMAND INDEX section in the existing
+  format. Add a hook entry in `.pre-commit-config.yaml`. Add a
+  CI workflow `.github/workflows/lint-llms-txt.yml` running the
+  same `git diff --exit-code` check.
+- **References:** [`docs/workflow.md`](../docs/workflow.md) item 7
+  (concept origin); AGENTS rule #7 (current manual rule);
+  [`MAINTENANCE.md` §When adding a new file](./MAINTENANCE.md)
+  (current manual checklist landed in PR #6).
+- **Why this is LOW ROI until base pre-commit stack exists.**
+  Adding a single hook before the rest of the stack means the
+  next PR (basic ruff / format / markdownlint hooks) will have to
+  re-touch `.pre-commit-config.yaml` anyway; bundling avoids two
+  configuration touches.
+
+## I-7 — Bootstrap-cost as auto-collected KPI (UC5-blocked)
+
+- **Status:** deferred from Stage 1 (proposed 2026-05-12 chat,
+  follow-up to PR #5 baseline).
+- **Idea:** Move bootstrap-cost from a one-off measurement
+  (current [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md))
+  to a continuously-tracked KPI. Each Devin (or First-Agent OWN
+  harness) session emits its bootstrap metrics — calls, files,
+  context tokens, file-list — at session end; an aggregator
+  produces medians, p90, and threshold alerts (e.g. median
+  bootstrap-calls > 30 → red).
+- **Blocked-on:** UC5 eval-harness (per
+  [ADR-1 Amendment 2026-05-06](./adr/ADR-1-v01-use-case-scope.md))
+  — no infrastructure to collect / aggregate metrics. Today the
+  baseline is manual: chat → user → research note.
+- **Unblock-trigger:** UC5 eval-harness ships a metrics-collection
+  pipeline (probably under `src/fa/eval/`); ADR-1 §UC5 moves from
+  *deferred* back to *in scope*.
+- **First concrete step once unblocked:** Extend the UC5 metric
+  schema with bootstrap-cost rows (tool_calls, files_opened,
+  context_tokens, file_list); auto-emit from each session via a
+  post-session hook; migrate the existing §6 baseline table from
+  `bootstrap-cost-baseline-2026-05.md` into the KPI store as
+  the historical row.
+- **References:** [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
+  §9 (re-measurement triggers, item 6 explicitly points here);
+  [`project-overview.md` §1.1](./project-overview.md#11-четыре-столпа-цели-project-goal--four-pillars)
+  Pillar 4 (iteration via measurement).
+
+## I-8 — Mid-tier × First-Agent's own harness bootstrap re-test
+
+- **Status:** deferred from Stage 1 (proposed 2026-05-12 chat,
+  post Arena.ai F / G / H sessions added to PR #5 baseline).
+- **Idea:** PR #5 + this extension's 6-session baseline (3 Devin
+  + 3 Arena.ai) validates that the routing surface works **across
+  external harnesses**. It does **not** validate that the routing
+  surface works **on First-Agent's own future mid-tier harness**
+  (the Pillar-3 goal: a minimalist OSS-coder-tier agent). Arena's
+  harness is general-purpose; FA's own harness will be
+  stripped-down. The confound: Arena's smart bootstrap behaviour
+  may compensate for any routing-surface weakness that FA's own
+  minimalist harness would expose. Until measured, this is
+  unanswered.
+- **Blocked-on:** First-Agent does not yet ship an end-to-end
+  agent — only `src/fa/chunker/` scaffolding from ADR-5 exists.
+  Phase M (per
+  [`project-overview.md` §1.3](./project-overview.md#13-three-stage-project-evolution))
+  will land the inner-loop after ADR-7 merges. Without a runnable
+  agent there is nothing to re-measure on.
+- **Unblock-trigger:** First-Agent Phase M ships an end-to-end
+  agent (Coder tier per
+  [ADR-2](./adr/ADR-2-llm-tiering.md)) capable of running the
+  same single-message ADR-7-prep prompt that PR #5 / this PR
+  used. The Coder tier is the canonical mid-tier OSS target.
+- **First concrete step once unblocked:** Adapt the bootstrap
+  prompt to FA's own harness invocation pattern; run 3 sessions;
+  produce a supplementary measurement-evidence note
+  `bootstrap-cost-mid-tier-2026-XX.md` (or amend the existing
+  baseline note with §11 Mid-tier extension). If the 6-file
+  irreducible core reproduces → proposals A / D / H from
+  `agent-reading-optimization-review.md` stay **dropped** (their
+  premise required the core to fail on mid-tier). If the core
+  does not reproduce → re-evaluate A / D / H with the new
+  evidence.
+- **Out-of-scope alternative.** Running this on the Coder-tier
+  LLM **without** FA's own harness (e.g. on Arena.ai with an
+  OSS-tagged model) would not isolate harness vs routing — Arena
+  routes to multiple unspecified models, and Arena's harness is
+  not minimalist. Repo-readability across external harnesses is
+  already validated by F-H; the open question is
+  harness × routing interaction on FA's own harness.
+- **References:**
+  [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
+  §3 (6-file irreducible core); §9 (re-measurement triggers,
+  item 5 points here);
+  `agent-reading-optimization-review.md` proposals A / D / H
+  (premise weakened on top-tier, still untested on FA's own
+  mid-tier).
+- **Why this is LOW ROI until Phase M lands.** Without the OWN
+  harness existing, the measurement is non-executable; there is
+  no good substitute (Arena = different harness; manual
+  cross-fork sessions = still Devin's harness underneath).
+
 ## See also
 
 - [`knowledge/MAINTENANCE.md`](./MAINTENANCE.md) — recurring
@@ -164,3 +288,6 @@
   — mitigations (a) and (b) reference I-2 and I-1/I-3
   respectively; the rule's «tracked in BACKLOG.md until ADR-7/8
   lands» wording points here.
+- [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
+  §9 re-measurement triggers items 5 and 6 reference I-7 and
+  I-8 here.

@@ -43,7 +43,7 @@ changes the project state, update **both**.
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-11)
+## Current state (as of 2026-05-12)
 
 - **Project stage:** **Stage 1** of the three-stage evolution
   (documentation + agent development через Devin). See
@@ -156,17 +156,26 @@ manually beyond this point.
     static layered prompt-assembly invariant + subtraction-first
     self-audit acceptance-block. Both upstream PR #37 and PR #38
     close without merge at cross-fork sync (lead action).
-- **Measurement-evidence note added 2026-05-11:**
+- **Measurement-evidence note added 2026-05-11, extended 2026-05-12:**
   - [`research/bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md)
-    — first persistent Pillar 4 datapoint. Three Devin sessions
-    on the same single-message ADR-7-prep prompt produced a
-    convergent 7-file routing-compliant bootstrap core; baseline
-    range 24–43 calls / 7–16 files / ~80–95 K context (§6).
-    Empirical structural evidence that 2026-05 readability
-    refactor's routing signals work. Not a research-briefing
-    note — §0 exempt per AGENTS.md rule #8. Re-measurement
-    triggers in §9; replaces no prior measurement (first
-    datapoint).
+    — first persistent Pillar 4 datapoint. Initial release (PR #5,
+    2026-05-11): three Devin ADR-7-prep sessions on a single-
+    message prompt produced a convergent 7-file routing-compliant
+    bootstrap core. Extension (PR #7, 2026-05-12): three Arena.ai
+    Agent Mode sessions on the same prompt confirm the
+    convergence on a different agent harness and tighten the
+    finding — **6-file irreducible core** (`HANDOFF.md`,
+    `knowledge/llms.txt`, `knowledge/adr/DIGEST.md`,
+    `knowledge/adr/ADR-template.md`,
+    `knowledge/research/efficient-llm-agent-harness-2026-05.md`,
+    `knowledge/trace/exploration_log.md`) across all six
+    ADR-7-prep sessions independently of model selection and
+    agent harness. Bootstrap-floor across harnesses
+    now 9 calls / 8 files / ~70 K (§6). Empirical structural
+    evidence that 2026-05 readability refactor's routing signals
+    work. Not a research-briefing note — §0 exempt per AGENTS.md
+    rule #8. Re-measurement triggers in §9 (items 5-6 cross-link
+    BACKLOG I-7 / I-8).
 
 ## Next steps (intended order)
 
