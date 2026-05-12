@@ -262,7 +262,7 @@ the 2026-04-29 amendment).**
 
    ```text
    request:  { name: str, params: dict[str, Any] }
-   response: { result: Any | None, error: { code: int, message: str } | None }
+   response: { result: Any | None, error: { code: str | int, message: str } | None }
    ```
 
    Tools are invoked through a single dispatcher that
@@ -270,9 +270,10 @@ the 2026-04-29 amendment).**
    code does not appear in the LLM-facing protocol. Tool
    parameters are described by **JSON Schema** (parsed from
    Python type hints + Pydantic models or hand-written),
-   which is the MCP-spec shape. Tool errors carry a numeric
-   code and a string message, matching JSON-RPC `error`
-   semantics.
+   which is the MCP-spec shape. Tool errors carry a `code`
+   field (see §4 dual-mode below — `str` internally for
+   agent ergonomics, `int` on the JSON-RPC wire) and a
+   string message, matching JSON-RPC `error` semantics.
 
 2. **Stable tool-name policy.** Tool names are stable strings
    (`repo.read`, `repo.search`, `git.status`, …) — not

@@ -238,7 +238,11 @@ the payload the dispatcher appends to the conversation:
 ```python
 @dataclass(frozen=True)
 class ToolError:
-    code: str          # stable identifier, e.g. "invalid_params", "sandbox_deny", "no_unique_match"
+    code: str          # stable domain identifier (internal); ergonomic strings — e.g.
+                       # "invalid_params", "sandbox_deny", "no_unique_match". Per
+                       # ADR-2 §Amendment 2026-05-01 §4 dual-mode, this internal `str`
+                       # maps to a JSON-RPC `int` code at the wire boundary; the
+                       # mapping table lives next to the dispatcher.
     message: str       # human-readable; may include JSON-Schema error path
     retryable: bool    # if true, the model is free to retry with corrected params
 
@@ -458,6 +462,18 @@ attached at one of two points:
   Multiple `pre_tool` hooks run in order; the first `deny`
   short-circuits and is recorded in `events.jsonl` as
   `kind == "hook_decision"`.
+  **Re-entry after `modify_params` (cross-ref §1 step 5).**
+  When hook *N* returns `modify_params(new_params)`, the dispatcher
+  re-runs JSON-Schema validation (§5) and the ADR-6 sandbox check
+  on `new_params`, then **continues the chain from hook *N+1*** with
+  the mutated payload. Already-run hooks `1..N-1` do **not** re-run
+  (this bounds the chain to one pass over each hook and avoids
+  repeating approval prompts / audit emissions). At most **one**
+  mutation per dispatch is allowed across the entire chain — a
+  second `modify_params` return by any hook is a hard error
+  (`error.code = "hook_double_mutation"`, `retryable = false`).
+  First-mutation-wins semantics keep the re-entry bounded and the
+  audit trail linear.
 - **`post_tool`** — runs after the handler, before
   `ToolResult` is appended to the conversation. Used for
   audit, redaction, artifact-write. Cannot deny (the tool
@@ -646,10 +662,13 @@ shape is pinned so the migration is config-only:
 ## Consequences
 
 - **Positive — single source of truth for every tool PR.**
-  The first implementation PR (chunker-indexer end-to-end,
-  HANDOFF §Next steps item 2) consumes the contract verbatim;
-  subsequent PRs (search, edit, future `git.*`) cite ADR-7
-  §2-§4 instead of re-deriving shape.
+  The first implementation PR (inner-loop scaffolding,
+  [HANDOFF §Next steps item 1](../../HANDOFF.md#next-steps-intended-order))
+  consumes the contract verbatim — `src/fa/inner_loop/registry.py`,
+  `loop.py`, `hooks/`, `tools/`, `trace.py` — and item 2
+  (chunker indexer end-to-end) is the first downstream consumer of
+  `fs.read_file` / `fs.list_files`. Subsequent PRs (search, edit,
+  future `git.*`) cite ADR-7 §2-§4 instead of re-deriving shape.
 - **Positive — closes two open amendments.** ADR-2 §Amendment
   2026-05-01 (MCP-shape convention) and ADR-6 §Tool wiring
   (sandbox-check placement) now have a concrete carrier
