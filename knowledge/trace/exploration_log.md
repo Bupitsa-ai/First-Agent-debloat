@@ -160,9 +160,16 @@
 ## Q-7 — What is the v0.1 inner-loop & tool-registry contract? (2026-05-12)
 
 - **Closed by:** [ADR-7](../adr/ADR-7-inner-loop-tool-registry.md)
+  (Amendment 2026-05-12 — cross-reference bootstrap-cost-baseline
+  measurement evidence; documentation-only, no shape change).
 - **Coupling:** depends on Q-2 (ADR-2 amendments — `tool_protocol`
   + MCP-shape) and Q-6 (ADR-6 — sandbox provides the v0.1 `pre_tool`
-  hook of record).
+  hook of record). Measurement counterpart:
+  [`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+  (added 2026-05-12 §Amendment) — six independent ADR-7-prep bootstrap
+  sessions across two harnesses empirically validate §6 tier-1 + tier-2
+  routing, §9 ≤100 K context-budget, §7 `harness_id` motivation, and
+  re-evaluation trigger 5 (= BACKLOG I-8, FA's own harness re-test).
 - **Chosen:** Formal inner-loop ADR — MCP-shaped `ToolSpec` /
   `ToolResult` registry; five-tool v0.1 catalog (`fs.read_file`,
   `fs.list_files`, `fs.edit_file`, `fs.write_file`, `fs.grep`); two

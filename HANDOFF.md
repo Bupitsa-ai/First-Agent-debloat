@@ -111,7 +111,12 @@ manually beyond this point.
     `events.jsonl` ≠ `hot.md`; mini hook pipeline — `pre_tool`
     Sandbox + optional Approval, `post_tool` Audit; static
     layered prompt frozen at session start; 4-question
-    subtraction-first acceptance block).
+    subtraction-first acceptance block). **Amendment 2026-05-12** —
+    cross-reference [`bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md)
+    measurement evidence (6-file irreducible core, ~80–95 K
+    Devin / 70–95 K Arena context, `harness_id` motivation,
+    re-evaluation trigger 5 = BACKLOG I-8, BACKLOG I-1 / I-2 /
+    I-3 unblocked); documentation-only, no shape change.
 - **ADR slot reservation.** Closed by ADR-7 above. History on
   the slot: `cross-reference-…-2026-04.md` §11 supersession
   marks on Q-1 / Q-2.

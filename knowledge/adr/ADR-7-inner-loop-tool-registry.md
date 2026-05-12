@@ -378,6 +378,19 @@ uses the first two and reserves the third for v0.2.
 This three-tier shape is what makes the migration to a
 larger v0.2 catalog config-only rather than code-only.
 
+**Empirical backing for tier-3 lazy hydration** (added 2026-05-12 §Amendment).
+[`bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+§3 records six independent ADR-7-prep sessions (3 Devin + 3 Arena.ai
+harnesses, ≥4 distinct model selections) that all reached
+«ready-to-draft» reading only **tier-1 + tier-2** material from the
+6-file irreducible core (`HANDOFF.md`, `knowledge/llms.txt`,
+`knowledge/adr/DIGEST.md`, `knowledge/adr/ADR-template.md`,
+`knowledge/research/efficient-llm-agent-harness-2026-05.md`,
+`knowledge/trace/exploration_log.md`) — none of the sessions hit
+tier-3 full `input_schema`. v0.1 lazy hydration is therefore
+consistent with observed agent behaviour across two distinct agent
+harnesses.
+
 ### 7. Trace — events.jsonl ≠ hot.md
 
 Per harness-research R-2 (anti-summary-rot invariant). Two
@@ -412,6 +425,13 @@ can refuse to compare runs across harness versions
 (forward-compat per
 [`efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md)
 §11 Q-6).
+
+**Future KPI consumption** (added 2026-05-12 §Amendment). The same
+`events.jsonl` schema is the auto-collection source for
+[BACKLOG I-7](../BACKLOG.md#i-7--bootstrap-cost-as-auto-collected-kpi-uc5-blocked)
+once the UC5 eval-harness lands; the §6 baseline table in
+[`bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+is the migration-source historical row.
 
 **Invariant.** `hot.md` cites file paths into `artifacts/` and
 event IDs into `events.jsonl`; `hot.md` **MUST NOT** be the
@@ -498,6 +518,18 @@ prefix; the user starts a new session. This is the same
 Migration trigger for v0.2 two-segment assembly: a UC5
 benchmark run shows ≥ N% degradation on staleness-sensitive
 tasks (the threshold is set in the UC5 ADR, not here).
+
+**Empirical context-budget evidence** (added 2026-05-12 §Amendment).
+[`bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+§5 shows Devin sessions converging to ~80–95 K total context at
+«feel-ready» across a 2.3× variance in files-count (Session A =
+16 files / ~95 K vs Session B = 7 files / ~95 K — same total context,
+different reading depth). Arena.ai sessions land in the 70–95 K
+range. The static layered prefix shape above therefore lands within
+the [AGENTS.md PR Checklist rule #11](../../AGENTS.md#pr-checklist)
+≤100 K budget on every measured session — independent empirical
+validation that the prefix-cache invariant is achievable on both
+Devin and external harnesses.
 
 ### 10. Acceptance criteria & 4-question subtraction-first self-audit
 
@@ -599,7 +631,17 @@ shape is pinned so the migration is config-only:
 - **R-9 cross-model harness transferability.** A future
   ADR-2 amendment may pin a `harness_id` ↔ model-tier
   compatibility matrix; the `harness_id` field in
-  `events.jsonl` (§7) already exists.
+  `events.jsonl` (§7) already exists. **Motivation**
+  (added 2026-05-12 §Amendment):
+  [`bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+  §1 `chain_of_custody` + §7 caveats show that agent self-report
+  of `session_model` is empirically unreliable (Devin returns
+  generic «Devin (Cognition AI)»; Arena.ai does not disclose
+  the underlying model identity to the agent runtime).
+  `harness_id` is the stable identity carrier the auto-KPI
+  pipeline
+  ([BACKLOG I-7](../BACKLOG.md#i-7--bootstrap-cost-as-auto-collected-kpi-uc5-blocked))
+  will key on.
 
 ## Consequences
 
@@ -664,6 +706,15 @@ shape is pinned so the migration is config-only:
     already covers the sandbox half; ADR-7 amendment will add
     the tool to §3 catalog plus an `output_schema` for the
     stdout/stderr/exit-code shape.
+  - **FA's own mid-tier inner-loop scaffolding ships (Phase M;
+    [BACKLOG I-8](../BACKLOG.md#i-8--mid-tier--first-agents-own-harness-bootstrap-re-test))**
+    (added 2026-05-12 §Amendment). Action: re-run the
+    ADR-7-prep bootstrap prompt on FA's own harness per
+    [`bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+    §9 trigger 5. Success criterion: the 6-file irreducible
+    core reproduces on FA's own harness. Failure to reproduce
+    re-opens routing-design proposals A / D / H (deferred per
+    BACKLOG I-8 §First concrete step once unblocked).
 - **Follow-up work this unlocks.**
   - `src/fa/inner_loop/registry.py` — `ToolSpec` dataclass,
     `register(spec)`, `lookup(name)`, lazy schema cache.
@@ -683,11 +734,109 @@ shape is pinned so the migration is config-only:
     `Hook (pre-tool / post-tool)`, `events.jsonl`, `hot.md`
     entries (some already present per AGENTS.md §Pre-flight
     Step 2 sweep — missing ones added by this PR).
+  - **BACKLOG forward-references unblocked by this ADR**
+    (added 2026-05-12 §Amendment).
+    - [BACKLOG I-1](../BACKLOG.md#i-1--planner-picks-needed-skills--tool-calls-at-planning-stage)
+      (Planner pre-selects tool-calls at planning stage) —
+      unblock-trigger «ADR-7 merges **and**
+      `src/fa/tool_registry/` module lands with a `ToolSpec`
+      dataclass plus loader» is half-satisfied by this ADR;
+      the other half lands in the chunker-indexer
+      implementation PR.
+    - [BACKLOG I-2](../BACKLOG.md#i-2--agent--sub-agents-for-context-load-reduction)
+      (sub-agents for context-load reduction) — needs Phase M
+      runner consuming this contract; the contract pre-defines
+      the `ToolResult.artifacts[]` shape so a sub-agent
+      merge-protocol can cite event IDs.
+    - [BACKLOG I-3](../BACKLOG.md#i-3--dispatcher-llm-lazy-load-skills--collect-repo-parts-on-the-fly)
+      (dispatcher LLM, lazy-load skills) — depends on I-1 +
+      skills system (future ADR-8); §6 three-tier disclosure
+      is the shape a dispatcher would key on.
+    - All three are AGENTS.md PR Checklist rule #11
+      mitigations (a) / (b) / (c) explicitly «tracked in
+      BACKLOG.md until ADR-7 + ADR-8 land» — this ADR closes
+      the ADR-7 half.
+
+## Amendments
+
+### Amendment 2026-05-12 — cross-reference bootstrap-cost-baseline measurement evidence
+
+**Source.** Measurement-evidence note
+[`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+landed on `main` in PR #5 (initial 4-session Devin baseline)
+and PR #7 (3-session Arena.ai extension + BACKLOG I-6/I-7/I-8)
+**after** this ADR's draft was written. The bootstrap-cost
+note is the readability-test measurement counterpart to this
+ADR's contract design — it ran the same single-message
+ADR-7-prep prompt across six independent sessions × two
+agent harnesses (3 Devin + 3 Arena.ai) × ≥4 distinct model
+selections and recorded calls / files / context tokens per
+session. The original ADR-7 draft cited four research notes
+but **not** the bootstrap-cost baseline, leaving the inner
+loop's three-tier disclosure (§6), static layered prompt
+(§9), `harness_id` field (§7), and re-evaluation triggers
+(§Consequences) without empirical grounding.
+
+**Change.** Six inline cross-references added to the ADR;
+**no** shape decisions changed:
+
+1. **§6 Tool disclosure** — empirical-backing paragraph
+   citing baseline §3 (6-file irreducible core: all six
+   bootstrap sessions reached «ready-to-draft» on tier-1 +
+   tier-2 material alone; **none** loaded tier-3 schemas).
+2. **§7 Trace** — future-KPI-consumption paragraph linking
+   `events.jsonl` schema to
+   [BACKLOG I-7](../BACKLOG.md#i-7--bootstrap-cost-as-auto-collected-kpi-uc5-blocked)
+   (auto-collected bootstrap-cost KPI) as the downstream
+   consumer once UC5 eval-harness lands.
+3. **§9 Loop invariant** — empirical context-budget paragraph
+   citing baseline §5 (Devin sessions converging to ~80–95 K
+   total context, Arena.ai 70–95 K — all within the
+   [AGENTS.md PR Checklist rule #11](../../AGENTS.md#pr-checklist)
+   ≤100 K envelope).
+4. **§11 R-9 cross-model harness transferability** — motivation
+   block citing baseline §1 `chain_of_custody` + §7 caveats
+   (agent self-report of `session_model` empirically
+   unreliable — Devin returns generic «Devin (Cognition AI)»;
+   Arena.ai does not disclose underlying model). `harness_id`
+   is the stable identity carrier.
+5. **§Consequences re-evaluation triggers** — 5th trigger
+   added: «FA's own mid-tier inner-loop scaffolding ships
+   (Phase M;
+   [BACKLOG I-8](../BACKLOG.md#i-8--mid-tier--first-agents-own-harness-bootstrap-re-test))».
+   Action: re-run ADR-7-prep bootstrap prompt on FA's own
+   harness. Success criterion: 6-file irreducible core
+   reproduces; failure re-opens routing proposals A / D / H.
+6. **§Consequences follow-up work** — BACKLOG forward-
+   references bullet listing I-1 / I-2 / I-3 (AGENTS.md rule
+   #11 mitigations a / b / c, explicitly «tracked in BACKLOG
+   until ADR-7 + ADR-8 land» — this ADR closes the ADR-7 half).
+
+**Why not a shape change.** The baseline empirically validates
+the v0.1 contract; it does not invalidate any decision. The
+6-file irreducible core reproduces across two harnesses and
+≥4 model selections — this is independent evidence that the
+tier-1 + tier-2 routing surface works. The amendment is
+documentation-only (no §3 catalog change, no §2 ToolSpec
+shape change, no §8 hook pipeline change).
+
+**Subtraction-check.** EXEMPT per AGENTS.md §Pre-flight
+Step 4 (documentation-only amendment with no new artefact;
+six new cross-references to an already-merged research note).
+
+**Re-measurement.** Per `bootstrap-cost-baseline-2026-05.md`
+§9 trigger 5 (= BACKLOG I-8), this ADR's amendment should be
+revisited once FA's own mid-tier harness ships and the
+bootstrap re-runs on it. If the 6-file irreducible core does
+**not** reproduce on FA's own harness, the empirical-backing
+paragraph in §6 must be qualified (works on external
+harnesses; needs separate evidence for FA's own).
 
 ## References
 
 - [HANDOFF.md §Next steps item 1](../../HANDOFF.md#next-steps-intended-order) — the explicit six-surface scope this ADR pins.
 - [`research/efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md) §0 (R-1..R-8) + §10 (contract sketch).
+- [`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md) §3 (6-file irreducible core), §5 (context-saturation), §6 (baseline range), §9 (re-measurement triggers) — measurement counterpart, cited from §6 / §7 / §9 / §11 / §Consequences in this ADR's §Amendment 2026-05-12.
 - [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](../research/cross-reference-ampcode-sliders-to-adr-2026-04.md) §10 R-1, R-3, R-7.
 - [`research/semi-autonomous-agents-cross-reference-2026-05.md`](../research/semi-autonomous-agents-cross-reference-2026-05.md) §7.1, §7.3, §8.4, §8.5.
 - [`research/how-to-build-an-agent-ampcode-2026-04.md`](../research/how-to-build-an-agent-ampcode-2026-04.md) — ampcode three-tool baseline.

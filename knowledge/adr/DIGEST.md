@@ -144,7 +144,19 @@ so a formal contract is the only way the ADR-2 §Amendment 2026-05-01
 MCP-shape convention and the ADR-6 §Tool wiring sandbox stub get
 concrete carriers; single source of truth for every tool PR.
 
-**Amendments.** None.
+**Amendments.**
+
+- 2026-05-12 — cross-reference bootstrap-cost-baseline measurement
+  evidence. Adds six inline cross-references (no shape change) to
+  [`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md):
+  §6 empirical-backing for tier-3 lazy hydration (6-file irreducible
+  core), §7 future-KPI-consumption (BACKLOG I-7), §9 empirical
+  context-budget evidence (~80–95 K Devin / 70–95 K Arena),
+  §11 R-9 motivation (agent self-report unreliable → `harness_id`),
+  §Consequences re-evaluation trigger 5 (FA's own mid-tier harness
+  ships = BACKLOG I-8), §Consequences follow-up work (BACKLOG I-1 /
+  I-2 / I-3 = AGENTS.md rule #11 mitigations a / b / c). EXEMPT
+  per AGENTS.md §Pre-flight Step 4 (documentation-only).
 
 **Source:** [`ADR-7`](./ADR-7-inner-loop-tool-registry.md).
 
