@@ -66,6 +66,41 @@ top-of-file `#` comment block instead — the live precedent is
 [`knowledge/trace/exploration_tree.yaml`](./trace/exploration_tree.yaml)
 which carries this exact marker after PR-F merged.
 
+## When adding a new file under `docs/` or `knowledge/`
+
+Triggered by [AGENTS.md PR Checklist rule #7](../AGENTS.md#pr-checklist).
+Applies forward-only (rule #7 rev landed 2026-05-12 — older
+rows in `llms.txt` not retro-fitted, agents reading this section
+should not back-fill existing rows).
+
+1. Add a row in [`knowledge/llms.txt`](./llms.txt) BY-DEMAND INDEX
+   under the matching folder section. Row format:
+
+   ```text
+   - [path/to/file.md](raw-url) (~N lines): description.
+   ```
+
+   `(~N lines)` — file length rounded to the nearest ten. Enables
+   informed pre-batch decisions for agents: an agent considering
+   reading several BY-DEMAND entries in one parallel batch can sum
+   `~N lines` first and decide whether to batch or load
+   sequentially (relevant for mid-tier OSS models with smaller
+   context windows; see
+   [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
+   §3 for the 7-file routing-compliant bootstrap core that this
+   metadata enables agents to size in advance).
+2. If the new file is a cheat-sheet or index that supersedes
+   prose in another file (e.g. `adr/DIGEST.md` vs the per-ADR
+   files, or `MAINTENANCE.md` vs the prose in
+   [AGENTS.md PR Checklist](../AGENTS.md#pr-checklist) rules
+   #5 / #7), write the description as «… cheap-read overlay;
+   authoritative source remains \<link\>» so an agent knows
+   when to skip vs when to drill down. Live precedent:
+   `adr/DIGEST.md` row in `llms.txt`.
+3. If the new file supersedes an existing file in the same PR,
+   also run the «When superseding a non-research file» checklist
+   above (banner + frontmatter + cross-references).
+
 ## When adding a new prompt template
 
 1. Add a row to [`knowledge/prompts/RESOLVER.md`](./prompts/RESOLVER.md)
