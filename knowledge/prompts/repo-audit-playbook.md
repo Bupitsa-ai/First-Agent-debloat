@@ -45,7 +45,7 @@ prereqs:
 
 ## 0. TL;DR — the loop
 
-```
+```text
 P1 Frame ─► P2 Analyse ─► P3 Confirm & Diverge ─► P4 Implement
                               ▲                         │
                               │                         ▼
@@ -168,7 +168,7 @@ Read the entry-point trio in full. For everything else, **sample**:
 
 Manually walk the agent's first 60 seconds:
 
-```
+```text
 HANDOFF.md → AGENTS.md §Pre-flight → llms.txt §MUST-READ
         → project-overview.md §1.1 → DIGEST.md
         → HANDOFF.md §Current state
@@ -219,7 +219,7 @@ adversary:
 
 One `repo-audit-YYYY-MM-DD.md` artefact. Section order:
 
-```
+```text
 0. Method + scope + commit hash + treatment of in-flight PRs
 1. Bootstrap path token-count walk
 2. Findings § per criterion (1 .. N)
@@ -272,7 +272,7 @@ but fragile.
 
 #### P3.1 — Map user response to a finding-status table
 
-```
+```text
 Finding  | Status   | User rationale                  | PR / Manual
 §1.3     | accept   | — (default)                     | PR-X
 §4.1     | skip     | "human-review process, manual"   | manual
@@ -354,7 +354,7 @@ other's content).
 
 Build a cross-file conflict matrix:
 
-```
+```text
             AGENTS.md  llms.txt  HANDOFF.md  glossary.md  research/*
 PR-A glossary    .         .          .          ✏️           .
 PR-B archive     .         ✏️         ✏️          .          ✏️
@@ -458,7 +458,7 @@ PR-M.
 A `stage-N-assessment.md` (or `preflight-pass-assessment.md`, in this
 session). Sections:
 
-```
+```text
 1. What changed (per PR, one paragraph)
 2. Expected effects on mid-tier OSS LLM bootstrap path
 3. Pending follow-ups (manual items + BACKLOG entries)
@@ -521,7 +521,7 @@ Artefact: <ref_file file="/home/ubuntu/preflight-pass-assessment.md" />
 
 #### P6.1 — For each finding, ask the four-part filter
 
-```
+```text
 1. Is there empirical support? (paper, benchmark, repo-internal note)
 2. Is the effect measurable? (1pp on a benchmark, 30% token reduction)
 3. Does the effect apply to the target audience? (mid-tier OSS LLM
@@ -586,7 +586,7 @@ In this session, P6 caught:
 
 `repo-audit-YYYY-MM-DD-revised.md`. Sections:
 
-```
+```text
 0. Method (the four-part filter)
 1. KEEP findings (with empirical citation per finding)
 2. DEFER findings (need evidence next session)
@@ -948,7 +948,7 @@ evidence: weak | strong | none
 
 ### PR sequencing matrix (P4.1)
 
-```
+```text
             File-A   File-B   File-C   File-D
 PR-X        ✏️        .        .        .
 PR-Y        .        ✏️        ✏️        .
@@ -960,7 +960,7 @@ Overlap rows → stack with explicit `base_branch=PR-...`.
 
 ### P6 four-part filter
 
-```
+```text
 1. Empirical support? (paper / benchmark / in-repo research)
 2. Measurable effect? (1 pp, 30 % tokens, X% speedup)
 3. Applies to target audience? (mid-tier OSS LLM specifically)
