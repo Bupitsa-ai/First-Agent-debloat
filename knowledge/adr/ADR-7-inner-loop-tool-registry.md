@@ -434,7 +434,7 @@ A `Hook` is a callable `(event: dict) -> HookDecision`
 attached at one of two points:
 
 - **`pre_tool`** — runs after input-schema validation,
-  before the handler. Returns `allow` | `deny(reason)`.
+  before the handler. Returns `allow` | `deny(reason)` | `modify_params(new_params)`.
   Multiple `pre_tool` hooks run in order; the first `deny`
   short-circuits and is recorded in `events.jsonl` as
   `kind == "hook_decision"`.
