@@ -78,7 +78,7 @@ Task type → primary entrypoint, then secondary:
 ### ADRs (`knowledge/adr/`)
 
 - [knowledge/adr/README.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/README.md) (~30 lines): ADR process; routes to DIGEST.md cheat-sheet.
-- [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) (~160 lines): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
+- [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) (~170 lines): One-paragraph cheat-sheet per accepted ADR + amendments. Cheap-read overlay; authoritative source remains the per-ADR file. Updated in the same PR whenever an amendment lands (AGENTS.md PR Checklist rule #9).
 - [knowledge/adr/ADR-template.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-template.md) (~40 lines): ADR template (copy when adding a new decision).
 - [knowledge/adr/ADR-1-v01-use-case-scope.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-1-v01-use-case-scope.md) (~230 lines): v0.1 use-case scope (UC1 + UC3 in; UC4 deferred; UC2 best-effort); Amendment 2026-05-01 deferred UC5; Amendment 2026-05-06 expanded UC5 to eval-driven harness iteration (5a-5e).
 - [knowledge/adr/ADR-2-llm-tiering.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/ADR-2-llm-tiering.md) (~350 lines): LLM tiering and access (static role routing; Planner / Coder / Debug / Eval).
