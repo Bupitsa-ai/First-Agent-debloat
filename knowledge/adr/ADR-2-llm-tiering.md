@@ -288,16 +288,17 @@ the 2026-04-29 amendment).**
    exposing internal tools as remote MCP services, etc. — all
    v0.2 work, gated by a follow-up ADR.
 
-4. ADR-7 inherits the convention. ADR-7's tool-registry contract uses this request/response shape (§2 ToolSpec / ToolResult).
-  The ADR-7 author MAY add fields (e.g. an id for streaming tool-calls, a metadata block)
-  but MUST NOT change the existing two fields (name, params for request; result, error for response)
-  without a separate amendment to this ADR-2. Tool errors match JSON-RPC error semantics,
-  carrying a string message and a code field that operates in a dual-mode approach:
-  ADR-7 agents internally produce and consume the code as ergonomic domain-specific strings
-  (str, e.g., "invalid_params", "sandbox_deny", "no_unique_match"),
-  while the JSON-RPC wire format requires standard integers (int).
-  To preserve wire compatibility while improving agent-facing error handling, 
-  implementations MUST map between these str and int representations at the transport boundary.
+4. **Inner-loop ADR** inherits the convention. ADR-7's tool-registry contract uses
+   this request/response shape (§2 ToolSpec / ToolResult).
+   The ADR-7 author MAY add fields (e.g. an id for streaming tool-calls, a metadata block)
+   but MUST NOT change the existing two fields (name, params for request; result, error for response)
+   without a separate amendment to this ADR-2. Tool errors match JSON-RPC error semantics,
+   carrying a string message and a code field that operates in a dual-mode approach:
+   ADR-7 agents internally produce and consume the code as ergonomic domain-specific strings
+   (str, e.g., "invalid_params", "sandbox_deny", "no_unique_match"),
+   while the JSON-RPC wire format requires standard integers (int).
+   To preserve wire compatibility while improving agent-facing error handling, 
+   implementations MUST map between these str and int representations at the transport boundary.
 
 5. **`tool_protocol` field semantics extended.** The existing
    `tool_protocol: native | prompt-only` field per role
