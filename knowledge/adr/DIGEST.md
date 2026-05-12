@@ -1,8 +1,8 @@
 # ADR Digest — one-paragraph cheat-sheet
 
 > **Purpose.** Cheat-sheet for agents and humans who need the gist of
-> all six accepted ADRs without reading ~1,400 lines of source. One
-> paragraph per ADR + bulleted amendments. **The per-ADR file is the
+> all accepted ADRs without reading the full source set. One paragraph
+> per ADR + bulleted amendments. **The per-ADR file is the
 > authoritative source** — this digest only paraphrases.
 >
 > **Maintenance rule.** When an ADR amendment lands, update the

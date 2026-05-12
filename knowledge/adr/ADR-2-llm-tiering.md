@@ -201,12 +201,14 @@ Critic.
 **Notes.**
 
 - The `tool_protocol` field is consumed by `src/fa/llm/router.py`
-  + the inner-loop module specified in the planned **Inner-loop
-  ADR** (cross-reference §10 R-1, not yet drafted). Until that
-  ADR lands, the implementer may stub a single `native`-only
-  inner-loop and mark `prompt-only` as `NotImplemented`; the
-  field still goes into the schema so the config never has to
-  be re-written.
+  + the inner-loop module specified in
+  [ADR-7](./ADR-7-inner-loop-tool-registry.md). The implementer
+  may stub a single `native`-only inner-loop and mark
+  `prompt-only` as `NotImplemented`; the field still goes into
+  the schema so the config never has to be re-written. ADR-7
+  §Consequences notes that prompt-only adapters MUST translate
+  to the same internal `request` / `response` shape pinned in
+  this ADR §Amendment 2026-05-01.
 - Verified model coverage (user, Apr 2026): Qwen 3.6, Kimi 2.6,
   GLM 5.1, Claude latest, Nemotron 3 Super — all native-tool.
   Mid-tier OSS prompt-only fallbacks remain possible for
@@ -237,10 +239,10 @@ The original Decision and the 2026-04-29 amendment fix the
 agent ↔ LLM contract (`tool_protocol: native | prompt-only`).
 They say nothing about the **agent ↔ tools** contract — i.e.
 how the inner-loop calls a tool function, whether locally
-in-process or eventually via an MCP server. Without an
-explicit convention, the future inner-loop ADR (cross-
-reference §10 R-1, now planned as ADR-7) might design a
-tool-shape that is **not** JSON-RPC-shaped, which would force
+in-process or eventually via an MCP server. Without this
+explicit convention, the inner loop now pinned by
+[ADR-7](./ADR-7-inner-loop-tool-registry.md) might have
+designed a tool-shape that is **not** JSON-RPC-shaped, which would force
 re-design when v0.2 wants to expose internal tools as MCP
 servers (so other MCP hosts — Claude Desktop, third-party
 agents — can use them, or so heavy tools like `mcp-runner` /
@@ -286,12 +288,12 @@ the 2026-04-29 amendment).**
    exposing internal tools as remote MCP services, etc. — all
    v0.2 work, gated by a follow-up ADR.
 
-4. **Inner-loop ADR (future ADR-7) inherits the convention.**
-   When ADR-7 lands, its tool-registry contract must use this
-   request/response shape. The ADR-7 author MAY add fields
-   (e.g. an `id` for streaming tool-calls, a `metadata`
-   block) but MUST NOT change the existing two fields
-   (`name`, `params` for request; `result`, `error` for
+4. **[ADR-7](./ADR-7-inner-loop-tool-registry.md) inherits the
+   convention.** ADR-7's tool-registry contract uses this
+   request/response shape (§2 ToolSpec / ToolResult). The ADR-7
+   author MAY add fields (e.g. an `id` for streaming tool-calls,
+   a `metadata` block) but MUST NOT change the existing two
+   fields (`name`, `params` for request; `result`, `error` for
    response) without a separate amendment to this ADR-2.
 
 5. **`tool_protocol` field semantics extended.** The existing

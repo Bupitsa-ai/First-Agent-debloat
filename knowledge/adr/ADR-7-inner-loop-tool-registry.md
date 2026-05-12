@@ -175,8 +175,14 @@ observation → next thought) with no Critic / Reflector role
    (tier-2: `name` + one-line description + tags); full input
    schema loaded on demand (tier-3) — see §6.
 4. Receive model response.
-5. If the response is a tool call: pre-tool hook chain → tool
-   handler → post-tool hook chain (§8).
+5. If the response is a tool call: input JSON-Schema
+   validation (§5) → `pre_tool` hook chain → tool handler →
+   `post_tool` hook chain (§8). If any `pre_tool` hook returns
+   `modify_params`, the dispatcher MUST re-run the same
+   JSON-Schema validation **and** the ADR-6 sandbox checks on
+   the mutated `params` before the handler executes — no
+   exception. Hook re-entry is bounded (one re-validate per
+   call); a second mutation by the same chain is a hard error.
 6. Append one JSONL event per state transition to
    `~/.fa/state/runs/<run_id>/events.jsonl`; large payloads
    land under `~/.fa/state/runs/<run_id>/artifacts/` (§7).
@@ -204,19 +210,50 @@ existing ones without an ADR-2 amendment.
 
 ```python
 from dataclasses import dataclass, field
-from typing import Callable, Literal
+from typing import Any, Callable, Literal
 
 @dataclass(frozen=True)
 class ToolSpec:
-    name: str                                 # stable dotted string, e.g. "fs.read_file"
-    description: str                          # one-line model-facing summary (tier-2)
-    input_schema: dict                        # JSON Schema; loaded on demand (tier-3)
-    permission: Literal["read", "workspace", "full"]   # ADR-6 sandbox scope
-    tags: tuple[str, ...] = ()                # used by [tool_groups] allow-list (forward-compat)
-    handler: Callable[[dict], "ToolResult"] = None     # deterministic dispatcher entry
-    output_schema: dict | None = None         # optional; documents ToolResult.result
-    defer_loading: bool = False               # forward-compat for Anthropic tool-search
+    name: str                                  # stable dotted string, e.g. "fs.read_file"
+    description: str                           # one-line model-facing summary (tier-2)
+    input_schema: dict                         # JSON Schema; loaded on demand (tier-3)
+    permission: Literal["read", "workspace", "full"]  # ADR-6 sandbox scope
+    handler: Callable[[dict], "ToolResult"]    # deterministic dispatcher entry
+    tags: tuple[str, ...] = ()                 # used by [tool_groups] allow-list (forward-compat)
+    output_schema: dict | None = None          # optional; documents ToolResult.result
+    defer_loading: bool = False                # forward-compat for Anthropic tool-search
 ```
+
+The v0.1 registry loader (`src/fa/inner_loop/registry.py::register`)
+MUST reject a `ToolSpec` with `permission == "full"` or with any
+missing required field (`name`, `description`, `input_schema`,
+`permission`, `handler`). `full` exists only as an explicit future
+registry value so implementers cannot smuggle privileged tools behind
+an underspecified boolean — a future ADR / amendment that introduces
+a privileged tool MUST also define its sandbox.
+
+`ToolResult` is the canonical return shape for every handler **and**
+the payload the dispatcher appends to the conversation:
+
+```python
+@dataclass(frozen=True)
+class ToolError:
+    code: str          # stable identifier, e.g. "invalid_params", "sandbox_deny", "no_unique_match"
+    message: str       # human-readable; may include JSON-Schema error path
+    retryable: bool    # if true, the model is free to retry with corrected params
+
+@dataclass(frozen=True)
+class ToolResult:
+    summary: str                       # short model-facing text; ALWAYS present
+    result: dict | None = None         # structured payload validated against ToolSpec.output_schema, or None
+    error: ToolError | None = None     # present iff the call failed; mutually exclusive with `result`
+    artifacts: tuple[str, ...] = ()    # paths to large outputs under ~/.fa/state/runs/<run_id>/artifacts/
+```
+
+The model sees `summary` + `artifacts[]` paths back from the loop
+(per §1 step 7). Large payloads stay on disk (R-2 trace-separation
+invariant). Empty output is explicit (`result = None` or
+`result = {}`), never silent.
 
 **Naming.** Tool `name` uses dotted namespaces (`fs.read_file`,
 `fs.list_files`, `fs.edit_file`, `fs.write_file`, `fs.grep`).
@@ -299,6 +336,14 @@ needs it for MCP-shape compat). The schema is loaded **once**
 per `ToolSpec` at registry init; per-call validation is
 ~µs-level and has no token cost (errors are *not* fed back
 into the conversation accumulator unless `retryable = true`).
+
+**Re-validation after `pre_tool` mutation (§1 step 5).** If a
+`pre_tool` hook returns `modify_params`, the dispatcher MUST
+re-run this same JSON-Schema check against the mutated
+`params` *and* re-run the ADR-6 sandbox check before the
+handler executes. There is no "trusted hook output" path; a
+hook cannot bypass validation by mutating a previously-valid
+payload into an invalid one.
 
 Schemas live alongside the handlers in
 `src/fa/inner_loop/tools/<tool_name>.py` (one file per tool)
@@ -454,7 +499,40 @@ Migration trigger for v0.2 two-segment assembly: a UC5
 benchmark run shows ≥ N% degradation on staleness-sensitive
 tasks (the threshold is set in the UC5 ADR, not here).
 
-### 10. Acceptance — 4-question subtraction-first self-audit
+### 10. Acceptance criteria & 4-question subtraction-first self-audit
+
+**Part A — enforceable checklist.** Before the first
+implementation PR (`src/fa/inner_loop/`) merges, the
+following MUST hold:
+
+1. `ToolSpec` loader (`registry.register`) raises on any tool
+   missing `name`, `description`, `input_schema`,
+   `permission`, or `handler`.
+2. `ToolSpec` loader raises on `permission: "full"` in v0.1.
+3. JSON-Schema validation rejects malformed `params` before
+   the `pre_tool` chain runs (§5).
+4. If a `pre_tool` hook returns `modify_params`, the
+   dispatcher re-runs JSON-Schema validation **and** ADR-6
+   sandbox checks on the mutated payload before the handler
+   (§1 step 5 + §5 re-validation invariant).
+5. ADR-6 `Sandbox.check_*` runs before any filesystem I/O
+   inside every `fs.*` handler (§3 + ADR-6 §Tool wiring).
+6. `fs.apply_patch` runs `git apply --check` before any
+   filesystem write (§4 point 2).
+7. Tool results with payload size > the artifact threshold
+   (default 32 KiB) return paths in `ToolResult.artifacts`,
+   not raw bytes in `result` (§7 trace-separation invariant).
+8. `events.jsonl` records **both** successful and failed tool
+   calls — `tool_call` always emitted; `tool_result` always
+   emitted (with `error != None` on failure).
+9. `fs.read_file` exposes the `start_line` / `end_line`
+   bounded-window pattern (§3 — semi-autonomous-agents §8.4).
+10. Both edit-shapes (`fs.edit_file` string-replace +
+    `fs.apply_patch` unified-diff) are registered; the
+    default is configurable via `~/.fa/inner_loop.toml`
+    (§4).
+
+**Part B — 4-question subtraction-first self-audit.**
 
 Per harness-research R-7 + AGENTS.md PR Checklist rule #10
 question 4. Every PR that **adds or amends a harness
@@ -491,7 +569,9 @@ step-as-LLM-call decisions:
 A "yes / unclear" answer to any question requires either
 removal of the named component or a one-paragraph
 justification cited in ADR-7 §Notes (this section) at
-amendment time.
+amendment time. Part A is binary (pass/fail); Part B is the
+minimalism-first review prompt every harness-component PR
+citing ADR-7 inherits.
 
 ### 11. Forward-compat (deferred but shape-pinned)
 
@@ -559,6 +639,14 @@ shape is pinned so the migration is config-only:
   now against 1-2 days of config-only migration later vs days
   of breaking `models.yaml` and `sandbox.toml` consumers in
   v0.2 when the catalog grows.
+- **Neutral — prompt-only Coder tier obligation.** Prompt-only
+  models remain a supported ADR-2 shape (§Amendment 2026-04-29).
+  This ADR specifies the native-tool dispatch path; any
+  prompt-only adapter (e.g. a JSON-blob-in-content workaround)
+  MUST translate the model output into the same internal
+  `request` / `response` shape pinned in §2 before it reaches
+  the registry. The translation lives in the adapter, not in
+  per-tool handlers — handlers see a uniform `ToolResult`.
 - **Re-evaluation triggers (when to revisit this ADR).**
   - **HANDOFF §Next steps item 4 fixture lands** and shows
     one of the five ADR-2 models clearly prefers
