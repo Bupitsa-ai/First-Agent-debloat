@@ -164,13 +164,7 @@ Verify before opening a PR. Each item has triggered wasted review cycles.
    least for non-trivial files. Plain bullet text is insufficient —
    reviewers should be able to open each file in one click without
    copy-pasting paths. Use the head branch of the PR, not `main`.
-7. **`knowledge/llms.txt` reflects reality.** If this PR adds,
-   removes, or renames any file under `docs/` or `knowledge/`, update
-   the corresponding entry (or add / remove a row) in
-   [`knowledge/llms.txt`](./knowledge/llms.txt). The index is
-   hand-maintained; it drifts silently if not enforced on every PR.
-   A pre-commit hook or generator can be added later (see
-   [`docs/workflow.md`](./docs/workflow.md) Phase S).
+7. **`knowledge/llms.txt` reflects reality.** If this PR adds, removes, or renames a file under `docs/` or `knowledge/`, follow the matching checklist in [`knowledge/MAINTENANCE.md`](./knowledge/MAINTENANCE.md) (§When adding a new file / §When archiving a research note / §When superseding a non-research file). Pre-commit regenerator is planned post-Phase S ([`docs/workflow.md`](./docs/workflow.md) item 7).
 8. **Research notes from the research-briefing workflow start with §0
    Decision Briefing.** Notes under `knowledge/research/` produced via
    [`knowledge/prompts/research-briefing.md`](./knowledge/prompts/research-briefing.md)

@@ -3,7 +3,7 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-11 by Devin session
+> **Last updated:** 2026-05-12 by Devin session
 > [`89c32745c44f47dea679af42ed2d2dd8`](https://app.devin.ai/sessions/89c32745c44f47dea679af42ed2d2dd8).
 
 This file is a portable counterpart to the Devin Knowledge note
@@ -33,9 +33,10 @@ changes the project state, update **both**.
    ([llmstxt.org](https://llmstxt.org/) convention).
 3. Skim [`knowledge/project-overview.md`](./knowledge/project-overview.md)
    — what the project is, what v0.1 ships, what is non-goal.
-4. Skim the ADR index at
-   [`knowledge/adr/README.md`](./knowledge/adr/README.md) — the
-   six accepted decisions that shape v0.1 (ADR-1..6).
+4. Read [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) —
+   one-paragraph cheat-sheet for ADR-1..6 + amendments. Open the
+   per-ADR file only when DIGEST is insufficient (exact schema,
+   Consequences wording, full Amendment text).
 5. Check the **Current state** section below for what is in
    flight right now.
 
