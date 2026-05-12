@@ -36,7 +36,7 @@ Six files cover ~90% of session-start context. Read in order:
 2. [AGENTS.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/AGENTS.md) — rules, PR checklist, query routing, **§Pre-flight checklist** (run BEFORE any non-trivial task).
 3. [knowledge/project-overview.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/project-overview.md) — §1.1 four-pillar goal; §1.2 minimalism-first principle.
 4. [HANDOFF.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/HANDOFF.md) — current state, next steps, recently-landed research notes.
-5. [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) — one-paragraph cheat-sheet for ADR-1..6 + amendments. Authoritative source remains the per-ADR files.
+5. [knowledge/adr/DIGEST.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/adr/DIGEST.md) — one-paragraph cheat-sheet for all ADR + amendments. Authoritative source remains the per-ADR files.
 6. [docs/glossary.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/docs/glossary.md) — canonical definitions for project-specific terms (axis, lens, pillar, NLAH, ACI, harness, hook, UC1..UC5, MCP, subtraction-first, minimalism-first, R-S-M).
 
 ## TASK ROUTING
@@ -90,7 +90,7 @@ Task type → primary entrypoint, then secondary:
 
 ### Exploration log (`knowledge/trace/`)
 
-- [knowledge/trace/exploration_log.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/trace/exploration_log.md): Telegraphic markdown overlay — one `## Q-N` block per ADR-1..6 with `Chosen:` and each `Rejected:` option carrying `Reason:` + `Lesson:`. Schema in [`knowledge/README.md` §`trace/`](./README.md#trace--exploration-log); origin in research note [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md) §9 R-1. Converted from YAML DAG 2026-05-10 per Tsinghua NLAH finding.
+- [knowledge/trace/exploration_log.md](https://raw.githubusercontent.com/GITcrassuskey-shop/First-Agent/main/knowledge/trace/exploration_log.md): Telegraphic markdown overlay — one `## Q-N` block for each ADR with `Chosen:` and each `Rejected:` option carrying `Reason:` + `Lesson:`. Schema in [`knowledge/README.md` §`trace/`](./README.md#trace--exploration-log); origin in research note [`ara-protocol-cross-reference-2026-05.md`](./research/ara-protocol-cross-reference-2026-05.md) §9 R-1. Converted from YAML DAG 2026-05-10 per Tsinghua NLAH finding.
 
 ### Prompts (`knowledge/prompts/`)
 
