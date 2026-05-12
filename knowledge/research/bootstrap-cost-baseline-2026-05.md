@@ -254,8 +254,9 @@ per cell). В обоих случаях главный вывод сохраня
   может повторить тот же промпт на каждом label'е 2-3 раза для
   оценки variance.
 - **No pre-refactor baseline.** Effectiveness claim — structural
-  (7-файловый core воспроизводится → routing работает), не
-  количественный («стало на N % дешевле»).
+  (6-файловый irreducible core воспроизводится во всех
+  шести ADR-7-prep сессиях → routing работает), не количественный
+  («стало на N % дешевле»).
 - **Model identity not verified.** `session_model` field в BOOTSTRAP
   REPORT — agent self-report; Devin часто возвращает обобщённое
   «Devin (Cognition AI)». Selection-labels = user-side flag.

@@ -87,8 +87,8 @@ should not back-fill existing rows).
    sequentially (relevant for mid-tier OSS models with smaller
    context windows; see
    [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
-   §3 for the 7-file routing-compliant bootstrap core that this
-   metadata enables agents to size in advance).
+   §3 for the 6-file irreducible bootstrap core that this metadata
+   enables agents to size in advance).
 2. If the new file is a cheat-sheet or index that supersedes
    prose in another file (e.g. `adr/DIGEST.md` vs the per-ADR
    files, or `MAINTENANCE.md` vs the prose in
