@@ -347,8 +347,14 @@ Implementation uses `jsonschema` (single new dependency at
 this layer; ADR-2 §Amendment 2026-05-01 already implicitly
 needs it for MCP-shape compat). The schema is loaded **once**
 per `ToolSpec` at registry init; per-call validation is
-~µs-level and has no token cost (errors are *not* fed back
-into the conversation accumulator unless `retryable = true`).
+~µs-level — the validation step itself has no token cost
+(success emits no model-facing message). On failure §1 step 7
+governs surfacing: the resulting `ToolResult` (with
+`error.code = "invalid_params"`, `retryable = true`) is fed
+back to the model exactly like any other `ToolResult`, so the
+model can correct and retry. There is no silent-drop path:
+every emitted `ToolResult` reaches the model per §1 step 7,
+regardless of `retryable`.
 
 **Re-validation after `pre_tool` mutation (§1 step 5).** If a
 `pre_tool` hook returns `modify_params`, the dispatcher MUST

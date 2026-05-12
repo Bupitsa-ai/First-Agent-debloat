@@ -66,6 +66,21 @@
     complexity detector exists with measurable precision/recall on
     FA's own task corpus.
 
+### Q-2 amendment 2026-05-12 — `error.code` dual-mode `str | int` (ADR-7-driven clarification)
+
+- **Coupling:** Q-2 + Q-7 (ADR-7 §2 ToolError defines
+  `code: str` ergonomic-domain identifier; ADR-2 §1
+  pseudo-schema is the JSON-RPC wire shape with numeric `code`).
+- **Rationale:** ADR-7 §2 introduces ergonomic string codes
+  (`"invalid_params"`, `"sandbox_deny"`, `"no_unique_match"`)
+  for agent-facing handlers; JSON-RPC wire spec requires
+  numeric codes. Dual-mode resolves the contradiction without
+  amending the field set: §1 pseudo-schema relaxed from
+  `code: int` to `code: str | int`, mapping table lives next to
+  the dispatcher. No `name` / `params` / `result` / `error`
+  field-set change → no breach of ADR-2 §4 inheritance rule.
+- **Source:** [ADR-2 §Amendment 2026-05-01 §4 dual-mode](../adr/ADR-2-llm-tiering.md#amendment-2026-05-01--mcp-forward-compat-tool-shape-convention) (clarification appended in this PR alongside ADR-7 import).
+
 ## Q-3 — Which memory architecture variant for v0.1? (2026-04-27)
 
 - **Closed by:** [ADR-3](../adr/ADR-3-memory-architecture-variant.md)

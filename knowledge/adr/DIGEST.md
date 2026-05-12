@@ -49,6 +49,13 @@ for v0.1.
 - **2026-05-01** — MCP forward-compat tool-shape convention: in-process
   tool dispatcher mirrors JSON-RPC `request: {name, params}` /
   `response: {result, error}`. **No `mcp` package dependency in v0.1.**
+- **2026-05-12** (clarification, ADR-7-driven) — `error.code` is
+  dual-mode `str | int`: ergonomic domain-string internally
+  (e.g. `"invalid_params"`, `"sandbox_deny"`), JSON-RPC numeric
+  on the wire. Implementations MUST map between the two at the
+  transport boundary. No shape change — relaxation of the §1
+  pseudo-schema; `name` / `params` / `result` / `error` field
+  set unchanged.
 
 **Source:** [`ADR-2`](./ADR-2-llm-tiering.md).
 

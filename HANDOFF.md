@@ -88,6 +88,11 @@ manually beyond this point.
     inner-loop without Critic. **Amendment 2026-05-01:** MCP
     forward-compat tool-shape convention (JSON-RPC-shaped
     `name`/`params`/`result`/`error` for all tool dispatch).
+    **Amendment 2026-05-12** (ADR-7-driven clarification):
+    `error.code` is dual-mode `str | int` — ergonomic domain
+    string internally, JSON-RPC numeric on the wire;
+    implementations MUST map between the two at the transport
+    boundary.
   - [ADR-3](./knowledge/adr/ADR-3-memory-architecture-variant.md) —
     Variant A (mechanical wiki, no embeddings, no graph,
     no Mem0).
