@@ -254,11 +254,19 @@
   produce a supplementary measurement-evidence note
   `bootstrap-cost-mid-tier-2026-XX.md` (or amend the existing
   baseline note with §11 Mid-tier extension). If the 6-file
-  irreducible core reproduces → proposals A / D / H from
-  `agent-reading-optimization-review.md` stay **dropped** (their
-  premise required the core to fail on mid-tier). If the core
-  does not reproduce → re-evaluate A / D / H with the new
-  evidence.
+  irreducible core reproduces → routing-design proposals **A**
+  (DIGEST.md routing for sequential-ADR readers), **D** (tiered
+  bootstrap surface — split current §MUST READ FIRST into top-tier
+  / mid-tier variants), and **H** (sequential-routing instruction
+  inside DIGEST telling the reader to expand only on demand) stay
+  **dropped** (their premise required the core to fail on
+  mid-tier). If the core does not reproduce → re-evaluate A / D /
+  H with the new evidence. Source artefact for these proposals is
+  a session-internal review document (`agent-reading-optimization
+  -review.md`, chat-only, not preserved in the repo tree — same
+  status as `agent-reading-optimization-input.md` cross-referenced
+  in [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
+  `chain_of_custody` frontmatter block).
 - **Out-of-scope alternative.** Running this on the Coder-tier
   LLM **without** FA's own harness (e.g. on Arena.ai with an
   OSS-tagged model) would not isolate harness vs routing — Arena
@@ -269,10 +277,11 @@
 - **References:**
   [`research/bootstrap-cost-baseline-2026-05.md`](./research/bootstrap-cost-baseline-2026-05.md)
   §3 (6-file irreducible core); §9 (re-measurement triggers,
-  item 5 points here);
-  `agent-reading-optimization-review.md` proposals A / D / H
-  (premise weakened on top-tier, still untested on FA's own
-  mid-tier).
+  item 5 points here). Proposals A / D / H are inlined above —
+  their authoritative source (`agent-reading-optimization-
+  review.md`) is a session-internal review document not preserved
+  in the repo tree; the inlined one-sentence labels above are
+  sufficient for the re-test decision.
 - **Why this is LOW ROI until Phase M lands.** Without the OWN
   harness existing, the measurement is non-executable; there is
   no good substitute (Arena = different harness; manual
