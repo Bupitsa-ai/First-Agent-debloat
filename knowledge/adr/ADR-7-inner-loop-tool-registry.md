@@ -249,7 +249,11 @@ class ToolError:
 @dataclass(frozen=True)
 class ToolResult:
     summary: str                       # short model-facing text; ALWAYS present
-    result: dict | None = None         # structured payload validated against ToolSpec.output_schema, or None
+    result: Any | None = None          # structured payload (JSON-RPC-compatible per ADR-2 §Amendment
+                                       # 2026-05-01 §1 — `Any | None`; v0.1 in-process tools typically
+                                       # return dict, but the type stays `Any` for v0.2 MCP forward-compat
+                                       # where JSON-RPC results can be list / str / number / bool); when
+                                       # `ToolSpec.output_schema` is set, the dispatcher validates against it.
     error: ToolError | None = None     # present iff the call failed; mutually exclusive with `result`
     artifacts: tuple[str, ...] = ()    # paths to large outputs under ~/.fa/state/runs/<run_id>/artifacts/
 ```

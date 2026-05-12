@@ -230,9 +230,13 @@ manually beyond this point.
    5-10 unified-diff `apply_patch` test set on each
    tool-using model from ADR-2 (Qwen 3.6, Kimi 2.6, GLM 5.1,
    Claude latest, Nemotron 3 Super). Empirically verify that
-   each model handles both edit-shapes; the result pins
-   default edit-format in ADR-7. Optional pre-ADR-7; can be
-   parallel.
+   each model handles both edit-shapes; the result may flip
+   the default in
+   [ADR-7 §4](./knowledge/adr/ADR-7-inner-loop-tool-registry.md#4-edit-shapes-string-replace-and-apply_patch)
+   via amendment (per ADR-7 §Consequences «Re-evaluation
+   triggers» — HANDOFF item 4 fixture lands). Can run in
+   parallel with item 1 (inner-loop scaffolding); not a
+   blocker for either tool PR.
 5. **Glossary** (cross-reference §10 R-8 + semi-autonomous
    note §7.8): add `MCP`, `Hook`, `ACI`,
    `Reflexion / Critic / Reflector`, `Self-evolving` terms
