@@ -155,6 +155,17 @@ manually beyond this point.
     static layered prompt-assembly invariant + subtraction-first
     self-audit acceptance-block. Both upstream PR #37 and PR #38
     close without merge at cross-fork sync (lead action).
+- **Measurement-evidence note added 2026-05-11:**
+  - [`research/bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md)
+    — first persistent Pillar 4 datapoint. Three Devin sessions
+    on the same single-message ADR-7-prep prompt produced a
+    convergent 7-file routing-compliant bootstrap core; baseline
+    range 24–43 calls / 7–16 files / ~80–95 K context (§6).
+    Empirical structural evidence that 2026-05 readability
+    refactor's routing signals work. Not a research-briefing
+    note — §0 exempt per AGENTS.md rule #8. Re-measurement
+    triggers in §9; replaces no prior measurement (first
+    datapoint).
 
 ## Next steps (intended order)
 
