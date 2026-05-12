@@ -306,8 +306,8 @@ per cross-reference §10 R-3 and semi-autonomous §7.3.
    string-replace.** Ampcode-style; simple mental model for the
    model. `old_string` must match **exactly once** in the
    target file (whitespace included); otherwise the call
-   returns `error.code = "no_unique_match"` (retryable false —
-   the model must widen the match window or use `apply_patch`).
+   returns `error.code = "no_unique_match"` (retryable true —
+   the model should widen the match window or use `apply_patch`).
    This is the default because cross-reference §10 R-3 already
    pinned it after the 5-10-edit fixture sweep across all five
    ADR-2 models.
