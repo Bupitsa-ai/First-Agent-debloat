@@ -3,8 +3,8 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-10 by Devin session
-> [`f6d329f2152544fdbb0204e78660d7d0`](https://app.devin.ai/sessions/f6d329f2152544fdbb0204e78660d7d0).
+> **Last updated:** 2026-05-12 by Devin session
+> [`89c32745c44f47dea679af42ed2d2dd8`](https://app.devin.ai/sessions/89c32745c44f47dea679af42ed2d2dd8).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -33,16 +33,17 @@ changes the project state, update **both**.
    ([llmstxt.org](https://llmstxt.org/) convention).
 3. Skim [`knowledge/project-overview.md`](./knowledge/project-overview.md)
    — what the project is, what v0.1 ships, what is non-goal.
-4. Skim the ADR index at
-   [`knowledge/adr/README.md`](./knowledge/adr/README.md) — the
-   six accepted decisions that shape v0.1 (ADR-1..6).
+4. Read [`knowledge/adr/DIGEST.md`](./knowledge/adr/DIGEST.md) —
+   one-paragraph cheat-sheet for ADR-1..6 + amendments. Open the
+   per-ADR file only when DIGEST is insufficient (exact schema,
+   Consequences wording, full Amendment text).
 5. Check the **Current state** section below for what is in
    flight right now.
 
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-10)
+## Current state (as of 2026-05-12)
 
 - **Project stage:** **Stage 1** of the three-stage evolution
   (documentation + agent development через Devin). See
@@ -69,7 +70,11 @@ manually beyond this point.
     (coding + PR write) and UC3 (local-docs-to-wiki) in;
     UC4 deferred; UC2 best-effort. **Amendment 2026-05-01:** UC5
     (semi-autonomous multi-LLM research/experiment) explicitly
-    deferred.
+    deferred. **Amendment 2026-05-06:** UC5 expanded to
+    eval-driven harness iteration (5a benchmark suite, 5b trace
+    consumption, 5c iteration interface, 5d score tracking /
+    leaderboard, 5e out-of-scope exclusions) — additive,
+    supersedes 2026-05-01 formulation.
   - [ADR-2](./knowledge/adr/ADR-2-llm-tiering.md) — static role
     routing (Planner / Coder / Debug / Eval) via
     `~/.fa/models.yaml`. **Amendment 2026-04-29:**
@@ -155,6 +160,26 @@ manually beyond this point.
     static layered prompt-assembly invariant + subtraction-first
     self-audit acceptance-block. Both upstream PR #37 and PR #38
     close without merge at cross-fork sync (lead action).
+- **Measurement-evidence note added 2026-05-11, extended 2026-05-12:**
+  - [`research/bootstrap-cost-baseline-2026-05.md`](./knowledge/research/bootstrap-cost-baseline-2026-05.md)
+    — first persistent Pillar 4 datapoint. Initial release (PR #5,
+    2026-05-11): three Devin ADR-7-prep sessions on a single-
+    message prompt produced a convergent 7-file routing-compliant
+    bootstrap core. Extension (PR #7, 2026-05-12): three Arena.ai
+    Agent Mode sessions on the same prompt confirm the
+    convergence on a different agent harness and tighten the
+    finding — **6-file irreducible core** (`HANDOFF.md`,
+    `knowledge/llms.txt`, `knowledge/adr/DIGEST.md`,
+    `knowledge/adr/ADR-template.md`,
+    `knowledge/research/efficient-llm-agent-harness-2026-05.md`,
+    `knowledge/trace/exploration_log.md`) across all six
+    ADR-7-prep sessions independently of model selection and
+    agent harness. Bootstrap-floor across harnesses
+    now 9 calls / 8 files / ~70 K (§6). Empirical structural
+    evidence that 2026-05 readability refactor's routing signals
+    work. Not a research-briefing note — §0 exempt per AGENTS.md
+    rule #8. Re-measurement triggers in §9 (items 5-6 cross-link
+    BACKLOG I-7 / I-8).
 
 ## Next steps (intended order)
 
