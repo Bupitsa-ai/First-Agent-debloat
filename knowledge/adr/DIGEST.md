@@ -25,9 +25,9 @@ no allow-lists). UC4 needs per-user namespacing that does not exist.
 - **2026-05-01** — UC5 (semi-autonomous multi-LLM research / experiment)
   added to deferred list.
 - **2026-05-06** — UC5 expanded to eval-driven harness iteration
-  (5a benchmark suite → 5b trace schema → 5c agent self-modification
-  via Skills → 5d re-benchmark → 5e leaderboard); makes Pillar 3
-  efficient-harness claim measurable.
+  (5a benchmark suite → 5b trace consumption → 5c iteration
+  interface → 5d score tracking / leaderboard → 5e out-of-scope
+  exclusions); makes Pillar 3 efficient-harness claim measurable.
 
 **Source:** [`ADR-1`](./ADR-1-v01-use-case-scope.md).
 
