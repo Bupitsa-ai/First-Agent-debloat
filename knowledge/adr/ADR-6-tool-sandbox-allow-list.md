@@ -36,9 +36,11 @@ gap in the v0.1 ADR set, and the user agreed in the
 2026-04-29 session that this ADR must land **before** any
 filesystem-touching tool is implemented.
 
-This ADR specifies the policy. The implementation lives in
-the inner-loop ADR slot (cross-reference §10 R-1, planned but
-not yet drafted) and in `src/fa/sandbox/`.
+This ADR specifies the policy. The implementation lives in the
+inner-loop contract
+([ADR-7](./ADR-7-inner-loop-tool-registry.md) §8, where
+`SandboxHook` is the v0.1 `pre_tool` hook of record) and in
+`src/fa/sandbox/`.
 
 ## Options considered
 
@@ -237,9 +239,10 @@ deny = [
 ### Tool wiring
 
 Every tool that takes a path argument is responsible for
-calling the sandbox **before** doing any I/O. The
-inner-loop ADR (R-1, deferred) will fix the exact exception
-type and the surface; for now the contract is:
+calling the sandbox **before** doing any I/O.
+[ADR-7](./ADR-7-inner-loop-tool-registry.md) §8 runs sandbox
+checks as the v0.1 `SandboxHook` `pre_tool` hook; the contract
+is:
 
 ```python
 class SandboxError(Exception):
@@ -252,8 +255,9 @@ class Sandbox:
     def check_write(self, path: str | os.PathLike) -> pathlib.Path: ...
 ```
 
-The v0.1 tool set (per the inner-loop ADR draft outline,
-cross-reference §10 R-1) is exactly:
+The v0.1 tool set (per
+[ADR-7](./ADR-7-inner-loop-tool-registry.md) §3 catalog) is
+exactly:
 
 | Tool | Gate |
 |---|---|
@@ -346,8 +350,9 @@ v0.1 (manual rotation is fine).
   - `fa init` template — ship a starter `sandbox.toml`
     pre-populated with `~/.fa/`, FA repo, and an empty
     user-repo block.
-  - **Inner-loop ADR (R-1, deferred)** wires every tool
-    in the registry through `Sandbox.check_*` before exec.
+  - **[ADR-7](./ADR-7-inner-loop-tool-registry.md)** wires every
+    tool in the registry through `Sandbox.check_*` before exec
+    (as the `SandboxHook` `pre_tool` hook).
   - `docs/glossary.md` — entry for "sandbox" / "path
     allow-list" (cross-reference §10 R-8).
 
