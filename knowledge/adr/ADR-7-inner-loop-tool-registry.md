@@ -43,11 +43,16 @@ Inputs already resolved before this ADR:
 - [`research/efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md)
   — single source-of-truth for the harness-research sweep
   under ADR-7 prep. §0 Decision Briefing resolves R-1..R-8
-  (7 TAKE + 1 DEFER). §10 ADR-7 contract sketch synthesises
-  the resolved recommendations into a single ToolSpec /
-  ToolResult / Trace pseudo-schema + runtime-loop +
-  acceptance-block — this ADR is the canonical write-up of
-  that sketch.
+  (7 TAKE + 1 DEFER); R-9 (`harness_id` stamp) was added
+  post-briefing per §11 Q-6 and is consumed by this ADR §7
+  (Trace) — so `HANDOFF.md` §Current state «nine resolved
+  recommendations (R-1..R-9; 8 TAKE + 1 DEFER)» is the
+  cumulative count, while ADR-7 §Context references the
+  formal Decision Briefing scope (R-1..R-8). §10 ADR-7
+  contract sketch synthesises the resolved recommendations
+  into a single ToolSpec / ToolResult / Trace pseudo-schema
+  + runtime-loop + acceptance-block — this ADR is the
+  canonical write-up of that sketch.
 - [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](../research/cross-reference-ampcode-sliders-to-adr-2026-04.md)
   §10 R-1 (inner-loop ADR scope), R-3 (string-replace edit-format
   fixture), R-7 (single-loop / no Critic in v0.1).
