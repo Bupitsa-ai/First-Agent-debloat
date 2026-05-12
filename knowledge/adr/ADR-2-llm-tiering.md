@@ -297,7 +297,7 @@ the 2026-04-29 amendment).**
    ADR-7 agents internally produce and consume the code as ergonomic domain-specific strings
    (str, e.g., "invalid_params", "sandbox_deny", "no_unique_match"),
    while the JSON-RPC wire format requires standard integers (int).
-   To preserve wire compatibility while improving agent-facing error handling, 
+   To preserve wire compatibility while improving agent-facing error handling,
    implementations MUST map between these str and int representations at the transport boundary.
 
 5. **`tool_protocol` field semantics extended.** The existing
