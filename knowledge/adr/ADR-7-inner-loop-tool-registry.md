@@ -762,7 +762,7 @@ shape is pinned so the migration is config-only:
     - [BACKLOG I-1](../BACKLOG.md#i-1--planner-picks-needed-skills--tool-calls-at-planning-stage)
       (Planner pre-selects tool-calls at planning stage) —
       unblock-trigger «ADR-7 merges **and**
-      `src/fa/tool_registry/` module lands with a `ToolSpec`
+      `src/fa/inner_loop/registry.py` module lands with a `ToolSpec`
       dataclass plus loader» is half-satisfied by this ADR;
       the other half lands in the chunker-indexer
       implementation PR.
