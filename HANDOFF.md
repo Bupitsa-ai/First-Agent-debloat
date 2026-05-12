@@ -3,8 +3,8 @@
 > **Read this first if you are an LLM agent (Devin, Claude, ChatGPT,
 > Cursor, etc.) starting a new session on this repository.**
 >
-> **Last updated:** 2026-05-10 by Devin session
-> [`f6d329f2152544fdbb0204e78660d7d0`](https://app.devin.ai/sessions/f6d329f2152544fdbb0204e78660d7d0).
+> **Last updated:** 2026-05-12 by Devin session
+> [`0fc8f9b26cf04aec92f598031e0dcf0f`](https://app.devin.ai/sessions/0fc8f9b26cf04aec92f598031e0dcf0f).
 
 This file is a portable counterpart to the Devin Knowledge note
 "First-Agent — current state pointer". Both contain the same
@@ -35,14 +35,14 @@ changes the project state, update **both**.
    — what the project is, what v0.1 ships, what is non-goal.
 4. Skim the ADR index at
    [`knowledge/adr/README.md`](./knowledge/adr/README.md) — the
-   six accepted decisions that shape v0.1 (ADR-1..6).
+   seven accepted decisions that shape v0.1 (ADR-1..7).
 5. Check the **Current state** section below for what is in
    flight right now.
 
 You should now have everything you need. Do not crawl the repo
 manually beyond this point.
 
-## Current state (as of 2026-05-10)
+## Current state (as of 2026-05-12)
 
 - **Project stage:** **Stage 1** of the three-stage evolution
   (documentation + agent development через Devin). See
@@ -91,10 +91,19 @@ manually beyond this point.
     Tool sandbox + path allow-list policy (deny-by-default,
     `~/.fa/sandbox.toml`, gitignore-style globs, audit log at
     `~/.fa/state/sandbox.jsonl`, one-shot CLI bypass).
-- **ADR slot reservation.** ADR-7 is reserved for the future
-  Inner-loop ADR (cross-reference §10 R-1, not yet drafted).
-  See `cross-reference-…-2026-04.md` §11 supersession marks
-  on Q-1 / Q-2 for history.
+  - [ADR-7](./knowledge/adr/ADR-7-inner-loop-tool-registry.md) —
+    Inner-loop & tool-registry contract (MCP-shaped
+    `ToolSpec`/`ToolResult`; five-tool `fs.*` catalog; two
+    edit-shapes — `edit_file` string-replace default,
+    `apply_patch` unified-diff off by default; JSON-Schema input
+    validation; three-tier tool disclosure; trace separation
+    `events.jsonl` ≠ `hot.md`; mini hook pipeline — `pre_tool`
+    Sandbox + optional Approval, `post_tool` Audit; static
+    layered prompt frozen at session start; 4-question
+    subtraction-first acceptance block).
+- **ADR slot reservation.** Closed by ADR-7 above. History on
+  the slot: `cross-reference-…-2026-04.md` §11 supersession
+  marks on Q-1 / Q-2.
 - **Scaffolding:** `pyproject.toml`, Ruff, mypy, pytest,
   pre-commit, GitHub Actions CI, `Makefile`, `markdown-it-py`,
   and system dependency documentation for `universal-ctags`
@@ -158,20 +167,16 @@ manually beyond this point.
 
 ## Next steps (intended order)
 
-1. **ADR-7 — Inner-loop + tool-registry contract** (cross-reference
-   §10 R-1, future). Should pin: tool-registry contract,
-   tool-call audit log shape, edit-format (string-replace vs
-   unified-diff), input JSON-Schema validation, **MCP-shaped
-   request/response per ADR-2 amendment 2026-05-01**, and a
-   minimal **hook pipeline** primitive (pre-tool / post-tool;
-   pre-run / post-run / on-event deferred to v0.2). Inputs:
-   - [`research/efficient-llm-agent-harness-2026-05.md`](./knowledge/research/efficient-llm-agent-harness-2026-05.md)
-     — single source-of-truth для harness research под ADR-7 prep
-     (R-1..R-9 resolved + §10 ADR-7 contract sketch).
-   - cross-reference §10 R-1 / R-3 / R-7.
-   - semi-autonomous-agents cross-reference §7.1 (R-1 input
-     summary), §7.3 (edit-format two shapes), §8.4 (large-file
-     two-stage read), §8.5 (mini-hook-system rationale).
+1. **Implementation PR — inner-loop scaffolding** (ADR-7 just
+   landed). Create `src/fa/inner_loop/` with `registry.py`
+   (`ToolSpec` dataclass + `register` / `lookup`), `loop.py`
+   (runtime loop §1 + JSON-Schema validation §5 + hook chain
+   §8), `hooks/` (`SandboxHook`, `ApprovalHook`, `AuditHook`),
+   `tools/` (one file per tool in ADR-7 §3 catalog — starting
+   with `fs.read_file` / `fs.list_files` to unblock the chunker
+   indexer end-to-end), and `trace.py` (`events.jsonl` writer +
+   `hot.md` summariser). The first tool PR consumes ADR-7
+   verbatim; subsequent PRs cite §2-§4 instead of re-deriving.
 2. **Implementation PR — chunker.** Implement `src/fa/chunker/`
    with the `Chunk` dataclass and `Chunker` Protocol from
    [ADR-5 §Decision](./knowledge/adr/ADR-5-chunker-tool.md#decision)

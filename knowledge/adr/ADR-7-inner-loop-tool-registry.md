@@ -1,0 +1,609 @@
+# ADR-7 — Inner-loop & tool-registry contract for v0.1
+
+- **Status:** accepted
+- **Date:** 2026-05-12
+- **Deciders:** project owner (`0oi9z7m1z8`), Devin (drafting)
+
+## Context
+
+[ADR-1](./ADR-1-v01-use-case-scope.md) §UC1 ships a Coder role
+that edits files and opens PRs end-to-end.
+[ADR-2](./ADR-2-llm-tiering.md) §Decision pins the role mix and
+two §Amendments fix `tool_protocol` per role (2026-04-29) and an
+MCP-shaped JSON-RPC convention for in-process dispatch
+(2026-05-01). [ADR-6](./ADR-6-tool-sandbox-allow-list.md) §Tool
+wiring lists the five v0.1 tools (`read_file`, `list_files`,
+`edit_file`, `write_file`, `grep`) and the `Sandbox.check_*`
+gate each of them passes through.
+
+What ADR-1..6 do **not** pin is the **inner-loop boundary**
+between the LLM and the harness: how a tool is registered, what
+shape a request and a response take, where the sandbox and
+audit hooks attach, which edit-shape the Coder writes against,
+how input is validated, and how the system prompt is assembled
+turn-after-turn. The ADR-6 Tool wiring table calls this out
+explicitly: *"The inner-loop ADR (R-1, deferred) will fix the
+exact exception type and the surface; for now the contract
+is…"* — and then leaves a stub Python signature.
+
+[`HANDOFF.md`](../../HANDOFF.md) §Next steps item 1 reserves
+the ADR-7 slot and enumerates six surfaces to pin: tool-registry
+contract, tool-call audit log shape, edit-format
+(string-replace vs unified-diff), input JSON-Schema validation,
+MCP-shaped request / response per ADR-2 §Amendment 2026-05-01,
+and a minimal hook-pipeline primitive (pre-tool / post-tool;
+pre-run / post-run / on-event deferred to v0.2). This ADR pins
+those six. Prompt-assembly + prefix-cache (R-8) is added as a
+§Loop invariant because the same runtime loop owns it and
+splitting it into a separate ADR would force every tool PR to
+straddle two specifications.
+
+Inputs already resolved before this ADR:
+
+- [`research/efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md)
+  — single source-of-truth for the harness-research sweep
+  under ADR-7 prep. §0 Decision Briefing resolves R-1..R-8
+  (7 TAKE + 1 DEFER). §10 ADR-7 contract sketch synthesises
+  the resolved recommendations into a single ToolSpec /
+  ToolResult / Trace pseudo-schema + runtime-loop +
+  acceptance-block — this ADR is the canonical write-up of
+  that sketch.
+- [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](../research/cross-reference-ampcode-sliders-to-adr-2026-04.md)
+  §10 R-1 (inner-loop ADR scope), R-3 (string-replace edit-format
+  fixture), R-7 (single-loop / no Critic in v0.1).
+- [`research/semi-autonomous-agents-cross-reference-2026-05.md`](../research/semi-autonomous-agents-cross-reference-2026-05.md)
+  §7.1 (R-1 input — MCP-shape, hook-pipeline primitive, ACI
+  tool signatures), §7.3 (two edit-shapes), §8.4 (large-file
+  two-stage read), §8.5 (mini-hook-system rationale —
+  pre-tool / post-tool only, defer the rest).
+- [`research/how-to-build-an-agent-ampcode-2026-04.md`](../research/how-to-build-an-agent-ampcode-2026-04.md)
+  — Thorsten Ball / Amp inner-loop micro-architecture and the
+  `read_file` / `list_files` / `edit_file` three-tool baseline
+  mapped to ADR-1 / ADR-2.
+
+## Options considered
+
+### Option A — No formal inner-loop ADR; let each tool PR define its own contract
+
+- Pros:
+  - Zero documentation cost up-front.
+  - Matches ampcode's *"three bare functions"* baseline
+    (cross-reference §10 R-1, ampcode note §3.1).
+- Cons:
+  - Ampcode targets exactly one tier (Anthropic Claude); FA
+    targets four (Planner / Coder / Debug / Eval) plus a
+    `tool_protocol: native | prompt-only` axis. No formal
+    contract = each Coder model sees a different shape for
+    the same tool, breaking the
+    [ADR-2 §Amendment 2026-04-29](./ADR-2-llm-tiering.md#amendment-2026-04-29--tool_protocol-field--native-by-default-v01-inner-loop-without-critic)
+    invariant that "loop adapts to the role's `tool_protocol`,
+    not to the model."
+  - ADR-2 §Amendment 2026-05-01 MCP-shape JSON-RPC convention
+    has no concrete carrier — the convention floats free until
+    the first tool PR lands, and that PR's shape becomes the
+    de-facto spec.
+  - ADR-6 §Tool wiring leaves an explicit stub
+    `class Sandbox: def check_read(...): ...` that the
+    inner-loop ADR is supposed to close; without ADR-7 the
+    stub propagates into the first tool implementation as
+    inline boilerplate, duplicating across each tool.
+  - Forks reading the repo cannot tell which shape is
+    intentional vs. legacy; minimalism-first
+    ([`project-overview.md` §1.2](../project-overview.md#12-enforceable-principle--minimalism-first))
+    relies on **enforceable** boundaries, not implicit ones.
+
+### Option B — Formal inner-loop ADR with MCP-shaped tool contract, two edit-shapes, mini hook-pipeline (chosen)
+
+- Pros:
+  - Single source of truth for every tool PR (chunker
+    indexer, search, edit, future `run_command`). The first
+    implementation PR consumes the ADR; subsequent PRs cite it.
+  - Closes ADR-2 §Amendment 2026-05-01 (MCP forward-compat
+    JSON-RPC convention) and ADR-6 §Tool wiring (pre-tool gate
+    placement) at the natural boundary — the inner-loop —
+    rather than scattering each across each tool.
+  - Allows the harness-research sweep
+    ([`efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md)
+    §10) to land its synthesis as a *decision*, not a *plan*:
+    R-1 progressive tool-disclosure, R-2 trace separation,
+    R-3 SQLite FTS5 reuse forward-compat, R-4 `[tool_groups]`
+    extension to ADR-6, R-5 no-Critic in v0.1, R-7 4-question
+    subtraction acceptance block, R-8 static layered prompt.
+  - Mini hook-system (pre-tool + post-tool only, per
+    semi-autonomous-agents §8.5) gives sandbox / audit / future
+    HITL a documented attachment point at ~50 LoC marginal
+    cost vs ampcode-style inlining at every tool.
+- Cons:
+  - Documentation cost up-front (~300 lines, this file).
+  - Locks in shape decisions before the first end-to-end
+    tool implementation PR proves them; mitigated by R-3
+    fixture (HANDOFF §Next steps item 4) which empirically
+    pins the edit-format default after ADR-7 lands, and by
+    the explicit re-evaluation triggers in §Consequences.
+  - Increases the surface a fork must adopt to be compatible
+    (any prompt-only Coder tier must implement the same
+    JSON-RPC-shaped dispatcher); accepted because ADR-2
+    already requires this convention.
+
+### Option C — Formal ADR + full hook pipeline (pre-run / post-run / on-event) + MCP transport in v0.1
+
+- Pros:
+  - Maximal extensibility — every concern (reflection,
+    semantic-event triggers, multi-agent coordination) has a
+    seat at the table from day one.
+  - MCP transport (not just MCP-shape) lets external MCP
+    servers (Bright Data, Cloudflare Code Mode) be wired in
+    without an ADR-2 amendment.
+- Cons:
+  - Pre-run / post-run / on-event hooks are v0.2 reflection
+    /  semi-autonomous territory; including them now imports
+    UC5 (semi-autonomous research — deferred per
+    [ADR-1 §Amendment 2026-05-01](./ADR-1-v01-use-case-scope.md#amendment-2026-05-01--uc5-added-to-deferred-list)
+    + 2026-05-06) ahead of schedule.
+  - MCP transport adds an `mcp` package dependency that
+    [ADR-2 §Amendment 2026-05-01](./ADR-2-llm-tiering.md#amendment-2026-05-01--mcp-forward-compat-tool-shape-convention)
+    explicitly excludes from v0.1 ("**No `mcp` package
+    dependency in v0.1**"). It also adds OS-level sandbox
+    concerns (code-execution-over-MCP per Anthropic Nov 2025
+    blog) that
+    [ADR-6 §Re-evaluation triggers](./ADR-6-tool-sandbox-allow-list.md#consequences)
+    flags as out-of-scope for v0.1.
+  - Harness-research R-6 explicitly defers code-execution-over-MCP
+    per §0; choosing it here re-opens the resolved decision.
+
+## Decision
+
+We will choose **Option B** for v0.1 with the following concrete
+shape. This subsumes the §10 contract sketch in the harness
+research note; the per-§ heading order matches HANDOFF.md §Next
+steps item 1 to make the mapping easy to audit.
+
+### 1. Runtime loop
+
+The inner loop runs Coder ↔ tools (thought → tool-call →
+observation → next thought) with no Critic / Reflector role
+(per [ADR-2 §Amendment 2026-04-29](./ADR-2-llm-tiering.md#amendment-2026-04-29--tool_protocol-field--native-by-default-v01-inner-loop-without-critic)
+§point 5). One iteration:
+
+1. Assemble the static prompt prefix **once** at session start
+   (§9 Loop invariant — prompt assembly); freeze for the
+   duration of the session.
+2. Load dynamic repo / session context by pointers in the first
+   user message — `hot.md` cite, current task, files of
+   interest (tier-1 disclosure per §6).
+3. Expose compact tool descriptors in the system prompt
+   (tier-2: `name` + one-line description + tags); full input
+   schema loaded on demand (tier-3) — see §6.
+4. Receive model response.
+5. If the response is a tool call: pre-tool hook chain → tool
+   handler → post-tool hook chain (§8).
+6. Append one JSONL event per state transition to
+   `~/.fa/state/runs/<run_id>/events.jsonl`; large payloads
+   land under `~/.fa/state/runs/<run_id>/artifacts/` (§7).
+7. Return the `ToolResult.summary` + `artifacts[]` paths back
+   to the model; the full payload stays on disk (R-2
+   trace-separation invariant).
+8. Stop on explicit final answer, max iterations, hard error,
+   or an explicit user approval gate.
+
+Loop runs single-threaded per session. No intra-loop retry on
+hook denial (the deny is a hard stop the model sees as an
+error). Intra-role retry on tool execution failure
+(`error.retryable == true`) is allowed; cross-tier escalation
+remains forbidden per ADR-2 §Decision.
+
+### 2. ToolSpec (registry entry)
+
+Every tool registered in `src/fa/inner_loop/registry.py` is a
+`ToolSpec` record. The shape is the **MCP-shaped JSON-RPC
+convention** from
+[ADR-2 §Amendment 2026-05-01](./ADR-2-llm-tiering.md#amendment-2026-05-01--mcp-forward-compat-tool-shape-convention)
+§point 4 — the inner-loop dispatcher mirrors JSON-RPC; ADR-7
+inherits the convention, MAY add fields, MUST NOT change
+existing ones without an ADR-2 amendment.
+
+```python
+from dataclasses import dataclass, field
+from typing import Callable, Literal
+
+@dataclass(frozen=True)
+class ToolSpec:
+    name: str                                 # stable dotted string, e.g. "fs.read_file"
+    description: str                          # one-line model-facing summary (tier-2)
+    input_schema: dict                        # JSON Schema; loaded on demand (tier-3)
+    permission: Literal["read", "workspace", "full"]   # ADR-6 sandbox scope
+    tags: tuple[str, ...] = ()                # used by [tool_groups] allow-list (forward-compat)
+    handler: Callable[[dict], "ToolResult"] = None     # deterministic dispatcher entry
+    output_schema: dict | None = None         # optional; documents ToolResult.result
+    defer_loading: bool = False               # forward-compat for Anthropic tool-search
+```
+
+**Naming.** Tool `name` uses dotted namespaces (`fs.read_file`,
+`fs.list_files`, `fs.edit_file`, `fs.write_file`, `fs.grep`).
+The namespace prefix is the group used by R-4 forward-compat
+extension to ADR-6 (`[tool_groups] fs = ["read", "workspace"]`).
+Renaming a tool requires an ADR-7 amendment because Coder
+prompts and `events.jsonl` consumers grep on `name`.
+
+### 3. Tool catalog v0.1
+
+Exactly the five tools from
+[ADR-6 §Tool wiring](./ADR-6-tool-sandbox-allow-list.md#tool-wiring),
+registered at startup; **no other tools in v0.1**:
+
+| name | permission | gate | edit-shape |
+|---|---|---|---|
+| `fs.read_file(path, start_line?, end_line?)` | read | `check_read` | n/a |
+| `fs.list_files(path)` | read | `check_read` + filter | n/a |
+| `fs.edit_file(path, old_string, new_string)` | workspace | `check_write` (implies `check_read` per ADR-6 §6) | string-replace |
+| `fs.write_file(path, content)` | workspace | `check_write` | full-file |
+| `fs.grep(pattern, path)` | read | `check_read` recursive | n/a |
+
+A sixth, `fs.apply_patch(path, unified_diff)`, is **registered
+but feature-flagged off by default** in v0.1; see §4. No
+`run_command` tool, no `network.*` tool, no MCP transport in
+v0.1 (ADR-6 §Re-evaluation triggers + ADR-2 §Amendment
+2026-05-01 §"No `mcp` package dependency in v0.1").
+
+`fs.read_file` accepts the optional `start_line` / `end_line`
+window pattern from semi-autonomous-agents §8.4 (two-stage read
+for files > a chunker-store-estimated threshold). v0.1 default
+threshold: 4 000 lines (~80 KB) — small files round-trip in one
+read; larger files require an explicit window. Threshold is
+overridable in `~/.fa/inner_loop.toml`.
+
+### 4. Edit-shapes (string-replace and apply_patch)
+
+Two shapes are accepted; default is `fs.edit_file` (string-replace)
+per cross-reference §10 R-3 and semi-autonomous §7.3.
+
+1. **`fs.edit_file(path, old_string, new_string)` — single-edit
+   string-replace.** Ampcode-style; simple mental model for the
+   model. `old_string` must match **exactly once** in the
+   target file (whitespace included); otherwise the call
+   returns `error.code = "no_unique_match"` (retryable false —
+   the model must widen the match window or use `apply_patch`).
+   This is the default because cross-reference §10 R-3 already
+   pinned it after the 5-10-edit fixture sweep across all five
+   ADR-2 models.
+2. **`fs.apply_patch(path, unified_diff)` — multi-edit
+   unified-diff.** Atomic; validated through `git apply
+   --check` before write. Off by default in v0.1; enabled per
+   `~/.fa/inner_loop.toml` `[edit] apply_patch = true`. Reserved
+   for multi-hunk edits where the model would otherwise need
+   five sequential `edit_file` calls — and for Coder-tier models
+   that empirically prefer unified-diff. The HANDOFF §Next steps
+   item 4 fixture (5-10 string-replace + 5-10 unified-diff edits
+   on each ADR-2 model) determines whether the default flips in
+   ADR-7 §Amendment after the next sweep.
+
+`fs.write_file` is full-file overwrite. Used only when the
+caller deliberately replaces the file (new file, large
+re-write). Not the default edit primitive; the model should
+prefer `fs.edit_file`.
+
+### 5. Input validation
+
+Every tool call's `params` is validated against
+`ToolSpec.input_schema` (JSON Schema Draft 2020-12) **before**
+the hook chain runs. Validation failures produce a
+`ToolResult` with `error.code = "invalid_params"`,
+`retryable = true`, and the JSON-Schema error path in
+`error.message`. The model sees a structured failure (not a
+Python traceback) and may retry the call with corrected
+parameters.
+
+Implementation uses `jsonschema` (single new dependency at
+this layer; ADR-2 §Amendment 2026-05-01 already implicitly
+needs it for MCP-shape compat). The schema is loaded **once**
+per `ToolSpec` at registry init; per-call validation is
+~µs-level and has no token cost (errors are *not* fed back
+into the conversation accumulator unless `retryable = true`).
+
+Schemas live alongside the handlers in
+`src/fa/inner_loop/tools/<tool_name>.py` (one file per tool)
+and are imported by `registry.py`. No global schema file —
+the schema travels with its handler so that adding a tool is
+one PR touching one file.
+
+### 6. Tool disclosure (three tiers)
+
+Per harness-research R-1, the registry surface is a
+discriminated union of three disclosure tiers; the v0.1 loop
+uses the first two and reserves the third for v0.2.
+
+1. **Tier 1 — server-name list.** A list of tool *groups*
+   (`fs`, future `git`, `gh`, `bm25`) exposed to the model in
+   the user message at session start. v0.1 has one group:
+   `fs`.
+2. **Tier 2 — per-tool one-line descriptors.** `name` +
+   `description` + `tags` for each tool in an enabled group,
+   injected into the system-prompt **at the static-prefix
+   layer** (per §9) — see the prompt-assembly invariant.
+3. **Tier 3 — full input schema on demand.** The full
+   `input_schema` is **not** in the system prompt. Instead the
+   model receives schemas the first time it calls a tool in
+   the session (lazy hydration), or via an explicit
+   `fs.describe_tool(name)` tool that v0.1 does **not** ship
+   but registers a placeholder for. Forward-compat for
+   Anthropic `tool_search_tool_*_20251119` and BM25-based
+   lookup (R-3 reuses SQLite FTS5) once the catalog grows
+   past ~10 tools.
+
+This three-tier shape is what makes the migration to a
+larger v0.2 catalog config-only rather than code-only.
+
+### 7. Trace — events.jsonl ≠ hot.md
+
+Per harness-research R-2 (anti-summary-rot invariant). Two
+artefacts; the runtime loop writes to both, but only
+`events.jsonl` is consumed by replay / eval / future
+self-evolution.
+
+```text
+~/.fa/state/runs/<run_id>/events.jsonl     # append-only, JSONL, raw
+~/.fa/state/runs/<run_id>/artifacts/<...>  # large tool outputs (diffs, file dumps)
+~/.fa/state/runs/<run_id>/hot.md           # LLM/human-readable summary; overwritable
+```
+
+Every state transition emits one event; the schema is:
+
+```json
+{
+  "ts": "2026-05-12T07:34:56Z",
+  "run_id": "r-2026-05-12-a3f9",
+  "harness_id": "fa-inner-loop@0.1.0",
+  "actor": "coder|tool|hook|user",
+  "kind": "user_msg|model_msg|tool_call|tool_result|hook_decision|approval|error|stop",
+  "tool_name": "fs.edit_file",
+  "tool_call_id": "tc-001",
+  "parent_event_id": "ev-007",
+  "content": { ... }
+}
+```
+
+`harness_id` is stamped on every event so a v0.2 trace-replay
+can refuse to compare runs across harness versions
+(forward-compat per
+[`efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md)
+§11 Q-6).
+
+**Invariant.** `hot.md` cites file paths into `artifacts/` and
+event IDs into `events.jsonl`; `hot.md` **MUST NOT** be the
+source for replay or self-evolution. This is the same shape
+as the [ADR-3 Mechanical Wiki](./ADR-3-memory-architecture-variant.md)
+canon-vs-cache split: canon (`events.jsonl`) wins; the
+summary (`hot.md`) is a cheap-read overlay.
+
+This trace shape also extends
+[ADR-6 §Audit log](./ADR-6-tool-sandbox-allow-list.md#audit-log)
+— the sandbox jsonl becomes a *projection* of `events.jsonl`
+filtered to `kind == "hook_decision" && hook == "sandbox"`. A
+follow-up implementation PR may collapse the two files or keep
+the existing `~/.fa/state/sandbox.jsonl` for ADR-6 backward
+compatibility; either is permitted by this ADR.
+
+### 8. Hook pipeline (pre-tool / post-tool only)
+
+A `Hook` is a callable `(event: dict) -> HookDecision`
+attached at one of two points:
+
+- **`pre_tool`** — runs after input-schema validation,
+  before the handler. Returns `allow` | `deny(reason)`.
+  Multiple `pre_tool` hooks run in order; the first `deny`
+  short-circuits and is recorded in `events.jsonl` as
+  `kind == "hook_decision"`.
+- **`post_tool`** — runs after the handler, before
+  `ToolResult` is appended to the conversation. Used for
+  audit, redaction, artifact-write. Cannot deny (the tool
+  already ran); may rewrite `ToolResult.summary` (e.g.
+  truncate large outputs) but MUST NOT silently change
+  `ToolResult.result` shape.
+
+v0.1 ships exactly two hooks (both `pre_tool`):
+
+1. `SandboxHook` — wraps
+   [ADR-6 `Sandbox.check_read` / `check_write`](./ADR-6-tool-sandbox-allow-list.md#tool-wiring).
+   Single resolution per invocation (ADR-6 §point 7).
+2. `ApprovalHook` — opt-in via `~/.fa/inner_loop.toml`
+   `[approval] write = "ask"`. When enabled, a `write` or
+   `workspace` permission tool blocks for a user prompt.
+   Off by default in v0.1.
+
+And one `post_tool` hook:
+
+3. `AuditHook` — appends a `kind == "tool_result"` event with
+   the resolved path, decision, and (path-only) artifact
+   reference. This is the
+   [ADR-6 §Audit log](./ADR-6-tool-sandbox-allow-list.md#audit-log)
+   projection that subsumes `~/.fa/state/sandbox.jsonl`.
+
+`pre_run` / `post_run` / `on_event` hook points are **not
+implemented in v0.1** per semi-autonomous-agents §8.5
+("mini-hook-system… max-выгода"). They are reserved for the
+future Reflection / UC5 ADR and may be added by amendment
+without breaking the v0.1 contract.
+
+### 9. Loop invariant — prompt assembly
+
+Per harness-research R-8 (Option (i), TAKE). The static layered
+prompt is assembled **once** at session start and frozen for
+the session:
+
+```text
+[layer 1] system  : AGENTS.md role-prompt body + ADR-2 role config
+[layer 2] system  : tier-2 tool descriptors (this ADR §6)
+[layer 3] system  : sandbox-policy summary (ADR-6 §Policy semantics)
+[layer 4] user[0] : dynamic state — hot.md cite, current task, files of interest
+```
+
+Layers 1-3 are frozen for the session and cached by the
+provider's prefix-cache (Anthropic implicit, OpenRouter
+provider-variable, vLLM yes). Layer 4 is the single mutable
+seam — anything that changes turn-to-turn (current file, last
+tool call, partial plan) goes through `hot.md` and lands in
+`user[0]` of the next session, **not** by rebuilding the
+prefix.
+
+**Implication.** If `AGENTS.md` or an ADR amendment lands
+mid-session, the inner-loop does **not** hot-reload the
+prefix; the user starts a new session. This is the same
+"new session on canon change" pattern ADR-3 already uses.
+
+Migration trigger for v0.2 two-segment assembly: a UC5
+benchmark run shows ≥ N% degradation on staleness-sensitive
+tasks (the threshold is set in the UC5 ADR, not here).
+
+### 10. Acceptance — 4-question subtraction-first self-audit
+
+Per harness-research R-7 + AGENTS.md PR Checklist rule #10
+question 4. Every PR that **adds or amends a harness
+component** (tool, hook, prompt-layer, retrieval-stage) under
+this contract MUST include in its description explicit answers
+to four questions. The check exists at this layer because the
+inner-loop is the natural seat of step-as-function vs
+step-as-LLM-call decisions:
+
+1. **What is in the agent's context window that does not need
+   to be there?** Look at the last N traces' average input
+   token count; if a layer (system / tier-2 descriptors /
+   `user[0]` state) consistently appears unused by the model,
+   either remove it or write one paragraph justifying it.
+2. **Which tools does the agent rarely use (over the latest N
+   traces)?** A tool with < 1 % call rate over N ≥ 100 traces
+   is a candidate for removal — its `input_schema` still pays
+   tier-3 lookup cost in every session.
+3. **Are there verification or search loops that might be
+   hurting performance?** Per harness-research R-5 and the
+   Tsinghua NLAH paper (`arXiv:2603.25723`), naive verifier
+   loops in v0.1 are a known anti-pattern; the inner-loop's
+   "no Critic" stance (ADR-2 §Amendment 2026-04-29 §point 5)
+   captures this — adding any new loop must justify why this
+   case is different.
+4. **Is the control logic written in code, or in language
+   (AGENTS.md / research notes / prompts), and which would be
+   cheaper to change?** A control-flow step that is parsing,
+   formatting, aggregation, fan-out, or file lookup is a
+   deterministic Python function — an LLM call is justified
+   only when the step needs reasoning that cannot be
+   expressed deterministically.
+
+A "yes / unclear" answer to any question requires either
+removal of the named component or a one-paragraph
+justification cited in ADR-7 §Notes (this section) at
+amendment time.
+
+### 11. Forward-compat (deferred but shape-pinned)
+
+The following are explicitly out of scope for v0.1 but the
+shape is pinned so the migration is config-only:
+
+- **R-3 SQLite FTS5 reuse for tool-search BM25.** When the
+  v0.1 tool catalog passes ~10 tools, an
+  `fs.describe_tool(name)` / `fs.search_tools(query)` pair can
+  be added; the BM25 index reuses
+  [ADR-4](./ADR-4-storage-backend.md) FTS5 with no new
+  dependency. ADR-7 amendment.
+- **R-4 `[tool_groups]` extension to ADR-6.** Add a
+  `[tool_groups]` block to `~/.fa/sandbox.toml` so the user
+  can disable a whole group (`fs.allow = false`) without
+  editing the per-path allow-list. Lands as an ADR-6
+  amendment in the same PR as the second tool group (`git.*`
+  or `gh.*`).
+- **R-6 code-execution-over-MCP.** Reserved per ADR-2
+  §Amendment 2026-05-01 ("no `mcp` package dependency in
+  v0.1") and ADR-6 §Re-evaluation triggers. The forward-compat
+  surface is the MCP-shape `ToolSpec` / `ToolResult` already
+  pinned in §2 — a future v0.2 MCP-server adapter consumes
+  the same shape, no protocol churn at v0.1's clients.
+- **R-9 cross-model harness transferability.** A future
+  ADR-2 amendment may pin a `harness_id` ↔ model-tier
+  compatibility matrix; the `harness_id` field in
+  `events.jsonl` (§7) already exists.
+
+## Consequences
+
+- **Positive — single source of truth for every tool PR.**
+  The first implementation PR (chunker-indexer end-to-end,
+  HANDOFF §Next steps item 2) consumes the contract verbatim;
+  subsequent PRs (search, edit, future `git.*`) cite ADR-7
+  §2-§4 instead of re-deriving shape.
+- **Positive — closes two open amendments.** ADR-2 §Amendment
+  2026-05-01 (MCP-shape convention) and ADR-6 §Tool wiring
+  (sandbox-check placement) now have a concrete carrier
+  rather than floating prose.
+- **Positive — testable boundary.** The dispatcher
+  (`src/fa/inner_loop/loop.py`) is a pure-function-ish wrapper
+  around `ToolSpec.handler` + ordered hooks; unit tests can
+  exercise the full request/response shape without spinning a
+  real LLM.
+- **Positive — minimal surface.** Five tools, two pre-tool
+  hooks, one post-tool hook, two edit-shapes (one off by
+  default), one full-file write, one mutable prompt layer.
+  Subtraction-check (Step 4 of AGENTS.md §Pre-flight) holds:
+  every artefact in this ADR is justified against an existing
+  ADR amendment or research-note R-N recommendation.
+- **Negative — locks in shapes before the first end-to-end
+  tool PR.** Mitigated by the R-3 fixture (HANDOFF §Next steps
+  item 4) which empirically validates the edit-format choice
+  on each ADR-2 model and is allowed to flip the default in
+  an ADR-7 amendment without rewriting the contract.
+- **Negative — JSON-Schema dependency on `jsonschema`.** One
+  new top-level dependency. Justified because ADR-2 §Amendment
+  2026-05-01 already implicitly required it for the MCP-shape
+  convention to be enforceable. Pinned in `pyproject.toml`
+  alongside `markdown-it-py` and `pathspec`.
+- **Negative — three-tier disclosure adds one tool-search
+  abstraction (tier 3) that v0.1 does not exercise.**
+  Justified because R-1 explicitly trades cheap shape-decision
+  now against 1-2 days of config-only migration later vs days
+  of breaking `models.yaml` and `sandbox.toml` consumers in
+  v0.2 when the catalog grows.
+- **Re-evaluation triggers (when to revisit this ADR).**
+  - **HANDOFF §Next steps item 4 fixture lands** and shows
+    one of the five ADR-2 models clearly prefers
+    `apply_patch` over `edit_file`. Action: ADR-7 §Amendment
+    flipping the default edit-shape.
+  - **Tool catalog passes 10 tools.** Action: implement
+    `fs.search_tools` (R-3 BM25 reuse).
+  - **Approval / HITL friction.** If the optional `ApprovalHook`
+    is consistently set to `ask` and the user reports
+    cognitive overhead, evaluate moving to a write-batching
+    primitive (`post_run` hook) — that lands as a v0.2 amendment
+    because it requires the `post_run` hook point currently
+    deferred.
+  - **`run_command` lands.** ADR-6 §Re-evaluation triggers
+    already covers the sandbox half; ADR-7 amendment will add
+    the tool to §3 catalog plus an `output_schema` for the
+    stdout/stderr/exit-code shape.
+- **Follow-up work this unlocks.**
+  - `src/fa/inner_loop/registry.py` — `ToolSpec` dataclass,
+    `register(spec)`, `lookup(name)`, lazy schema cache.
+  - `src/fa/inner_loop/loop.py` — runtime loop (§1) +
+    JSON-Schema validation (§5) + hook chain runner (§8).
+  - `src/fa/inner_loop/hooks/` — `SandboxHook`,
+    `ApprovalHook`, `AuditHook`.
+  - `src/fa/inner_loop/tools/` — one file per tool from §3
+    catalog.
+  - `src/fa/inner_loop/trace.py` — `events.jsonl` writer +
+    `hot.md` summariser (§7).
+  - **HANDOFF §Next steps item 2 (chunker indexer end-to-end)**
+    is now unblocked; the indexer is a `fs.*`-shaped tool the
+    Coder runs via the registry rather than a stand-alone
+    CLI module.
+  - `docs/glossary.md` — add `Tool registry`, `ToolSpec`,
+    `Hook (pre-tool / post-tool)`, `events.jsonl`, `hot.md`
+    entries (some already present per AGENTS.md §Pre-flight
+    Step 2 sweep — missing ones added by this PR).
+
+## References
+
+- [HANDOFF.md §Next steps item 1](../../HANDOFF.md#next-steps-intended-order) — the explicit six-surface scope this ADR pins.
+- [`research/efficient-llm-agent-harness-2026-05.md`](../research/efficient-llm-agent-harness-2026-05.md) §0 (R-1..R-8) + §10 (contract sketch).
+- [`research/cross-reference-ampcode-sliders-to-adr-2026-04.md`](../research/cross-reference-ampcode-sliders-to-adr-2026-04.md) §10 R-1, R-3, R-7.
+- [`research/semi-autonomous-agents-cross-reference-2026-05.md`](../research/semi-autonomous-agents-cross-reference-2026-05.md) §7.1, §7.3, §8.4, §8.5.
+- [`research/how-to-build-an-agent-ampcode-2026-04.md`](../research/how-to-build-an-agent-ampcode-2026-04.md) — ampcode three-tool baseline.
+- [ADR-2 §Amendment 2026-04-29](./ADR-2-llm-tiering.md#amendment-2026-04-29--tool_protocol-field--native-by-default-v01-inner-loop-without-critic) — `tool_protocol` field + no Critic in v0.1.
+- [ADR-2 §Amendment 2026-05-01](./ADR-2-llm-tiering.md#amendment-2026-05-01--mcp-forward-compat-tool-shape-convention) — MCP-shaped JSON-RPC convention.
+- [ADR-6 §Tool wiring](./ADR-6-tool-sandbox-allow-list.md#tool-wiring) — five-tool catalog + sandbox-gate placement.
+- [`project-overview.md` §1.2](../project-overview.md#12-enforceable-principle--minimalism-first) — minimalism-first principle (the §10 acceptance block is its enforceable form at the inner-loop boundary).
