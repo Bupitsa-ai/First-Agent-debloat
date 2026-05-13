@@ -53,6 +53,13 @@ chain_of_custody: |
   All ADR / AGENTS.md facts — из локального git checkout
   Bupitsa-ai/First-Agent-debloat main HEAD `59dcb9b` (2026-05-12)
   на момент компиляции.
+
+  §10 «Secondary lens» append — добавлен 2026-05-13 in-PR (повторный
+  pass по тем же четырём papers под non-primary goal_lens-2:
+  loop-creation / sandbox / tool-calling, по запросу project lead).
+  Те же primary-source URLs из `source:`; никаких новых fetches не
+  понадобилось. Goal_lens-2 verbatim — в §10.0; три новых R-7..R-9
+  TAKE верификации, шесть CUT-ов задокументированы для transparency.
 goal_lens: "Снизить session-start context noise для будущих агентов + найти один immediate-improvement, implementable в следующий PR (combined (a)+(b) per research-briefing.md Stage 1)."
 tier: stable
 links:
@@ -92,7 +99,10 @@ claims_requiring_verification:
     на code-gen / agent-tool-call workloads требует отдельной replication;
     paper 2 §1 цитирует Lu et al. 2024 + Ashiga et al. 2025 как survey-coverage,
     но pairwise-correlation на code-gen specifically — open empirical
-    question."
+    question. **§10 R-8 (F-B intra-role retry temperature default) inherits
+    этот caveat**: temperature-as-decorrelator finding из P-3 §4.1 проверен
+    только на IMO math; до domain-replication на FA Coder workload R-8
+    остаётся docs-only conditional TAKE."
   - "Paper 2 «95% of theoretical 83% uplift» measured на 10 LLMs from 5
     families. Если FA в production окажется с overlap-providers (например,
     Planner=GLM 5.1 и Eval=Kimi 2.6 — оба top-tier OSS из общего
@@ -115,11 +125,19 @@ superseded_by: none
 
 ## 0. Decision Briefing
 
-Шесть рекомендаций (`R-1..R-6`) на основе трёх papers (`P-1` Cornell
-correlated-errors, `P-2` Simula LLM-ensembles, `P-3` Nitarach AIMO 3),
-плюс `R-6` SKIP по `P-4` (Stanford NTK theory) как out-of-scope. Все
-verdicts resolved — UNCERTAIN-ASK блоков нет. Goal-lens см. в
-frontmatter и §2.
+Шесть основных рекомендаций (`R-1..R-6`) на основе трёх papers (`P-1`
+Cornell correlated-errors, `P-2` Simula LLM-ensembles, `P-3` Nitarach
+AIMO 3), плюс `R-6` SKIP по `P-4` (Stanford NTK theory) как
+out-of-scope. Все verdicts resolved — UNCERTAIN-ASK блоков нет.
+Goal-lens см. в frontmatter и §2.
+
+**Secondary lens addendum** (2026-05-13). Те же четыре papers переоценены
+под non-primary goal_lens-2 (loop-creation / sandbox / tool-calling — см.
+§10.0 verbatim); три дополнительных рекомендации `R-7..R-9` (все TAKE,
+docs-only) задокументированы в **§10**, не в §6. R-7/R-8/R-9 включены в
+summary table ниже для один-stop §0 read. Шесть отвергнутых findings
+перечислены в §10.4 для transparency. Все verdicts resolved — снова без
+UNCERTAIN-ASK.
 
 ### R-1 — ADR-2 Amendment: Eval-role MUST использовать provider+family disjoint от Planner и Coder
 
@@ -366,6 +384,8 @@ frontmatter и §2.
 
 ### Summary
 
+Primary-lens recommendations (§6, goal_lens-1 = noise-reduction + immediate-PR):
+
 | R-N | Verdict | Project-fit (A / B) | Goal-fit (C) | Cost | Alternative-if-rejected | User decision needed? |
 |-----|---------|---------------------|--------------|------|--------------------------|------------------------|
 | R-1 | TAKE | YES / YES | YES (Eval-role disjoint, immediate-PR) | cheap | Soft guideline only; risk biased UC5 baselines | No (TAKE) |
@@ -374,6 +394,14 @@ frontmatter и §2.
 | R-4 | DEFER | PARTIAL / YES | PARTIAL (UC5 candidate) | cheap-defer / medium-build | Build-now (violates ADR-1) / SKIP permanently | No (DEFER) |
 | R-5 | DEFER | PARTIAL / YES | PARTIAL (verifier-defer) | cheap-defer | Build-now (violates ADR-1) / lose cross-ref | No (DEFER) |
 | R-6 | SKIP | NO / NO | NO (P-4 out of scope) | n/a | Scope-expansion to fine-tuning territory | No (SKIP) |
+
+Secondary-lens recommendations (§10, goal_lens-2 = loop / sandbox / tool-calling):
+
+| R-N | Verdict | Project-fit (A / B) | Goal-fit (C — goal_lens-2) | Cost | Alternative-if-rejected | User decision needed? |
+|-----|---------|---------------------|----------------------------|------|--------------------------|------------------------|
+| R-7 | TAKE | YES / YES | YES (loop retry-budget invariant, ADR-7 evidence-row + DIGEST) | cheap | Implicit-only rule; risk unbounded inner-loop retries в future hook code | No (TAKE) |
+| R-8 | TAKE (conditional, docs-only) | PARTIAL / YES | PARTIAL (intra-role retry temperature default; pending FA-domain replication) | cheap | Default to ad-hoc T=0.0..0.7 per agent; loses P-3 evidence-row | No (TAKE; promote to invariant after domain replication, см. Q-2) |
+| R-9 | TAKE | YES / YES | YES (ADR-7 hook design constraint; symmetric к R-1) | cheap | LLM-using hooks без provider/family check; risk in-loop bias mirror R-1 issue | No (TAKE) |
 
 <!--
   Goal-fit (C) cell carries Y / PARTIAL / N + a 2–3-word tag; the full
@@ -414,6 +442,16 @@ frontmatter и §2.
 - **Goal-lens (a)+(b) satisfied**: один immediate-PR (R-1+R-2+R-3 в
   одной shape) closes half-(b); session-start noise-reduction через
   named primary-source pointers вместо ad-hoc retro-debate closes half-(a).
+- **Secondary-lens (loop / sandbox / tool-calling) findings (§10)**: три
+  docs-only TAKE-рекомендации под goal_lens-2 — R-7 ADR-7 retry-budget
+  invariant из P-3 §4.3 «N beyond compute backfires», R-8 intra-role retry
+  temperature default T=1.0 из P-3 §4.1 (conditional, pending code-gen
+  replication), R-9 ADR-7 hook design constraint (LLM-using hooks satisfy
+  provider/family ≠ acting-role per P-1 §4 generalization). Шесть отвергнутых
+  findings — в §10.4 (P-3 §4.4 selection-loss, P-1 §refusal-correlation, P-3
+  tool-execution-as-verifier, P-1 §arch-correlation на tool-arg shape,
+  P-2 §popularity-trap на tool-arg JSON, P-4 NTK reservoir/signal метафора)
+  — все CUT по causes «confirms-existing-design» или «speculative bridge».
 
 ## 2. Scope, метод
 
@@ -715,7 +753,12 @@ Re-evaluation trigger (formally noted in §9):
    sweep of cited papers (per AGENTS.md Pre-flight Step 1 recency-surface
    logic), либо UC5 baseline shows zero bias detection over N runs.
 
-## 6. Numbered recommendations (R-1..R-6)
+## 6. Numbered recommendations (R-1..R-6, primary lens)
+
+> **Primary lens** (goal_lens-1 из frontmatter): noise-reduction +
+> immediate-PR из P-1/P-2/P-3 vs ADR-1/2/7 и AGENTS.md rule #10.
+> Secondary-lens recommendations R-7..R-9 (loop / sandbox / tool-calling) —
+> в §10, не здесь, чтобы сохранить per-lens разделение по Stage-1 elicitation.
 
 ### R-1 — ADR-2 Eval-role provider/family disjointness (cost: cheap)
 
@@ -950,3 +993,261 @@ FA repo files (local git HEAD `59dcb9b`, 2026-05-12):
 - **Multi-fork PR coordination** (Bupitsa-ai/First-Agent-debloat →
   upstream merge logistics). Handled by project lead per `knowledge/llms.txt`
   §Project stage paragraph.
+
+## 10. Secondary lens — loop / sandbox / tool-calling (2026-05-13 addendum)
+
+Этот раздел — повторный pass по тем же четырём papers под non-primary
+goal_lens-2, инициированный project lead через chat 2026-05-13 после
+landing первой шестёрки `R-1..R-6` в этой же PR. Стиль и format — те
+же 8-field per-R-N блоки + единый CUT-список. Никаких новых sources не
+читалось; ссылки те же, что и в §0/§4 — `arXiv:2506.07962v1`,
+`arXiv:2510.21513v2`, `arXiv:2603.27844v2`, `arXiv:2605.01172v1`.
+
+### 10.0 Goal_lens-2 (verbatim)
+
+«Extract non-obvious insights from P-1..P-4 that improve FA
+loop-creation / sandbox / tool-calling subsystems, where papers aren't
+directly on these topics, and that correlate with current four-pillar
+project axes.»
+
+Подчёркнуто **non-obvious** — papers (Cornell correlated-errors / Simula
+ensembling / Nitarach AIMO 3 / Stanford NTK) явно не про inner-loop
+ReAct цикл, не про path-allow-list sandbox, и не про MCP-shaped
+tool-registry. Лензy-2 интересуют пересекающиеся выводы: findings,
+которые fall out из measurements авторов как side-effect, и которые
+переносятся на FA subsystems по аналогии. Под этим лезвием большинство
+findings отсекается как **confirms-existing-design** или
+**speculative bridge** — см. §10.4 CUT-список. Три find переживают
+триаж: R-7, R-8, R-9.
+
+### 10.1 Triage rationale
+
+Критерии acceptance в §10.2/10.3 — primary-source-citable, design-actionable
+(не только «информационная заметка»), и cross-axis fit с двумя
+из четырёх pillars project-overview.md §1.1 (research-backed implementation,
+pragmatic single-user, most efficient OSS harness, iteration via measurement).
+Findings, которые проходят только axis-A или axis-B (noise-reduction /
+context-pointer), без axis-C (advances goal_lens-2 — concrete subsystem
+delta), идут в CUT. P-4 NTK reservoir/signal-channel метафора рассмотрена
+и отвергнута как **speculative bridge** — conceptual rhyme без
+actionable transfer, см. §10.4 CUT #6.
+
+### R-7 — ADR-7 retry-budget invariant: inner-loop retry budgets MUST be config-bounded (P-3 §4.3)
+
+- **What:** ADR-7 §Decision §«Inner loop» текущий fix — single-thought →
+  single-tool-call → observation → next-turn loop. Intra-role retry-loop
+  «допустим в рамках same role per ADR-2 §Amendment 2026-04-29 §5» —
+  без явного config bound. P-3 §4.3 Table 2 показывает: gpt-oss-20b
+  $N{=}8 \to 31.0$, $N{=}32 \to 26.0$ — увеличение sample-N **без**
+  пропорционального увеличения compute backfires monotonically.
+  ADR-7 должен фиксировать это как primary-source-cited invariant:
+  «intra-role retry budget config-bound; default $N \le 3$; promotion к
+  более высокому $N$ требует UC5 measurement (Pillar-4)». Концретно
+  — добавить в `ADR-7 §Decision §Inner loop` подпункт «Retry budgets»
+  с одной строкой config-bound rule + 1-line citation P-3 §4.3.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (один primary-source-pin вместо
+    ad-hoc «сколько раз retry-ить» обсуждений в каждой Phase-M PR).
+  - (B) helps LLM find context when needed: YES (pointer-shape: ADR-7
+    §Decision §Inner loop §Retry budgets → P-3 §4.3 Table 2).
+- **Goal-lens fit (per session, dynamic — goal_lens-2):**
+  - (C) advances chosen goal_lens-2 «loop / sandbox / tool-calling
+    non-obvious insights»: YES (loop-creation: explicit retry-budget
+    invariant в ADR-7, ранее implicit).
+- **Cost:** cheap (<1h — single ADR-7 §Decision sub-bullet + DIGEST.md
+  row update; no `src/fa/loop/` code touched since current implementation
+  не реализует retry-loop yet — invariant вступает в силу при первой
+  Phase-M PR, добавляющей intra-role retry).
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE resolved).
+- **Alternative-if-rejected:** Оставить «retry budgets implicit», полагаясь
+  на minimalism-first AGENTS.md rule #10 как single restraint. Risk: первый
+  Phase-M PR, добавляющий intra-role retry для Coder/Debug, может зашить
+  unbounded retry-loop или $N{=}\text{большое}$ default, тратя compute
+  и landing AIMO-style regression (per P-3 §4.3). Cost-of-rejection ≥
+  1 retro-amendment PR + 1 Pillar-4 measurement run для baseline.
+- **Concrete first step (if TAKE):** В
+  [`knowledge/adr/ADR-7-inner-loop-tool-registry.md`](../adr/ADR-7-inner-loop-tool-registry.md)
+  §Decision §«Inner loop» добавить bullet `**Retry budgets.**` с
+  rule «`max_retry_per_role <= 3` default; configurable per role;
+  promotion к более высокому $N$ требует Pillar-4 measurement
+  (UC5b benchmark)»; primary-source citation `P-3 §4.3 (arXiv:2603.27844v2
+  Table 2) — gpt-oss-20b $N{=}8 \to 31.0$, $N{=}32 \to 26.0$; scaling N
+  beyond compute backfires monotonically». DIGEST.md ADR-7 row — добавить
+  bullet под `**Amendments / Inner-loop bullets.**`.
+
+### R-8 — Intra-role retry temperature default T=1.0 (P-3 §4.1, conditional TAKE)
+
+- **What:** Если intra-role retry-loop (R-7 above) когда-либо
+  активируется, sampling temperature default должен быть высоким, **не**
+  низким. P-3 §4.1: $T{=}0.5 \to 38$, $T{=}0.8 \to 40$, $T{=}1.0 \to 39.3$,
+  $T{=}1.2 \to 37$. Концепт «retry with $T{=}0$ для consistency» —
+  recognized anti-pattern: nominal consistency воспроизводит ту же ошибку.
+  P-3 одновременно показывает $\hat{\rho} \approx -0.122$ для $N{\ge}7$
+  при $T{=}1.0$ within single model — высокая температура **внутри**
+  одной модели уже decorrelates errors enough, что explicit multi-model
+  ensembling часто не нужен (см. R-4 DEFER в §6 для multi-model trajectory).
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (default temperature
+    documentation вместо повторяющихся «какую temperature использовать
+    для retry» дискуссий).
+  - (B) helps LLM find context when needed: YES (pointer-shape:
+    `~/.fa/models.yaml` schema doc → ADR-2/ADR-7 retry-temperature
+    bullet → P-3 §4.1 Table 1).
+- **Goal-lens fit (per session, dynamic — goal_lens-2):**
+  - (C) advances chosen goal_lens-2: PARTIAL (loop-creation: concrete
+    config default + explicit anti-pattern; HOWEVER conditional на
+    domain replication — см. caveat ниже).
+- **Cost:** cheap (<30 min — single bullet в ADR-2 §Amendment-NN OR
+  ADR-7 §Decision §Inner-loop §Retry budgets с note о temperature
+  default; OR `~/.fa/models.yaml` schema doc).
+- **Verdict:** TAKE (conditional, docs-only). Promotion к hard-invariant
+  blocked на FA Coder workload domain replication — см. Q-2.
+- **If UNCERTAIN-ASK:** n/a (conditional TAKE resolved; conditional на
+  Q-2 outcome, не блокирует embedding документации now).
+- **Alternative-if-rejected:** Default to ad-hoc per-agent temperature
+  (typically `T=0.0..0.7` для «consistency»), теряем primary-source
+  evidence-row и оставляем anti-pattern undocumented. Risk: первая
+  Phase-M PR, добавляющая intra-role retry, выбирает $T{=}0$ default,
+  reproduce same error → loop невыходной.
+- **Concrete first step (if TAKE):** В том же ADR-7 §Decision §Inner-loop
+  bullet `**Retry budgets.**` (см. R-7 above) добавить под-строку:
+  «temperature default $T{=}1.0$ on retry attempt (P-3 §4.1 — high-temp
+  within single model decorrelates $\hat{\rho} \approx -0.122$); explicit
+  anti-pattern: «retry with $T{=}0$ для consistency» — reproduces error.
+  Conditional invariant: promote к hard rule после FA Coder domain
+  replication per Q-2». ADR-2 §Amendments — нет изменений (config-default
+  живёт в ADR-7 inner-loop scope).
+
+### R-9 — ADR-7 hook design constraint: LLM-using hooks satisfy provider/family ≠ acting-role (P-1 §4 + R-1 generalization)
+
+- **What:** ADR-7 §Decision §«Mini hook pipeline» (pre_tool / post_tool)
+  currently описан как «mostly deterministic Python; hook may call LLM
+  если task требует». R-1 (§6 above) добавил provider/family ≠
+  acting-role constraint для Eval-role; та же P-1 §4 LLM-as-judge
+  over-inflation finding применима к **любому** in-loop hook, который
+  использует LLM для self-evaluation Coder/Planner output (i.e. hook-LLM
+  judges another LLM's tool-call args или output). Constraint
+  симметричный R-1: «LLM-using hooks MUST satisfy
+  `hook.primary.provider ≠ acting-role.primary.provider` AND
+  `hook.primary.architecture_family ≠ acting-role.primary.architecture_family`».
+  Если hook чисто-deterministic (Python validators, regex matchers,
+  schema-strict checks) — constraint не применим (no LLM call). Если
+  hook делает LLM call для «is this output reasonable» — applies.
+- **Project-axis fit (stable across notes):**
+  - (A) reduces session-start noise: YES (хорошая default constraint
+    предотвращает retro-amendment, когда первый LLM-using hook landed
+    с shared-family bias).
+  - (B) helps LLM find context when needed: YES (pointer: ADR-7
+    §Decision §Hook pipeline → P-1 §4 finding → R-1 §0 block).
+- **Goal-lens fit (per session, dynamic — goal_lens-2):**
+  - (C) advances chosen goal_lens-2: YES (loop-creation + tool-calling:
+    explicit design constraint, ранее implicit; cross-references R-1
+    Eval-role rule для consistency).
+- **Cost:** cheap (<30 min — single bullet в ADR-7 §Decision §Mini hook
+  pipeline; no code change since hooks в v0.1 deterministic, constraint
+  activates при первом LLM-using hook).
+- **Verdict:** TAKE
+- **If UNCERTAIN-ASK:** n/a (TAKE resolved).
+- **Alternative-if-rejected:** Hooks без constraint → first Phase-M PR
+  с LLM-using hook (e.g. «verify Coder output is reasonable» через
+  Coder-family LLM call) reproduces P-1 §4 bias inside the loop. Cost-of-rejection
+  ≥ 1 retro-amendment + потенциальный re-run UC5b baselines, если hook
+  использовался для filter-pass measurements.
+- **Concrete first step (if TAKE):** В
+  [`knowledge/adr/ADR-7-inner-loop-tool-registry.md`](../adr/ADR-7-inner-loop-tool-registry.md)
+  §Decision §«Mini hook pipeline» добавить bullet `**LLM-using hook
+  constraint.**` с rule «если hook вызывает LLM (rare in v0.1; default
+  hooks — deterministic Python), hook.primary MUST satisfy provider/family
+  ≠ acting-role.primary per same rule as R-1 §6 для Eval-role; primary
+  source — P-1 §4 (arXiv:2506.07962v1) LLM-as-judge over-inflation
+  finding». DIGEST.md ADR-7 row — добавить bullet под `**Amendments /
+  Hook pipeline.**`.
+
+### 10.4 Considered-and-CUT (six findings)
+
+Шесть findings из той же четвёрки papers рассмотрены и отвергнуты как
+не-проходящие триаж §10.1 (либо **confirms-existing-design** — паттерн
+уже зашит в ADR-1..7, no actionable delta; либо **speculative bridge** —
+conceptual rhyme без primary-source-actionable transfer). Перечислены
+для transparency и future-revisit if domain replication изменит cost-balance.
+
+1. **P-3 §4.4 «selection loss > prompt loss» применительно к loop.**
+   CUT — confirms-existing-design. ADR-7 §Decision уже центрируется
+   на tool-execution → observation → next-turn-decision паттерне; это
+   selection-driven, not prompt-driven, by design. Paper validates но
+   не proposes change. (R-5 §6 уже DEFER'ит ту же finding под другой
+   axis — verifier-defer pattern.)
+2. **P-1 §refusal-correlation применительно к sandbox (ADR-6).**
+   CUT — speculative bridge. ADR-6 deny-by-default chosen на
+   threat-model grounds (sandbox = hard-allow-list, no model
+   judgment); добавлять «P-1 supports it» как post-hoc rationalization
+   не даёт actionable delta. Re-evaluate trigger: ADR-6 v2 considers
+   model-driven sandbox bypass (вряд ли).
+3. **P-3 tool-execution-as-verifier implicit паттерн.** CUT — informational
+   only. AIMO 3 wins precisely потому что sandbox-execution = verifier;
+   FA уже использует ту же модель (ADR-7 §Decision tool-call →
+   observation). Adding citation row в DIGEST §ADR-6/-7 — noise без
+   decision change. Subtraction-first per AGENTS.md rule #10 wins.
+4. **P-1 §architecture-correlation применительно к tool-arg shape
+   correlation.** CUT — confirms-existing-design. ADR-2 §Decision
+   §Notes-on-model-slugs + Amendment 2026-04-29 verified-model-coverage
+   list уже empirically pinned per-architecture (Qwen-coder 3.6 native,
+   Kimi 2.6 prompt-only, GLM 5.1 native). P-1 backs choice conceptually,
+   но ADR-2 уже cites primary-source evidence (P-1 в этой же ноте через
+   R-1). Adding second citation row — duplication.
+5. **P-2 popularity-trap on tool-arg JSON shape.** CUT — already
+   mitigated. ADR-2 §Amendment 2026-05-01 #1 JSON-Schema-strict
+   boundary validation catches «popular-but-wrong tool-arg shape» by
+   design (schema rejection happens before model output ever reaches
+   tool runtime). P-2 finding applies где schema validation **отсутствует**;
+   FA's schema-strict invariant moots it.
+6. **P-4 reservoir/signal-channel метафора применительно к loop.**
+   CUT — speculative bridge. Tempting to say «reservoir = untested code
+   paths, signal channel = observed tool-call/result pairs»; conceptual
+   rhyme, но P-4 — training-time NTK theory, no inference-time transfer.
+   Reaching for primary-source citation от P-4 для inference-loop
+   decisions = misuse. P-4 correctly остаётся R-6 SKIP per §6.
+
+### 10.5 Goal_lens-2 specific caveats
+
+Дополнительные caveats, специфичные для §10 recommendations (общие
+caveats §5 #1..#5 продолжают применяться):
+
+- **F-B / R-8 inherits frontmatter caveat #2** (P-3 ρ̂≈−0.122 measured
+  только на IMO math с tool-integrated Python verifier). FA Coder
+  workload — code-gen + tool-call, **не верифицирован тем же
+  measurement-protocol**. До domain replication R-8 остаётся
+  conditional, docs-only — promotion к hard-invariant blocked на
+  Q-2 outcome. Concrete unblock trigger: UC5b benchmark suite landed
+  и показывает $\hat{\rho} < 0$ для $N{\ge}7$ at $T{=}1.0$ within
+  single model на FA Coder targets.
+- **F-A / R-7 measurement domain caveat**. P-3 §4.3 measurements
+  делались на $N{=}1{,}2{,}4{,}8{,}16{,}32$ AIMO problems with
+  Python execution verifier — closed-domain (math с answer-key).
+  FA Coder loop — open-domain code-gen, где «retry budget» имеет
+  иную failure-mode: код может пройти tests на retry #3 не потому
+  что better sample, а потому что test-set itself недо-specified
+  (overfit). R-7 «config-bound retry budget» — directionally safe
+  (cap unbounded retries), но конкретный default `N <= 3` — **первая
+  approximation** без FA-specific measurement. Promotion default-cap
+  к более detailed «per-role budget» (e.g. `coder: N<=3, debug: N<=5`)
+  — separate Phase-M PR после UC5b baseline.
+- **F-C / R-9 LLM-using-hook scope ambiguity**. Constraint применяется
+  к hooks, которые **вызывают** LLM. Граничные случаи: (a) hook,
+  который только parses LLM output (no second LLM call) — constraint
+  не применим; (b) hook, который вызывает LLM, но в read-only режиме
+  (no decision-affecting return) — constraint **strictly** применим
+  even though impact мал. Unblock через Q-NN (future) — нужно явное
+  ADR-7 wording, что определяет «LLM call» для hook-purposes
+  (probably: «any inference call к external/local LLM API, regardless
+  of how its output is consumed»).
+
+### 10.6 Cross-axis fit reminder
+
+R-7/R-8/R-9 — **все три** docs-only, no code change. Combined cost ≈
+1.5h aggregate (3 × ADR-7 sub-bullets + 1 DIGEST.md update + 1
+exploration_log block для cluster). Implementation cost (actual
+retry-loop code, hook code, etc.) **out of scope** — separate
+Phase-M PRs activated when подсистема building. R-7/R-8/R-9 чисто
+prep-of-evidence для future PR authors.
