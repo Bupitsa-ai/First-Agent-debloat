@@ -66,6 +66,21 @@
     complexity detector exists with measurable precision/recall on
     FA's own task corpus.
 
+### Q-2 amendment 2026-05-12 — `error.code` dual-mode `str | int` (ADR-7-driven clarification)
+
+- **Coupling:** Q-2 + Q-7 (ADR-7 §2 ToolError defines
+  `code: str` ergonomic-domain identifier; ADR-2 §1
+  pseudo-schema is the JSON-RPC wire shape with numeric `code`).
+- **Rationale:** ADR-7 §2 introduces ergonomic string codes
+  (`"invalid_params"`, `"sandbox_deny"`, `"no_unique_match"`)
+  for agent-facing handlers; JSON-RPC wire spec requires
+  numeric codes. Dual-mode resolves the contradiction without
+  amending the field set: §1 pseudo-schema relaxed from
+  `code: int` to `code: str | int`, mapping table lives next to
+  the dispatcher. No `name` / `params` / `result` / `error`
+  field-set change → no breach of ADR-2 §4 inheritance rule.
+- **Source:** [ADR-2 §Amendment 2026-05-01 §4 dual-mode](../adr/ADR-2-llm-tiering.md#amendment-2026-05-01--mcp-forward-compat-tool-shape-convention) (clarification appended in this PR alongside ADR-7 import).
+
 ## Q-3 — Which memory architecture variant for v0.1? (2026-04-27)
 
 - **Closed by:** [ADR-3](../adr/ADR-3-memory-architecture-variant.md)
@@ -156,3 +171,50 @@
     repo»).** Reason: hallucinating Coder will violate prompt;
     failure is silent. Lesson: useful only as a layer on top of
     the chosen option, never as a replacement.
+
+## Q-7 — What is the v0.1 inner-loop & tool-registry contract? (2026-05-12)
+
+- **Closed by:** [ADR-7](../adr/ADR-7-inner-loop-tool-registry.md)
+  (Amendment 2026-05-12 — cross-reference bootstrap-cost-baseline
+  measurement evidence; documentation-only, no shape change).
+- **Coupling:** depends on Q-2 (ADR-2 amendments — `tool_protocol`
+  + MCP-shape) and Q-6 (ADR-6 — sandbox provides the v0.1 `pre_tool`
+  hook of record). Measurement counterpart:
+  [`research/bootstrap-cost-baseline-2026-05.md`](../research/bootstrap-cost-baseline-2026-05.md)
+  (added 2026-05-12 §Amendment) — six independent ADR-7-prep bootstrap
+  sessions across two harnesses empirically validate §6 tier-1 + tier-2
+  routing, §9 ≤100 K context-budget, §7 `harness_id` motivation, and
+  re-evaluation trigger 5 (= BACKLOG I-8, FA's own harness re-test).
+- **Chosen:** Formal inner-loop ADR — MCP-shaped `ToolSpec` /
+  `ToolResult` registry; five-tool v0.1 catalog (`fs.read_file`,
+  `fs.list_files`, `fs.edit_file`, `fs.write_file`, `fs.grep`); two
+  edit-shapes (`edit_file` string-replace default + `apply_patch`
+  unified-diff off by default, R-3 fixture pins the flip);
+  JSON-Schema input validation; three-tier tool disclosure;
+  separated trace (`events.jsonl` raw + `hot.md` summary, anti-
+  summary-rot invariant); mini hook pipeline (`pre_tool` ×2 —
+  Sandbox + Approval, `post_tool` ×1 — Audit); static layered
+  prompt frozen at session start; 4-question subtraction-first
+  acceptance block.
+- **Rejected:**
+  - **No formal inner-loop ADR; let each tool PR define its own
+    contract (ampcode «three bare functions» baseline).**
+    Reason: ampcode targets one tier (Claude); FA targets four
+    + `tool_protocol: native | prompt-only` axis; without a
+    formal contract each Coder model sees a different shape for
+    the same tool, breaking ADR-2 §Amendment 2026-04-29 «loop
+    adapts to the role's `tool_protocol`, not to the model».
+    ADR-2 §Amendment 2026-05-01 MCP-shape convention has no
+    concrete carrier; ADR-6 §Tool wiring stub propagates as
+    inline boilerplate across each tool PR. Lesson: becomes
+    viable only if FA collapses to a single tier (e.g. Claude
+    only) AND the catalog stays at three tools.
+  - **Formal ADR + full hook pipeline (pre-run / post-run /
+    on-event) + MCP transport in v0.1.** Reason: pre-run /
+    post-run / on-event hooks are v0.2 reflection / UC5
+    territory (deferred per ADR-1 §Amendment 2026-05-01 + 2026-05-06);
+    MCP transport adds an `mcp` package dependency that ADR-2
+    §Amendment 2026-05-01 explicitly excludes; harness-research
+    R-6 defers code-execution-over-MCP. Lesson: re-evaluate when
+    UC5 lands (eval-driven harness iteration) AND OS-level sandbox
+    is built out per ADR-6 §Re-evaluation triggers.
